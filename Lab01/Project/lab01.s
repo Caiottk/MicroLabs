@@ -8,8 +8,7 @@
 ; -------------------------------------------------------------------------------
 ; Declarações EQU - Defines
 ;<NOME>         EQU <VALOR>
-INITIAL_MEM_POS   EQU 0x20000400
-HIGHEST_INCID_POS EQU 0x20000500
+INCID_VEC_SIZE EQU 26
 ; -------------------------------------------------------------------------------
 ; Área de Dados - Declarações de variáveis
 		AREA  DATA, ALIGN=2
@@ -20,7 +19,7 @@ HIGHEST_INCID_POS EQU 0x20000500
                                            ; de <tam> bytes a partir da primeira 
                                            ; posição da RAM
 offset SPACE 0x400										   
-incidencias SPACE 26										   
+incidencias SPACE INCID_VEC_SIZE										   
 
 ; -------------------------------------------------------------------------------
 ; Área de Código - Tudo abaixo da diretiva a seguir será armazenado na memória de 
@@ -40,14 +39,14 @@ incidencias SPACE 26
 Start  
 ; Comece o código aqui <======================================================
 	
-STRING1 DCB "MACACOCOMGIRAFA", 0
+STRING1 DCB "RELeTe", 0
 	LDR R0, =incidencias
 	LDR R1, =STRING1
 	
 ReadString
-	LDRB R2, [R1], #1 	;R2 gets value from the string letter
+	LDRB R2, [R1], #1 	; R2 gets value from the string letter
 	CMP R2, #0x5A		
-	ITE HI				;Decides where in the incidencias vector the value will be iterated
+	ITE HI				; Decides where in the incidencias vector the value will be iterated
 		SUBHI R3, R2, #0x61
 		SUBLS R3, R2, #0x41
 		
@@ -62,36 +61,27 @@ ReadString
 	BNE ReadString
 	
 	MOV R9, #0
-    MOV R5, #26
+    MOV R5, INCID_VEC_SIZE	; To loop the incidencias array
 
 loop
     LDRB R6, [R0]
 
     CMP R6, R9
-
-    BGT update_max
+	IT HI
+		MOVHI R9,R6
 
     ADDS R0, R0, #1
-
     SUBS R5, R5, #1
 
 	CMP R5, #0
 	BEQ done
 	B loop
 
-update_max
-    MOV R9, R6
-
-    ADDS R0, R0, #1
-    SUBS R5, R5, #1
-	CMP R5, #0
-    BEQ done
-	B loop
-
 done
+	MOV R5, #0x0500
+	MOVT R5, #0x2000
+	STRB R9, [R5]
 	NOP
-
-		
 
     ALIGN                           ; garante que o fim da seção está alinhada 
     END                             ; fim do arquivo
