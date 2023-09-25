@@ -42,8 +42,10 @@
 		IMPORT  SysTick_Init
 		IMPORT  SysTick_Wait1ms			
 		IMPORT  GPIO_Init
-        IMPORT  PortN_Output
-        IMPORT  PortJ_Input	
+        IMPORT LightUp7SegLeft
+		IMPORT LightUp7SegRight
+		IMPORT LightUpLEDs	
+		IMPORT GetPushBtnsState	
 
 
 ; -------------------------------------------------------------------------------
@@ -52,16 +54,29 @@ Start
 	BL PLL_Init                  ;Chama a subrotina para alterar o clock do microcontrolador para 80MHz
 	BL SysTick_Init              ;Chama a subrotina para inicializar o SysTick
 	BL GPIO_Init                 ;Chama a subrotina que inicializa os GPIO
+	MOV R3, #0
 
 MainLoop
 ; ****************************************
 ; Escrever código que lê o estado da chave, se ela estiver desativada apaga o LED
 ; Se estivar ativada chama a subrotina Pisca_LED
 ; ****************************************
-	BL PortJ_Input
-	CMP R0, #0X0
-	IT	EQ
-		BLEQ Pisca_LED
+	BL GetPushBtnsState
+	MOV R1, R0
+	CMP R0, #2_10
+	ITT	EQ
+		MOVEQ R0, R3
+		BLEQ LightUpLEDs
+	CMP R1, #2_01
+	ITT EQ
+		MOVEQ R0, R3
+		BLEQ LightUp7SegLeft
+	
+	ADD R3, R3, #1
+	CMP R3, #10
+	IT EQ
+		MOVEQ R3, #0
+	
 	B MainLoop
 
 ;--------------------------------------------------------------------------------
@@ -73,7 +88,7 @@ Pisca_LED
 ; Escrever função que acende o LED, espera 1 segundo, apaga o LED e espera 1 s
 ; Esta função deve chamar a rotina SysTick_Wait1ms com o parâmetro de entrada em R0
 ; ****************************************
-	BL PortN_Output
+	;BL PortN_Output
 	B Pisca_LED
 
 ; -------------------------------------------------------------------------------------------------------------------------
