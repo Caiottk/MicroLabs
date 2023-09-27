@@ -15,7 +15,7 @@
 ; ========================
 ; Definições de Valores
 
-
+VECT_SIZE EQU 8
 ; -------------------------------------------------------------------------------
 ; Área de Dados - Declarações de variáveis
 		AREA  DATA, ALIGN=2
@@ -25,7 +25,8 @@
 ;<var>	SPACE <tam>                        ; Declara uma variável de nome <var>
                                            ; de <tam> bytes a partir da primeira 
                                            ; posição da RAM		
-
+offset SPACE 0x400
+vect SPACE VECT_SIZE
 ; -------------------------------------------------------------------------------
 ; Área de Código - Tudo abaixo da diretiva a seguir será armazenado na memória de 
 ;                  código
@@ -55,22 +56,70 @@ Start
 	BL SysTick_Init              ;Chama a subrotina para inicializar o SysTick
 	BL GPIO_Init                 ;Chama a subrotina que inicializa os GPIO
 	MOV R3, #0
+	
+atualizaBaseAtual
+; ****************************************
+;Função que itera a base atual
+; ****************************************
+	LDR R2, =0x3FE
+    LDR R4, [R2]
+	
+    ANDS R4, R4, #7  ; R2 = i mod 8
+    ADDS R4, R4, #1  ; R2 = (i mod 8) + 1
+	
+    STR R4, [R2]
+	
+    LDR R5, =vect   ; Carrega o conteúdo de Vect[i] em R5
+    ADD R5, R5, R4  ; 
+    LDR R5, [R5]
+	
+	
+	
+	BX LR
 
+;--------------------------------------------------------------------------------
+atualizaFatorMultiplicativo
+; ****************************************
+;Função que itera o fator multiplicativo
+; ****************************************
+	LDR R5, =0x3FE   ; Carrega i
+	LDR R5, [R5]
+	
+	LDR R2, =vect   ; Carrega o conteúdo de Vect[i]
+	ADD R2, R2, R5
+	LDRB R4, [R2]
+	
+	ADD R4, R4, #1	; Atualiza o conteúdo de Vect[i] para (Vect[i] +1) mod 10
+	CMP R4, #10
+	IT GE
+		SUBGE R4, R4, #10
+	
+	STR R4, [R2]
+	
+    
+	
+	BX LR
+;--------------------------------------------------------------------------------
 MainLoop
 ; ****************************************
-; Escrever código que lê o estado da chave, se ela estiver desativada apaga o LED
-; Se estivar ativada chama a subrotina Pisca_LED
 ; ****************************************
+	
+	
+	
 	BL GetPushBtnsState
 	MOV R1, R0
+	MOV R2, #500
 	CMP R0, #2_10
-	ITT	EQ
-		MOVEQ R0, R3
-		BLEQ LightUpLEDs
+	ITT EQ
+		BLEQ espera_500ms
+		BLEQ atualizaBaseAtual
+;	ITT	EQ
+;		MOVEQ R0, R3
+;		BLEQ LightUpLEDs
 	CMP R1, #2_01
 	ITT EQ
-		MOVEQ R0, R3
-		BLEQ LightUp7SegLeft
+		BLEQ espera_500ms
+		BLEQ atualizaFatorMultiplicativo
 	
 	ADD R3, R3, #1
 	CMP R3, #10
@@ -80,17 +129,17 @@ MainLoop
 	B MainLoop
 
 ;--------------------------------------------------------------------------------
-; Função Pisca_LED
-; Parâmetro de entrada: Não tem
-; Parâmetro de saída: Não tem
-Pisca_LED
+espera_500ms
 ; ****************************************
-; Escrever função que acende o LED, espera 1 segundo, apaga o LED e espera 1 s
-; Esta função deve chamar a rotina SysTick_Wait1ms com o parâmetro de entrada em R0
+;Função que cria um atraso de 0,5s entre o aperto du pushButton e seu tratamento
 ; ****************************************
-	;BL PortN_Output
-	B Pisca_LED
 
+	BL Systick_Wait1ms
+    SUBS R2, R2, #1
+    CMP R2, #0
+    BNE espera_500ms
+	BX LR
+	
 ; -------------------------------------------------------------------------------------------------------------------------
 ; Fim do Arquivo
 ; -------------------------------------------------------------------------------------------------------------------------	
