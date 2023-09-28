@@ -186,6 +186,7 @@ GPIO_PORTQ				EQU 	2_100000000000000
 		EXPORT LightUp7SegRight
 		EXPORT LightUpLEDs			; Permite chamar LightUpLEDs de outro arquivo
 		EXPORT GetPushBtnsState     ; Permite chamar GetPushBtnsState de outro arquivo
+		EXPORT DisableAllLEDs
 							
 		IMPORT SysTick_Wait1ms
 
@@ -479,7 +480,21 @@ GetPushBtnsState
 	
 	BX LR
 
-
+; -------------------------------------------------------------------------------
+; Função DisableAllLEDs
+; Parâmetro de entrada: R0: numero de 1 a 8 para ser aceso nos LEDs
+; Parâmetro de saída: Não tem
+DisableAllLEDs
+	; Disables 7-segment Displays
+	LDR R9, =GPIO_PORTB_AHB_DATA_R
+	MOV R8, #2_000000
+	STR R8, [R9]
+	; Disables LEDs
+	LDR R9, =GPIO_PORTP_DATA_R
+	MOV R8, #2_000000
+	STR R8, [R9]
+	
+	BX LR
 
     ALIGN                           ; garante que o fim da seção está alinhada 
     END                             ; fim do arquivo
