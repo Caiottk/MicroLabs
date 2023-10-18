@@ -194,7 +194,10 @@ GPIO_PORTQ				EQU 	2_100000000000000
 		EXPORT LightUpLEDs			; Permite chamar LightUpLEDs de outro arquivo
 		EXPORT GetPushBtnsState     ; Permite chamar GetPushBtnsState de outro arquivo
 		EXPORT DisableAllLEDs
-							
+		EXPORT printArrayInLcd
+		EXPORT readKeyboard
+		EXPORT blinkLEDs
+		
 		IMPORT SysTick_Wait1ms
 
 ;--------------------------------------------------------------------------------
@@ -435,5 +438,30 @@ DisableAllLEDs
 	
 	BX LR
 
-    ALIGN                           ; garante que o fim da seção está alinhada 
-    END                             ; fim do arquivo
+; -------------------------------------------------------------------------------
+; Function to print an array of chars in a LCD display
+; Input: R0 = pointer to the array of chars
+;        R1 = number of chars to be printed
+; Output: none
+printArrayInLcd
+
+	BX LR
+
+; -------------------------------------------------------------------------------
+; Function to read button input from the matrix keyboard
+; Input: none
+; Output: R0 = pressed button
+readKeyboard
+
+	BX LR
+
+; -------------------------------------------------------------------------------
+; Function to blink LED's
+; Input: none
+; Output: none
+blinkLEDs
+
+	BX LR
+
+	ALIGN                           ; garante que o fim da seção está alinhada 
+	END                             ; fim do arquivo
