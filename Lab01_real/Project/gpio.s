@@ -189,6 +189,7 @@ GPIO_PORTQ				EQU 	2_100000000000000
 		EXPORT DisableAllLEDs
 							
 		IMPORT SysTick_Wait1ms
+		IMPORT  SysTick_Wait1us
 
 ;--------------------------------------------------------------------------------
 ; Função GPIO_Init

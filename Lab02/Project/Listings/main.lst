@@ -9,38 +9,38 @@ ARM Macro Assembler    Page 1
     3 00000000         ; Prof. Guilherme Peron
     4 00000000         ; Ver 1 19/03/2018
     5 00000000         ; Ver 2 26/08/2018
-    6 00000000         ; Este programa deve esperar o usuário pressionar uma ch
-                       ave.
-    7 00000000         ; Caso o usuário pressione uma chave, um LED deve piscar
-                        a cada 1 segundo.
+    6 00000000         ; Este programa deve esperar o usuï¿½rio pressionar uma 
+                       chave.
+    7 00000000         ; Caso o usuï¿½rio pressione uma chave, um LED deve pisc
+                       ar a cada 1 segundo.
     8 00000000         
     9 00000000         ; ------------------------------------------------------
                        -------------------------
-   10 00000000                 THUMB                        ; Instruções do tip
-                                                            o Thumb-2
+   10 00000000                 THUMB                        ; Instruï¿½ï¿½es do
+                                                             tipo Thumb-2
    11 00000000         ; ------------------------------------------------------
                        -------------------------
    12 00000000         
-   13 00000000         ; Declarações EQU - Defines
+   13 00000000         ; Declaraï¿½ï¿½es EQU - Defines
    14 00000000         ;<NOME>         EQU <VALOR>
    15 00000000         ; ========================
-   16 00000000         ; Definições de Valores
+   16 00000000         ; Definiï¿½ï¿½es de Valores
    17 00000000         
-   18 00000000 00000008 
-                       VECT_SIZE
-                               EQU              8
+   18 00000000 00000000 
+                       NO_BTNS_PRESSED
+                               EQU              0
    19 00000000         ; ------------------------------------------------------
                        -------------------------
-   20 00000000         ; Área de Dados - Declarações de variáveis
+   20 00000000         ; ï¿½rea de Dados - Declaraï¿½ï¿½es de variï¿½veis
    21 00000000                 AREA             DATA, ALIGN=2
-   22 00000000         ; Se alguma variável for chamada em outro arquivo
+   22 00000000         ; Se alguma variï¿½vel for chamada em outro arquivo
    23 00000000         ;EXPORT  <var> [DATA,SIZE=<tam>]   ; Permite chamar a va
-                       riável <var> a 
+                       riï¿½vel <var> a 
    24 00000000         ; partir de outro arquivo
    25 00000000         ;<var> SPACE <tam>                        ; Declara uma 
-                       variável de nome <var>
+                       variï¿½vel de nome <var>
    26 00000000         ; de <tam> bytes a partir da primeira 
-   27 00000000         ; posição da RAM  
+   27 00000000         ; posiï¿½ï¿½o da RAM  
    28 00000000 00      sysState
                                SPACE            0x1
    29 00000001 00 00 00 
@@ -52,143 +52,492 @@ ARM Macro Assembler    Page 1
    31 00000009 00 00 00 
               00       guessPword
                                SPACE            0x4
-   32 0000000D         ; ------------------------------------------------------
-                       -------------------------
-   33 0000000D         ; Área de Código - Tudo abaixo da diretiva a seguir será
-                        armazenado na memória de 
-   34 0000000D         ;                  código
-   35 0000000D                 AREA             |.text|, CODE, READONLY, ALIGN=
-2
-   36 00000000         
-   37 00000000         ; Se alguma função do arquivo for chamada em outro arqui
-                       vo 
-   38 00000000                 EXPORT           Start       ; Permite chamar a 
+   32 0000000D 00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00    lcdString
 
 
 
 ARM Macro Assembler    Page 2 
 
 
-                                                            função Start a part
-                                                            ir de 
-   39 00000000         ; outro arquivo. No caso startup.s
-   40 00000000         
-   41 00000000         ; Se chamar alguma função externa 
-   42 00000000         ;IMPORT <func>              ; Permite chamar dentro dest
+                               SPACE            0x20
+   33 0000002D         ; ------------------------------------------------------
+                       -------------------------
+   34 0000002D         ; ï¿½rea de Cï¿½digo - Tudo abaixo da diretiva a seguir 
+                       serï¿½ armazenado na memï¿½ria de 
+   35 0000002D         ;                  cï¿½digo
+   36 0000002D                 AREA             |.text|, CODE, READONLY, ALIGN=
+2
+   37 00000000         
+   38 00000000         ; Se alguma funï¿½ï¿½o do arquivo for chamada em outro a
+                       rquivo 
+   39 00000000                 EXPORT           Start       ; Permite chamar a 
+                                                            funï¿½ï¿½o Start a 
+                                                            partir de 
+   40 00000000         ; outro arquivo. No caso startup.s
+   41 00000000         
+   42 00000000         ; Se chamar alguma funï¿½ï¿½o externa 
+   43 00000000         ;IMPORT <func>              ; Permite chamar dentro dest
                        e arquivo uma 
-   43 00000000         ; função <func>
-   44 00000000                 IMPORT           PLL_Init
-   45 00000000                 IMPORT           SysTick_Init
-   46 00000000                 IMPORT           SysTick_Wait1ms
-   47 00000000                 IMPORT           GPIO_Init
-   48 00000000                 IMPORT           LightUpLEDs
-   49 00000000                 IMPORT           GetPushBtnsState
-   50 00000000                 IMPORT           DisableAllLEDs
-   51 00000000         
-   52 00000000         
-   53 00000000         ; ------------------------------------------------------
+   44 00000000         ; funï¿½ï¿½o <func>
+   45 00000000                 IMPORT           PLL_Init
+   46 00000000                 IMPORT           SysTick_Init
+   47 00000000                 IMPORT           SysTick_Wait1ms
+   48 00000000                 IMPORT           GPIO_Init
+   49 00000000         
+   50 00000000                 IMPORT           lcd_init
+   51 00000000                 IMPORT           printArrayInLcd
+   52 00000000                 IMPORT           readKeyboard
+   53 00000000                 IMPORT           blinkLEDs
+   54 00000000                 IMPORT           escrever_caractere_senha
+   55 00000000         
+   56 00000000         ; ------------------------------------------------------
                        -------------------------
-   54 00000000         ; Função main()
-   55 00000000         Start
-   56 00000000 F7FF FFFE       BL               PLL_Init    ;Chama a subrotina 
-                                                            para alterar o cloc
-                                                            k do microcontrolad
-                                                            or para 80MHz
-   57 00000004 F7FF FFFE       BL               SysTick_Init ;Chama a subrotina
-                                                             para inicializar o
-                                                             SysTick
-   58 00000008 F7FF FFFE       BL               GPIO_Init   ;Chama a subrotina 
-                                                            que inicializa os G
-                                                            PIO
-   59 0000000C F000 F817       BL               InitilizeVars
-   60 00000010         ;-------------------------------------------------------
-                       -------------------------
-   61 00000010         MainLoop
-   62 00000010 490E            LDR              R1, =sysState
-   63 00000012 6809            LDR              R1, [R1]
-   64 00000014         
-   65 00000014 2900            CMP              R1, #0
-   66 00000016 BF08            IT               EQ
-   67 00000018 F000 F80D       BLEQ             waitNewPword
-   68 0000001C         
-   69 0000001C 2901            CMP              R1, #1
-   70 0000001E BF08            IT               EQ
-   71 00000020 F000 F80A       BLEQ             closedSafe
-   72 00000024         
-   73 00000024 2902            CMP              R1, #2
-   74 00000026 BF08            IT               EQ
-   75 00000028 F000 F807       BLEQ             waitJ0Interrup
-   76 0000002C         
-   77 0000002C 2901            CMP              R1, #1
-   78 0000002E BF08            IT               EQ
-   79 00000030 F000 F804       BLEQ             waitMasterPword
-   80 00000034         
-   81 00000034 E7EC            B                MainLoop
-   82 00000036         
-   83 00000036         ;-------------------------------------------------------
-                       -------------------------
-   84 00000036         ; Routine for entering a new password and close the safe
+   57 00000000         ; Funï¿½ï¿½o main()
+   58 00000000         Start
+   59 00000000 43 6F 66 
+              72 65 20 
+              41 62 65 
+              72 74 6F 
+              00       MSG_OPEN
+                               DCB              "Cofre Aberto", 0
+   60 0000000D 43 6F 66 
+              72 65 20 
+              41 62 72 
+              69 6E 64 
+              6F 00    MSG_OPENING
+                               DCB              "Cofre Abrindo", 0
+   61 0000001B 43 6F 66 
+              72 65 20 
+              46 65 63 
+              68 61 6E 
+              64 6F 00 MSG_CLOSING
+                               DCB              "Cofre Fechando", 0
+   62 0000002A 43 6F 66 
+              72 65 20 
+              46 65 63 
+              68 61 64 
+              6F 00    MSG_CLOSED
+                               DCB              "Cofre Fechado", 0
 
 
 
 ARM Macro Assembler    Page 3 
 
 
+   63 00000038 43 6F 66 
+              72 65 20 
+              54 72 61 
+              76 61 64 
+              6F 2E 00 MSG_LOCKED
+                               DCB              "Cofre Travado.", 0
+   64 00000047 00 F7FF 
+              FFFE             BL               PLL_Init    ;Chama a subrotina 
+                                                            para alterar o cloc
+                                                            k do microcontrolad
+                                                            or para 80MHz
+   65 0000004C F7FF FFFE       BL               SysTick_Init ;Chama a subrotina
+                                                             para inicializar o
+                                                             SysTick
+   66 00000050 F7FF FFFE       BL               GPIO_Init
+   67 00000054 F7FF FFFE       BL               lcd_init    ;Chama a subrotina 
+                                                            que inicializa os G
+                                                            PIO
+   68 00000058 F000 F8E1       BL               InitilizeVars
+   69 0000005C         ;-------------------------------------------------------
+                       -------------------------
+   70 0000005C         MainLoop
+   71 0000005C 498B            LDR              R1, =sysState
+   72 0000005E 6809            LDR              R1, [R1]
+   73 00000060         
+   74 00000060 2900            CMP              R1, #0
+   75 00000062 BF08            IT               EQ
+   76 00000064 F000 F80D       BLEQ             newPword
+   77 00000068         
+   78 00000068 2901            CMP              R1, #1
+   79 0000006A BF08            IT               EQ
+   80 0000006C F000 F842       BLEQ             closedSafe
+   81 00000070         
+   82 00000070 2902            CMP              R1, #2
+   83 00000072 BF08            IT               EQ
+   84 00000074 F000 F898       BLEQ             waitJ0Interrup
+   85 00000078         
+   86 00000078 2901            CMP              R1, #1
+   87 0000007A BF08            IT               EQ
+   88 0000007C F000 F89F       BLEQ             waitMasterPword
+   89 00000080         
+   90 00000080 E7EC            B                MainLoop
+   91 00000082         
+   92 00000082         ;-------------------------------------------------------
+                       -------------------------
+   93 00000082         ; Routine for entering a new password and close the safe
                        
-   85 00000036         waitNewPword
-   86 00000036         
-   87 00000036 4770            BX               LR
-   88 00000038         ;-------------------------------------------------------
+   94 00000082         newPword
+   95 00000082 4883            LDR              R0, =MSG_OPEN
+   96 00000084 F04F 011F       MOV              R1, #31
+   97 00000088 B500            PUSH{LR}
+   98 0000008A F7FF FFFE       BL               printArrayInLcd
+   99 0000008E F7FF FFFE       BL               readKeyboard
+  100 00000092 F85D EB04       POP{LR}
+  101 00000096         
+  102 00000096 2800            CMP              R0, #NO_BTNS_PRESSED
+  103 00000098 BF08            IT               EQ
+  104 0000009A E02A            BEQ              newPwordEnd
+  105 0000009C         
+
+
+
+ARM Macro Assembler    Page 4 
+
+
+  106 0000009C 2F04            CMP              R7, #4      ; i == 4
+  107 0000009E BF08            IT               EQ
+  108 000000A0 E000            BEQ              newPwordHashtag
+  109 000000A2 E01B            B                newPwordNewInput
+  110 000000A4         
+  111 000000A4         newPwordHashtag
+  112 000000A4 2823            CMP              R0, #0x23   ; R0 == '#'
+  113 000000A6 BF18            IT               NE
+  114 000000A8 E023            BNE              newPwordEnd
+  115 000000AA         
+  116 000000AA B500            PUSH{LR}
+  117 000000AC F44F 707A       MOV              R0, #1000
+  118 000000B0 F7FF FFFE       BL               SysTick_Wait1ms
+  119 000000B4         
+  120 000000B4 4877            LDR              R0, =MSG_CLOSING
+  121 000000B6 F04F 0111       MOV              R1, #17
+  122 000000BA F7FF FFFE       BL               printArrayInLcd
+  123 000000BE         
+  124 000000BE F241 3088       MOV              R0, #5000
+  125 000000C2 F7FF FFFE       BL               SysTick_Wait1ms
+  126 000000C6         
+  127 000000C6 F04F 0700       MOV              R7, #0      ; i = 0
+  128 000000CA F04F 0600       MOV              R6, #0      ; errorCtr = 0
+  129 000000CE 496F            LDR              R1, =sysState
+  130 000000D0 F04F 0001       MOV              R0, #1
+  131 000000D4 7008            STRB             R0, [R1]
+  132 000000D6 F85D EB04       POP{LR}
+  133 000000DA         
+  134 000000DA E00A            B                newPwordEnd
+  135 000000DC         
+  136 000000DC         newPwordNewInput
+  137 000000DC 496E            LDR              R1, =currPword
+  138 000000DE 4439            ADD              R1, R1, R7
+  139 000000E0 7008            STRB             R0, [R1]    ; currPword[i] = R0
+                                                            
+  140 000000E2 F107 0701       ADD              R7, R7, #1  ; i++
+  141 000000E6 B500            PUSH             {LR}
+  142 000000E8 F7FF FFFE       BL               escrever_caractere_senha
+  143 000000EC F85D EB04       POP              {LR}
+  144 000000F0 E7FF            B                newPwordEnd
+  145 000000F2         
+  146 000000F2         newPwordEnd
+  147 000000F2 4770            BX               LR
+  148 000000F4         
+  149 000000F4         ;-------------------------------------------------------
                        -------------------------
-   89 00000038         ; Routine for when the safe is closed: either opens or l
+  150 000000F4         ; Routine for when the safe is closed: either opens or l
                        ocks permanently
-   90 00000038         closedSafe
-   91 00000038         
-   92 00000038 4770            BX               LR
-   93 0000003A         ;-------------------------------------------------------
+  151 000000F4         closedSafe
+  152 000000F4 4869            LDR              R0, =MSG_CLOSED
+  153 000000F6 F04F 010D       MOV              R1, #13
+  154 000000FA B500            PUSH{LR}
+  155 000000FC F7FF FFFE       BL               printArrayInLcd
+  156 00000100 F7FF FFFE       BL               readKeyboard
+  157 00000104 F85D EB04       POP{LR}
+  158 00000108         
+  159 00000108 2800            CMP              R0, #NO_BTNS_PRESSED
+  160 0000010A BF08            IT               EQ
+  161 0000010C E04B            BEQ              closedSafeEnd
+
+
+
+ARM Macro Assembler    Page 5 
+
+
+  162 0000010E         
+  163 0000010E 2F04            CMP              R7, #4      ; i == 4
+  164 00000110 BF08            IT               EQ
+  165 00000112 E000            BEQ              closedSafeHashtag
+  166 00000114 E041            B                closedSafeNewInput
+  167 00000116         
+  168 00000116         closedSafeHashtag
+  169 00000116 2823            CMP              R0, #0x23   ; R0 == '#'
+  170 00000118 BF18            IT               NE
+  171 0000011A E044            BNE              closedSafeEnd
+  172 0000011C         
+  173 0000011C 485E            LDR              R0, =currPword
+  174 0000011E 4960            LDR              R1, =guessPword
+  175 00000120 F04F 0204       MOV              R2, #4
+  176 00000124 B500            PUSH{LR}
+  177 00000126 F000 F887       BL               arraysCmp
+  178 0000012A F85D EB04       POP{LR}
+  179 0000012E         
+  180 0000012E 2801            CMP              R0, #1
+  181 00000130 BF1A            ITTE             NE
+  182 00000132 2700            MOVNE            R7, #0      ; i = 0
+  183 00000134 1C76            ADDNE            R6, R6, #1  ; errorCtr++
+  184 00000136 E003            BEQ              closedSafeOpenSafe
+  185 00000138         
+  186 00000138 2E03            CMP              R6, #3      ; errorCtr == 3
+  187 0000013A BF08            IT               EQ
+  188 0000013C E014            BEQ              closedSafeLockSafe
+  189 0000013E         
+  190 0000013E E032            B                closedSafeEnd
+  191 00000140         
+  192 00000140         closedSafeOpenSafe
+  193 00000140 B500            PUSH{LR}
+  194 00000142 4858            LDR              R0, =MSG_OPENING
+  195 00000144 F04F 0110       MOV              R1, #16
+  196 00000148 F7FF FFFE       BL               printArrayInLcd
+  197 0000014C         
+  198 0000014C F241 3088       MOV              R0, #5000
+  199 00000150 F7FF FFFE       BL               SysTick_Wait1ms
+  200 00000154         
+  201 00000154 F04F 0700       MOV              R7, #0      ; i = 0
+  202 00000158 F04F 0600       MOV              R6, #0      ; errorCtr = 0
+  203 0000015C 494B            LDR              R1, =sysState
+  204 0000015E F04F 0000       MOV              R0, #0
+  205 00000162 7008            STRB             R0, [R1]
+  206 00000164 F85D EB04       POP{LR}
+  207 00000168         
+  208 00000168         closedSafeLockSafe
+  209 00000168 B500            PUSH{LR}
+  210 0000016A 484F            LDR              R0, =MSG_LOCKED
+  211 0000016C F04F 010E       MOV              R1, #14
+  212 00000170 F7FF FFFE       BL               printArrayInLcd
+  213 00000174         
+  214 00000174 F241 3088       MOV              R0, #5000
+  215 00000178 F7FF FFFE       BL               SysTick_Wait1ms
+  216 0000017C         
+  217 0000017C F04F 0700       MOV              R7, #0      ; i = 0
+  218 00000180 F04F 0600       MOV              R6, #0      ; errorCtr = 0
+  219 00000184 F04F 0300       MOV              R3, #0
+  220 00000188 4945            LDR              R1, =guessPword
+
+
+
+ARM Macro Assembler    Page 6 
+
+
+  221 0000018A 600B            STR              R3, [R1]
+  222 0000018C 493F            LDR              R1, =sysState
+  223 0000018E F04F 0002       MOV              R0, #2
+  224 00000192 7008            STRB             R0, [R1]
+  225 00000194 F85D EB04       POP{LR}
+  226 00000198         
+  227 00000198 E005            B                closedSafeEnd
+  228 0000019A         
+  229 0000019A         closedSafeNewInput
+  230 0000019A 4941            LDR              R1, =guessPword
+  231 0000019C 4439            ADD              R1, R1, R7
+  232 0000019E 7008            STRB             R0, [R1]    ; guessPword[i] = R
+                                                            0
+  233 000001A0 F107 0701       ADD              R7, R7, #1  ; i++
+  234 000001A4         
+  235 000001A4 E7FF            B                closedSafeEnd
+  236 000001A6         
+  237 000001A6         closedSafeEnd
+  238 000001A6 4770            BX               LR
+  239 000001A8         
+  240 000001A8         ;-------------------------------------------------------
                        -------------------------
-   94 0000003A         ; Routine that waits for a interruption and disables all
+  241 000001A8         ; Routine that waits for a interruption and disables all
                         other funcions
-   95 0000003A         waitJ0Interrup
-   96 0000003A         
-   97 0000003A 4770            BX               LR
-   98 0000003C         ;-------------------------------------------------------
+  242 000001A8         waitJ0Interrup
+  243 000001A8 483F            LDR              R0, =MSG_LOCKED
+  244 000001AA F04F 010E       MOV              R1, #14
+  245 000001AE B500            PUSH{LR}
+  246 000001B0 F7FF FFFE       BL               printArrayInLcd
+  247 000001B4 F000 F856       BL               Atualiza_LEDs
+  248 000001B8 F85D EB04       POP{LR}
+  249 000001BC         
+  250 000001BC 4770            BX               LR
+  251 000001BE         
+  252 000001BE         ;-------------------------------------------------------
                        -------------------------
-   99 0000003C         ; Routine to check if the master password was correctly 
+  253 000001BE         ; Routine to check if the master password was correctly 
                        written
-  100 0000003C         waitMasterPword
-  101 0000003C         
-  102 0000003C 4770            BX               LR
-  103 0000003E         ;-------------------------------------------------------
+  254 000001BE         waitMasterPword
+  255 000001BE 483A            LDR              R0, =MSG_LOCKED
+  256 000001C0 F04F 010E       MOV              R1, #14
+  257 000001C4 B500            PUSH{LR}
+  258 000001C6 F7FF FFFE       BL               printArrayInLcd
+  259 000001CA F7FF FFFE       BL               readKeyboard
+  260 000001CE F85D EB04       POP{LR}
+  261 000001D2         
+  262 000001D2 2800            CMP              R0, #NO_BTNS_PRESSED
+  263 000001D4 BF08            IT               EQ
+  264 000001D6 E021            BEQ              waitMasterPwordEnd
+  265 000001D8         
+  266 000001D8 2F04            CMP              R7, #4      ; i == 4
+  267 000001DA BF08            IT               EQ
+  268 000001DC E000            BEQ              waitMasterPwordHashtag
+  269 000001DE E017            B                waitMasterPwordNewInput
+  270 000001E0         
+  271 000001E0         waitMasterPwordHashtag
+  272 000001E0 2823            CMP              R0, #0x23   ; R0 == '#'
+  273 000001E2 BF18            IT               NE
+  274 000001E4 E01A            BNE              waitMasterPwordEnd
+
+
+
+ARM Macro Assembler    Page 7 
+
+
+  275 000001E6         
+  276 000001E6 4831            LDR              R0, =masterPword
+  277 000001E8 492D            LDR              R1, =guessPword
+  278 000001EA F04F 0204       MOV              R2, #4
+  279 000001EE B500            PUSH{LR}
+  280 000001F0 F000 F822       BL               arraysCmp
+  281 000001F4 F85D EB04       POP{LR}
+  282 000001F8         
+  283 000001F8 2801            CMP              R0, #1
+  284 000001FA BF14            ITE              NE
+  285 000001FC 2700            MOVNE            R7, #0      ; i = 0
+  286 000001FE E000            BEQ              waitMasterPwordOpenSafe
+  287 00000200         
+  288 00000200 E00C            B                waitMasterPwordEnd
+  289 00000202         
+  290 00000202         waitMasterPwordOpenSafe
+  291 00000202 F04F 0700       MOV              R7, #0      ; i = 0
+  292 00000206 4921            LDR              R1, =sysState
+  293 00000208 F04F 0000       MOV              R0, #0
+  294 0000020C 7008            STRB             R0, [R1]
+  295 0000020E         
+  296 0000020E E005            B                waitMasterPwordEnd
+  297 00000210         
+  298 00000210         waitMasterPwordNewInput
+  299 00000210 4923            LDR              R1, =guessPword
+  300 00000212 4439            ADD              R1, R1, R7
+  301 00000214 7008            STRB             R0, [R1]    ; guessPword[i] = R
+                                                            0
+  302 00000216 F107 0701       ADD              R7, R7, #1  ; i++
+  303 0000021A         
+  304 0000021A E7FF            B                waitMasterPwordEnd
+  305 0000021C         
+  306 0000021C         waitMasterPwordEnd
+  307 0000021C 4770            BX               LR
+  308 0000021E         
+  309 0000021E         ;-------------------------------------------------------
                        -------------------------
-  104 0000003E         ; Initializes the first array pos and the multiplicator 
-                       factor with 1, as requested
-  105 0000003E         InitilizeVars
-  106 0000003E 4904            LDR              R1, =masterPword
-  107 00000040 F44F 7241       MOV              R2, #0x0304
-  108 00000044 F2C0 1202       MOVT             R2, #0x0102
-  109 00000048 600A            STR              R2, [R1]
-  110 0000004A         
-  111 0000004A 4770            BX               LR
-  112 0000004C         
-  113 0000004C         ; ------------------------------------------------------
+  310 0000021E         ; Initializes variables before the main loop
+  311 0000021E         InitilizeVars
+  312 0000021E 4923            LDR              R1, =masterPword
+  313 00000220 F44F 7241       MOV              R2, #0x0304
+  314 00000224 F2C0 1202       MOVT             R2, #0x0102
+  315 00000228 600A            STR              R2, [R1]
+  316 0000022A         
+  317 0000022A F04F 0700       MOV              R7, #0      ; Iterator for pass
+                                                            words
+  318 0000022E F04F 0432       MOV              R4, #50
+  319 00000232 F04F 0501       MOV              R5, #1      ; blinkLeds input(O
+                                                            N/OFF)
+  320 00000236         
+  321 00000236         
+  322 00000236 4770            BX               LR
+  323 00000238         
+  324 00000238         ;-------------------------------------------------------
+                       -------------------------
+  325 00000238         ; Verifies if two arrays are equal
+  326 00000238         ; Input:  R0 = array1 starting address
+  327 00000238         ;         R1 = array2 starting address
+  328 00000238         ;    R2 = array size
+
+
+
+ARM Macro Assembler    Page 8 
+
+
+  329 00000238         ; Output: R0 = 1 if the arrays are equal, 0 if not
+  330 00000238         arraysCmp
+  331 00000238 2A00            CMP              R2, #0
+  332 0000023A BF04            ITT              EQ
+  333 0000023C 2001            MOVEQ            R0, #1
+  334 0000023E E009            BEQ              arraysCmpEnd
+  335 00000240         
+  336 00000240 F810 3B01       LDRB             R3, [R0], #1
+  337 00000244 F811 4B01       LDRB             R4, [R1], #1
+  338 00000248 42A3            CMP              R3, R4
+  339 0000024A BF1C            ITT              NE
+  340 0000024C 2000            MOVNE            R0, #0
+  341 0000024E E001            BNE              arraysCmpEnd
+  342 00000250         
+  343 00000250 1E52            SUBS             R2, R2, #1
+  344 00000252 E7F1            B                arraysCmp
+  345 00000254         
+  346 00000254         arraysCmpEnd
+  347 00000254 4770            BX               LR
+  348 00000256         
+  349 00000256         ;-------------------------------------------------------
+                       -------------------------
+  350 00000256         ; Verifies if the interruption should change state
+  351 00000256         checkJ0Interrup
+  352 00000256 480D            LDR              R0, =sysState
+  353 00000258 7801            LDRB             R1, [R0]
+  354 0000025A 2902            CMP              R1, #2
+  355 0000025C BF04            ITT              EQ
+  356 0000025E 2103            MOVEQ            R1, #3
+  357 00000260 7001            STRBEQ           R1, [R0]
+  358 00000262         
+  359 00000262 4770            BX               LR
+  360 00000264         
+  361 00000264         Atualiza_LEDs
+  362 00000264 B500            PUSH             { LR }
+  363 00000266 F7FF FFFE       BL               blinkLEDs
+  364 0000026A F85D EB04       POP              { LR }
+  365 0000026E F1A4 0401       SUB              R4, #1
+  366 00000272 2C00            CMP              R4, #0
+  367 00000274 D109            BNE              Atualiza_LEDsEnd
+  368 00000276 F04F 0432       MOV              R4, #50
+  369 0000027A F84D 8D04       PUSH             { R8 }
+  370 0000027E F04F 38FF       MOV              R8, #-1
+  371 00000282 FB05 F508       MUL              R5,R8
+  372 00000286 F85D 8B04       POP              { R8 }
+  373 0000028A         
+  374 0000028A         Atualiza_LEDsEnd
+  375 0000028A 4770            BX               LR
+  376 0000028C         ; ------------------------------------------------------
                        --------------------------------------------------------
                        -----------
-  114 0000004C         ; Fim do Arquivo
-  115 0000004C         ; ------------------------------------------------------
+  377 0000028C         ; Fim do Arquivo
+  378 0000028C         ; ------------------------------------------------------
                        --------------------------------------------------------
                        ----------- 
-  116 0000004C                 ALIGN                        ;Garante que o fim 
-                                                            da seção está alinh
-                                                            ada 
-  117 0000004C                 END                          ;Fim do arquivo
+  379 0000028C                 ALIGN                        ;Garante que o fim 
+                                                            da seï¿½ï¿½o estï¿½
+                                                             alinhada 
+  380 0000028C                 END                          ;Fim do arquivo
+
+
+
+ARM Macro Assembler    Page 9 
+
+
               00000000 
               00000000 
-Command Line: --debug --xref --diag_suppress=9931,A1950W --cpu=Cortex-M4.fp.sp 
---depend=.\objects\main.d -o.\objects\main.o -IC:\Users\joaov\AppData\Local\Arm
-\Packs\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C129 --predefine="__EVAL SETA 1" -
--predefine="__UVISION_VERSION SETA 538" --predefine="TM4C1294NCPDT SETA 1" --li
-st=.\listings\main.lst main.s
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp.sp --depen
+d=.\objects\main.d -o.\objects\main.o -I"C:\Users\Caio Andrade\AppData\Local\Ar
+m\Packs\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C129" --predefine="__EVAL SETA 1"
+ --predefine="__UVISION_VERSION SETA 536" --predefine="TM4C1294NCPDT SETA 1" --
+list=.\listings\main.lst main.s
 
 
 
@@ -209,33 +558,58 @@ Symbol: currPword
    Definitions
       At line 30 in file main.s
    Uses
-      None
-Comment: currPword unused
+      At line 137 in file main.s
+      At line 173 in file main.s
+
 guessPword 00000009
 
 Symbol: guessPword
    Definitions
       At line 31 in file main.s
    Uses
+      At line 174 in file main.s
+      At line 220 in file main.s
+      At line 230 in file main.s
+      At line 277 in file main.s
+      At line 299 in file main.s
+
+lcdString 0000000D
+
+Symbol: lcdString
+   Definitions
+      At line 32 in file main.s
+   Uses
       None
-Comment: guessPword unused
+Comment: lcdString unused
 masterPword 00000001
 
 Symbol: masterPword
    Definitions
       At line 29 in file main.s
    Uses
-      At line 106 in file main.s
-Comment: masterPword used once
+      At line 276 in file main.s
+      At line 312 in file main.s
+
 sysState 00000000
 
 Symbol: sysState
    Definitions
       At line 28 in file main.s
    Uses
-      At line 62 in file main.s
-Comment: sysState used once
-5 symbols
+      At line 71 in file main.s
+      At line 129 in file main.s
+      At line 203 in file main.s
+      At line 222 in file main.s
+      At line 292 in file main.s
+      At line 352 in file main.s
+
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+Relocatable symbols
+
+6 symbols
 
 
 
@@ -246,87 +620,299 @@ Relocatable symbols
 
 Symbol: .text
    Definitions
-      At line 35 in file main.s
+      At line 36 in file main.s
    Uses
       None
 Comment: .text unused
-InitilizeVars 0000003E
+Atualiza_LEDs 00000264
+
+Symbol: Atualiza_LEDs
+   Definitions
+      At line 361 in file main.s
+   Uses
+      At line 247 in file main.s
+Comment: Atualiza_LEDs used once
+Atualiza_LEDsEnd 0000028A
+
+Symbol: Atualiza_LEDsEnd
+   Definitions
+      At line 374 in file main.s
+   Uses
+      At line 367 in file main.s
+Comment: Atualiza_LEDsEnd used once
+InitilizeVars 0000021E
 
 Symbol: InitilizeVars
    Definitions
-      At line 105 in file main.s
+      At line 311 in file main.s
    Uses
-      At line 59 in file main.s
+      At line 68 in file main.s
 Comment: InitilizeVars used once
-MainLoop 00000010
+MSG_CLOSED 0000002A
 
-Symbol: MainLoop
+Symbol: MSG_CLOSED
+   Definitions
+      At line 62 in file main.s
+   Uses
+      At line 152 in file main.s
+Comment: MSG_CLOSED used once
+MSG_CLOSING 0000001B
+
+Symbol: MSG_CLOSING
    Definitions
       At line 61 in file main.s
    Uses
-      At line 81 in file main.s
-Comment: MainLoop used once
-Start 00000000
+      At line 120 in file main.s
+Comment: MSG_CLOSING used once
+MSG_LOCKED 00000038
 
-Symbol: Start
+Symbol: MSG_LOCKED
    Definitions
-      At line 55 in file main.s
+      At line 63 in file main.s
    Uses
-      At line 38 in file main.s
-Comment: Start used once
-closedSafe 00000038
+      At line 210 in file main.s
+      At line 243 in file main.s
+      At line 255 in file main.s
 
-Symbol: closedSafe
-   Definitions
-      At line 90 in file main.s
-   Uses
-      At line 71 in file main.s
-Comment: closedSafe used once
-waitJ0Interrup 0000003A
-
-Symbol: waitJ0Interrup
-   Definitions
-      At line 95 in file main.s
-   Uses
-      At line 75 in file main.s
-Comment: waitJ0Interrup used once
-waitMasterPword 0000003C
-
-Symbol: waitMasterPword
-   Definitions
-      At line 100 in file main.s
-   Uses
-      At line 79 in file main.s
-Comment: waitMasterPword used once
-waitNewPword 00000036
-
-Symbol: waitNewPword
+MSG_OPEN 00000000
 
 
 
 ARM Macro Assembler    Page 2 Alphabetic symbol ordering
 Relocatable symbols
 
+
+Symbol: MSG_OPEN
    Definitions
-      At line 85 in file main.s
+      At line 59 in file main.s
    Uses
-      At line 67 in file main.s
-Comment: waitNewPword used once
-8 symbols
+      At line 95 in file main.s
+Comment: MSG_OPEN used once
+MSG_OPENING 0000000D
+
+Symbol: MSG_OPENING
+   Definitions
+      At line 60 in file main.s
+   Uses
+      At line 194 in file main.s
+Comment: MSG_OPENING used once
+MainLoop 0000005C
+
+Symbol: MainLoop
+   Definitions
+      At line 70 in file main.s
+   Uses
+      At line 90 in file main.s
+Comment: MainLoop used once
+Start 00000000
+
+Symbol: Start
+   Definitions
+      At line 58 in file main.s
+   Uses
+      At line 39 in file main.s
+Comment: Start used once
+arraysCmp 00000238
+
+Symbol: arraysCmp
+   Definitions
+      At line 330 in file main.s
+   Uses
+      At line 177 in file main.s
+      At line 280 in file main.s
+      At line 344 in file main.s
+
+arraysCmpEnd 00000254
+
+Symbol: arraysCmpEnd
+   Definitions
+      At line 346 in file main.s
+   Uses
+      At line 334 in file main.s
+      At line 341 in file main.s
+
+checkJ0Interrup 00000256
+
+Symbol: checkJ0Interrup
+   Definitions
+      At line 351 in file main.s
+   Uses
+      None
+Comment: checkJ0Interrup unused
+closedSafe 000000F4
+
+
+
+ARM Macro Assembler    Page 3 Alphabetic symbol ordering
+Relocatable symbols
+
+
+Symbol: closedSafe
+   Definitions
+      At line 151 in file main.s
+   Uses
+      At line 80 in file main.s
+Comment: closedSafe used once
+closedSafeEnd 000001A6
+
+Symbol: closedSafeEnd
+   Definitions
+      At line 237 in file main.s
+   Uses
+      At line 161 in file main.s
+      At line 171 in file main.s
+      At line 190 in file main.s
+      At line 227 in file main.s
+      At line 235 in file main.s
+
+closedSafeHashtag 00000116
+
+Symbol: closedSafeHashtag
+   Definitions
+      At line 168 in file main.s
+   Uses
+      At line 165 in file main.s
+Comment: closedSafeHashtag used once
+closedSafeLockSafe 00000168
+
+Symbol: closedSafeLockSafe
+   Definitions
+      At line 208 in file main.s
+   Uses
+      At line 188 in file main.s
+Comment: closedSafeLockSafe used once
+closedSafeNewInput 0000019A
+
+Symbol: closedSafeNewInput
+   Definitions
+      At line 229 in file main.s
+   Uses
+      At line 166 in file main.s
+Comment: closedSafeNewInput used once
+closedSafeOpenSafe 00000140
+
+Symbol: closedSafeOpenSafe
+   Definitions
+      At line 192 in file main.s
+   Uses
+      At line 184 in file main.s
+Comment: closedSafeOpenSafe used once
+newPword 00000082
+
+Symbol: newPword
+   Definitions
+      At line 94 in file main.s
+   Uses
+      At line 76 in file main.s
+Comment: newPword used once
+
+
+
+ARM Macro Assembler    Page 4 Alphabetic symbol ordering
+Relocatable symbols
+
+newPwordEnd 000000F2
+
+Symbol: newPwordEnd
+   Definitions
+      At line 146 in file main.s
+   Uses
+      At line 104 in file main.s
+      At line 114 in file main.s
+      At line 134 in file main.s
+      At line 144 in file main.s
+
+newPwordHashtag 000000A4
+
+Symbol: newPwordHashtag
+   Definitions
+      At line 111 in file main.s
+   Uses
+      At line 108 in file main.s
+Comment: newPwordHashtag used once
+newPwordNewInput 000000DC
+
+Symbol: newPwordNewInput
+   Definitions
+      At line 136 in file main.s
+   Uses
+      At line 109 in file main.s
+Comment: newPwordNewInput used once
+waitJ0Interrup 000001A8
+
+Symbol: waitJ0Interrup
+   Definitions
+      At line 242 in file main.s
+   Uses
+      At line 84 in file main.s
+Comment: waitJ0Interrup used once
+waitMasterPword 000001BE
+
+Symbol: waitMasterPword
+   Definitions
+      At line 254 in file main.s
+   Uses
+      At line 88 in file main.s
+Comment: waitMasterPword used once
+waitMasterPwordEnd 0000021C
+
+Symbol: waitMasterPwordEnd
+   Definitions
+      At line 306 in file main.s
+   Uses
+      At line 264 in file main.s
+      At line 274 in file main.s
+      At line 288 in file main.s
+      At line 296 in file main.s
+      At line 304 in file main.s
+
+waitMasterPwordHashtag 000001E0
+
+Symbol: waitMasterPwordHashtag
+   Definitions
+
+
+
+ARM Macro Assembler    Page 5 Alphabetic symbol ordering
+Relocatable symbols
+
+      At line 271 in file main.s
+   Uses
+      At line 268 in file main.s
+Comment: waitMasterPwordHashtag used once
+waitMasterPwordNewInput 00000210
+
+Symbol: waitMasterPwordNewInput
+   Definitions
+      At line 298 in file main.s
+   Uses
+      At line 269 in file main.s
+Comment: waitMasterPwordNewInput used once
+waitMasterPwordOpenSafe 00000202
+
+Symbol: waitMasterPwordOpenSafe
+   Definitions
+      At line 290 in file main.s
+   Uses
+      At line 286 in file main.s
+Comment: waitMasterPwordOpenSafe used once
+30 symbols
 
 
 
 ARM Macro Assembler    Page 1 Alphabetic symbol ordering
 Absolute symbols
 
-VECT_SIZE 00000008
+NO_BTNS_PRESSED 00000000
 
-Symbol: VECT_SIZE
+Symbol: NO_BTNS_PRESSED
    Definitions
       At line 18 in file main.s
    Uses
-      None
-Comment: VECT_SIZE unused
+      At line 102 in file main.s
+      At line 159 in file main.s
+      At line 262 in file main.s
+
 1 symbol
 
 
@@ -334,61 +920,94 @@ Comment: VECT_SIZE unused
 ARM Macro Assembler    Page 1 Alphabetic symbol ordering
 External symbols
 
-DisableAllLEDs 00000000
-
-Symbol: DisableAllLEDs
-   Definitions
-      At line 50 in file main.s
-   Uses
-      None
-Comment: DisableAllLEDs unused
 GPIO_Init 00000000
 
 Symbol: GPIO_Init
    Definitions
-      At line 47 in file main.s
-   Uses
-      At line 58 in file main.s
-Comment: GPIO_Init used once
-GetPushBtnsState 00000000
-
-Symbol: GetPushBtnsState
-   Definitions
-      At line 49 in file main.s
-   Uses
-      None
-Comment: GetPushBtnsState unused
-LightUpLEDs 00000000
-
-Symbol: LightUpLEDs
-   Definitions
       At line 48 in file main.s
    Uses
-      None
-Comment: LightUpLEDs unused
+      At line 66 in file main.s
+Comment: GPIO_Init used once
 PLL_Init 00000000
 
 Symbol: PLL_Init
    Definitions
-      At line 44 in file main.s
+      At line 45 in file main.s
    Uses
-      At line 56 in file main.s
+      At line 64 in file main.s
 Comment: PLL_Init used once
 SysTick_Init 00000000
 
 Symbol: SysTick_Init
    Definitions
-      At line 45 in file main.s
+      At line 46 in file main.s
    Uses
-      At line 57 in file main.s
+      At line 65 in file main.s
 Comment: SysTick_Init used once
 SysTick_Wait1ms 00000000
 
 Symbol: SysTick_Wait1ms
    Definitions
-      At line 46 in file main.s
+      At line 47 in file main.s
    Uses
-      None
-Comment: SysTick_Wait1ms unused
-7 symbols
-357 symbols in table
+      At line 118 in file main.s
+      At line 125 in file main.s
+      At line 199 in file main.s
+      At line 215 in file main.s
+
+blinkLEDs 00000000
+
+Symbol: blinkLEDs
+   Definitions
+      At line 53 in file main.s
+   Uses
+      At line 363 in file main.s
+Comment: blinkLEDs used once
+escrever_caractere_senha 00000000
+
+Symbol: escrever_caractere_senha
+   Definitions
+      At line 54 in file main.s
+   Uses
+      At line 142 in file main.s
+Comment: escrever_caractere_senha used once
+lcd_init 00000000
+
+Symbol: lcd_init
+   Definitions
+      At line 50 in file main.s
+   Uses
+      At line 67 in file main.s
+Comment: lcd_init used once
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+External symbols
+
+printArrayInLcd 00000000
+
+Symbol: printArrayInLcd
+   Definitions
+      At line 51 in file main.s
+   Uses
+      At line 98 in file main.s
+      At line 122 in file main.s
+      At line 155 in file main.s
+      At line 196 in file main.s
+      At line 212 in file main.s
+      At line 246 in file main.s
+      At line 258 in file main.s
+
+readKeyboard 00000000
+
+Symbol: readKeyboard
+   Definitions
+      At line 52 in file main.s
+   Uses
+      At line 99 in file main.s
+      At line 156 in file main.s
+      At line 259 in file main.s
+
+9 symbols
+382 symbols in table

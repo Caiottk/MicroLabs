@@ -3,59 +3,68 @@
 ; Prof. Guilherme Peron
 ; Ver 1 19/03/2018
 ; Ver 2 26/08/2018
-; Este programa deve esperar o usuário pressionar uma chave.
-; Caso o usuário pressione uma chave, um LED deve piscar a cada 1 segundo.
+; Este programa deve esperar o usuï¿½rio pressionar uma chave.
+; Caso o usuï¿½rio pressione uma chave, um LED deve piscar a cada 1 segundo.
 
 ; -------------------------------------------------------------------------------
-        THUMB                        ; Instruções do tipo Thumb-2
+        THUMB                        ; Instruï¿½ï¿½es do tipo Thumb-2
 ; -------------------------------------------------------------------------------
 		
-; Declarações EQU - Defines
+; Declaraï¿½ï¿½es EQU - Defines
 ;<NOME>         EQU <VALOR>
 ; ========================
-; Definições de Valores
+; Definiï¿½ï¿½es de Valores
 
-VECT_SIZE EQU 8
+NO_BTNS_PRESSED EQU 0
 ; -------------------------------------------------------------------------------
-; Área de Dados - Declarações de variáveis
+; ï¿½rea de Dados - Declaraï¿½ï¿½es de variï¿½veis
 		AREA  DATA, ALIGN=2
-		; Se alguma variável for chamada em outro arquivo
-		;EXPORT  <var> [DATA,SIZE=<tam>]   ; Permite chamar a variável <var> a 
+		; Se alguma variï¿½vel for chamada em outro arquivo
+		;EXPORT  <var> [DATA,SIZE=<tam>]   ; Permite chamar a variï¿½vel <var> a 
 		                                   ; partir de outro arquivo
-;<var>	SPACE <tam>                        ; Declara uma variável de nome <var>
+;<var>	SPACE <tam>                        ; Declara uma variï¿½vel de nome <var>
                                            ; de <tam> bytes a partir da primeira 
-                                           ; posição da RAM		
+                                           ; posiï¿½ï¿½o da RAM		
 sysState    SPACE 0x1
 masterPword SPACE 0x4
 currPword   SPACE 0x4
 guessPword  SPACE 0x4
+lcdString   SPACE 0x20
 ; -------------------------------------------------------------------------------
-; Área de Código - Tudo abaixo da diretiva a seguir será armazenado na memória de 
-;                  código
+; ï¿½rea de Cï¿½digo - Tudo abaixo da diretiva a seguir serï¿½ armazenado na memï¿½ria de 
+;                  cï¿½digo
         AREA    |.text|, CODE, READONLY, ALIGN=2
 
-		; Se alguma função do arquivo for chamada em outro arquivo	
-        EXPORT Start                ; Permite chamar a função Start a partir de 
+		; Se alguma funï¿½ï¿½o do arquivo for chamada em outro arquivo	
+        EXPORT Start                ; Permite chamar a funï¿½ï¿½o Start a partir de 
 			                        ; outro arquivo. No caso startup.s
 									
-		; Se chamar alguma função externa	
+		; Se chamar alguma funï¿½ï¿½o externa	
         ;IMPORT <func>              ; Permite chamar dentro deste arquivo uma 
-									; função <func>
+									; funï¿½ï¿½o <func>
 		IMPORT  PLL_Init
 		IMPORT  SysTick_Init
 		IMPORT  SysTick_Wait1ms			
 		IMPORT  GPIO_Init
-		IMPORT LightUpLEDs	
-		IMPORT GetPushBtnsState
-		IMPORT DisableAllLEDs
 
+		IMPORT lcd_init
+		IMPORT printArrayInLcd
+		IMPORT readKeyboard
+		IMPORT blinkLEDs
+		IMPORT escrever_caractere_senha
 
 ; -------------------------------------------------------------------------------
-; Função main()
-Start  		
+; Funï¿½ï¿½o main()
+Start
+MSG_OPEN	DCB "Cofre Aberto", 0
+MSG_OPENING	DCB	"Cofre Abrindo", 0
+MSG_CLOSING	DCB "Cofre Fechando", 0
+MSG_CLOSED	DCB	"Cofre Fechado", 0
+MSG_LOCKED	DCB	"Cofre Travado.", 0
 	BL PLL_Init                  ;Chama a subrotina para alterar o clock do microcontrolador para 80MHz
 	BL SysTick_Init              ;Chama a subrotina para inicializar o SysTick
-	BL GPIO_Init                 ;Chama a subrotina que inicializa os GPIO
+	BL GPIO_Init
+	BL lcd_init                 ;Chama a subrotina que inicializa os GPIO
 	BL InitilizeVars
 ;--------------------------------------------------------------------------------
 MainLoop
@@ -64,54 +73,308 @@ MainLoop
 	
 	CMP R1, #0
 	IT EQ
-	BLEQ waitNewPword
+		BLEQ newPword
 	
 	CMP R1, #1
 	IT EQ
-	BLEQ closedSafe
+		BLEQ closedSafe
 	
 	CMP R1, #2
 	IT EQ
-	BLEQ waitJ0Interrup
+		BLEQ waitJ0Interrup
 	
 	CMP R1, #1
 	IT EQ
-	BLEQ waitMasterPword
+		BLEQ waitMasterPword
 	
 	B MainLoop
 	
 ;--------------------------------------------------------------------------------
 ; Routine for entering a new password and close the safe
-waitNewPword
+newPword
+	LDR R0, =MSG_OPEN
+	MOV R1, #31
+	PUSH{LR}
+	BL printArrayInLcd
+	BL readKeyboard
+	POP{LR}
 
+	CMP R0, #NO_BTNS_PRESSED
+	IT EQ
+		BEQ newPwordEnd
+
+	CMP R7, #4 ; i == 4
+	IT EQ
+		BEQ newPwordHashtag
+	B newPwordNewInput
+	
+newPwordHashtag
+	CMP R0, #0x23 ; R0 == '#'
+	IT NE
+		BNE newPwordEnd
+
+	PUSH{LR}
+	MOV R0, #1000
+	BL SysTick_Wait1ms
+
+	LDR R0, =MSG_CLOSING
+	MOV R1, #17
+	BL printArrayInLcd
+
+	MOV R0, #5000
+	BL SysTick_Wait1ms
+
+	MOV R7, #0 ; i = 0
+	MOV R6, #0 ; errorCtr = 0
+	LDR R1, =sysState
+	MOV R0, #1
+	STRB R0, [R1]
+	POP{LR}
+
+	B newPwordEnd
+
+newPwordNewInput
+	LDR R1, =currPword
+	ADD R1, R1, R7
+	STRB R0, [R1]  ; currPword[i] = R0
+	ADD R7, R7, #1 ; i++
+	PUSH {LR}
+	BL escrever_caractere_senha
+	POP {LR}
+	B newPwordEnd
+
+newPwordEnd
 	BX LR
+
 ;--------------------------------------------------------------------------------
 ; Routine for when the safe is closed: either opens or locks permanently
 closedSafe
+	LDR R0, =MSG_CLOSED
+	MOV R1, #13
+	PUSH{LR}
+	BL printArrayInLcd
+	BL readKeyboard
+	POP{LR}
 
+	CMP R0, #NO_BTNS_PRESSED
+	IT EQ
+		BEQ closedSafeEnd
+
+	CMP R7, #4 ; i == 4
+	IT EQ
+		BEQ closedSafeHashtag
+	B closedSafeNewInput
+
+closedSafeHashtag
+	CMP R0, #0x23 ; R0 == '#'
+	IT NE
+		BNE closedSafeEnd
+
+	LDR R0, =currPword
+	LDR R1, =guessPword
+	MOV R2, #4
+	PUSH{LR}
+	BL arraysCmp
+	POP{LR}
+
+	CMP R0, #1
+	ITTE NE
+		MOVNE R7, #0 ; i = 0
+		ADDNE R6, R6, #1 ; errorCtr++
+		BEQ closedSafeOpenSafe
+
+	CMP R6, #3 ; errorCtr == 3
+	IT EQ
+		BEQ closedSafeLockSafe
+
+	B closedSafeEnd
+
+closedSafeOpenSafe
+	PUSH{LR}
+	LDR R0, =MSG_OPENING
+	MOV R1, #16
+	BL printArrayInLcd
+
+	MOV R0, #5000
+	BL SysTick_Wait1ms
+
+	MOV R7, #0 ; i = 0
+	MOV R6, #0 ; errorCtr = 0
+	LDR R1, =sysState
+	MOV R0, #0
+	STRB R0, [R1]
+	POP{LR}
+
+closedSafeLockSafe
+	PUSH{LR}
+	LDR R0, =MSG_LOCKED
+	MOV R1, #14
+	BL printArrayInLcd
+
+	MOV R0, #5000
+	BL SysTick_Wait1ms
+
+	MOV R7, #0 ; i = 0
+	MOV R6, #0 ; errorCtr = 0
+	MOV R3, #0
+	LDR R1, =guessPword
+	STR R3, [R1]
+	LDR R1, =sysState
+	MOV R0, #2
+	STRB R0, [R1]
+	POP{LR}
+
+	B closedSafeEnd
+
+closedSafeNewInput
+	LDR R1, =guessPword
+	ADD R1, R1, R7
+	STRB R0, [R1]  ; guessPword[i] = R0
+	ADD R7, R7, #1 ; i++
+
+	B closedSafeEnd
+
+closedSafeEnd
 	BX LR
+
 ;--------------------------------------------------------------------------------
 ; Routine that waits for a interruption and disables all other funcions
 waitJ0Interrup
+	LDR R0, =MSG_LOCKED
+	MOV R1, #14
+	PUSH{LR}
+	BL printArrayInLcd
+	BL Atualiza_LEDs
+	POP{LR}
 
 	BX LR
+
 ;--------------------------------------------------------------------------------
 ; Routine to check if the master password was correctly written
 waitMasterPword
+	LDR R0, =MSG_LOCKED
+	MOV R1, #14
+	PUSH{LR}
+	BL printArrayInLcd
+	BL readKeyboard
+	POP{LR}
 
+	CMP R0, #NO_BTNS_PRESSED
+	IT EQ
+		BEQ waitMasterPwordEnd
+
+	CMP R7, #4 ; i == 4
+	IT EQ
+		BEQ waitMasterPwordHashtag
+	B waitMasterPwordNewInput
+
+waitMasterPwordHashtag
+	CMP R0, #0x23 ; R0 == '#'
+	IT NE
+		BNE waitMasterPwordEnd
+
+	LDR R0, =masterPword
+	LDR R1, =guessPword
+	MOV R2, #4
+	PUSH{LR}
+	BL arraysCmp
+	POP{LR}
+
+	CMP R0, #1
+	ITE NE
+		MOVNE R7, #0 ; i = 0
+		BEQ waitMasterPwordOpenSafe
+	
+	B waitMasterPwordEnd
+
+waitMasterPwordOpenSafe
+	MOV R7, #0 ; i = 0
+	LDR R1, =sysState
+	MOV R0, #0
+	STRB R0, [R1]
+
+	B waitMasterPwordEnd
+
+waitMasterPwordNewInput
+	LDR R1, =guessPword
+	ADD R1, R1, R7
+	STRB R0, [R1]  ; guessPword[i] = R0
+	ADD R7, R7, #1 ; i++
+
+	B waitMasterPwordEnd
+
+waitMasterPwordEnd
 	BX LR
+
 ;--------------------------------------------------------------------------------
-; Initializes the first array pos and the multiplicator factor with 1, as requested
+; Initializes variables before the main loop
 InitilizeVars
 	LDR R1, =masterPword
 	MOV R2, #0x0304
 	MOVT R2, #0x0102
 	STR R2, [R1]
 	
+	MOV R7, #0 ; Iterator for passwords
+	MOV R4, #50
+	MOV R5, #1 ; blinkLeds input(ON/OFF)
+
+
 	BX LR
+
+;--------------------------------------------------------------------------------
+; Verifies if two arrays are equal
+; Input:  R0 = array1 starting address
+;         R1 = array2 starting address
+;		  R2 = array size
+; Output: R0 = 1 if the arrays are equal, 0 if not
+arraysCmp
+	CMP R2, #0
+	ITT EQ
+		MOVEQ R0, #1
+		BEQ arraysCmpEnd
 	
+	LDRB R3, [R0], #1
+	LDRB R4, [R1], #1
+	CMP R3, R4
+	ITT NE
+		MOVNE R0, #0
+		BNE arraysCmpEnd
+
+	SUBS R2, R2, #1
+	B arraysCmp
+
+arraysCmpEnd
+	BX LR
+
+;--------------------------------------------------------------------------------
+; Verifies if the interruption should change state
+checkJ0Interrup
+	LDR R0, =sysState
+	LDRB R1, [R0]
+	CMP R1, #2
+	ITT EQ
+		MOVEQ R1, #3
+		STRBEQ R1, [R0]
+	
+	BX LR
+
+Atualiza_LEDs
+	PUSH { LR }
+	BL blinkLEDs
+	POP { LR }
+	SUB R4, #1
+	CMP R4, #0
+	BNE Atualiza_LEDsEnd
+	MOV R4, #50
+	PUSH { R8 }
+	MOV R8, #-1
+	MUL R5,R8
+	POP { R8 }
+
+Atualiza_LEDsEnd
+	BX LR
 ; -------------------------------------------------------------------------------------------------------------------------
 ; Fim do Arquivo
 ; -------------------------------------------------------------------------------------------------------------------------	
-    ALIGN                        ;Garante que o fim da seção está alinhada 
-    END                          ;Fim do arquivo
+	ALIGN                        ;Garante que o fim da seï¿½ï¿½o estï¿½ alinhada 
+	END                          ;Fim do arquivo
