@@ -37,8 +37,8 @@ lcdString   SPACE 0x20
         AREA    |.text|, CODE, READONLY, ALIGN=2
 
 		; Se alguma funcao do arquivo for chamada em outro arquivo	
-        EXPORT Start                ; Permite chamar a funcao Start a partir de 
-			                        ; outro arquivo. No caso startup.s
+		EXPORT Start                ; Permite chamar a funcao Start a partir de 
+      EXPORT checkJ0Interrup            ; outro arquivo.
 									
 		; Se chamar alguma funcao externa	
         ;IMPORT <func>              ; Permite chamar dentro deste arquivo uma 
@@ -52,7 +52,8 @@ lcdString   SPACE 0x20
 		IMPORT printArrayInLcd
 		IMPORT readKeyboard
 		IMPORT blinkLEDs
-		IMPORT escrever_caractere_senha
+		IMPORT reset_LCD
+		IMPORT pula_cursor_segunda_linha
 
 ; -------------------------------------------------------------------------------
 ; Funcao main()
@@ -64,6 +65,10 @@ Start
 	BL InitilizeVars
 ;--------------------------------------------------------------------------------
 MainLoop
+	PUSH{LR}
+	BL reset_LCD ; Resets LCD before next print
+	POP{LR}
+
 	LDR R1, =sysState
 	LDR R1, [R1]
 	
@@ -89,8 +94,13 @@ MainLoop
 ; Routine for entering a new password and close the safe
 newPword
 	LDR R0, =MSG_OPEN
-	MOV R1, #31
+	MOV R1, #12
 	PUSH{LR}
+	BL printArrayInLcd
+	BL pula_cursor_segunda_linha
+	LDR R0, =guessPword
+	MOV R1, R7
+	ADD R1, R1, #1    ; gessPword[0:(i+1)]
 	BL printArrayInLcd
 	BL readKeyboard
 	POP{LR}
@@ -105,7 +115,7 @@ newPword
 	B newPwordNewInput
 	
 newPwordHashtag
-	CMP R0, #0x23 ; R0 == '#'
+	CMP R0, #'#' ; R0 == '#'
 	IT NE
 		BNE newPwordEnd
 
@@ -114,7 +124,7 @@ newPwordHashtag
 	BL SysTick_Wait1ms
 
 	LDR R0, =MSG_CLOSING
-	MOV R1, #17
+	MOV R1, #14
 	BL printArrayInLcd
 
 	MOV R0, #5000
@@ -134,9 +144,6 @@ newPwordNewInput
 	ADD R1, R1, R7
 	STRB R0, [R1]  ; currPword[i] = R0
 	ADD R7, R7, #1 ; i++
-	PUSH {LR}
-	BL escrever_caractere_senha
-	POP {LR}
 	B newPwordEnd
 
 newPwordEnd
@@ -146,8 +153,13 @@ newPwordEnd
 ; Routine for when the safe is closed: either opens or locks permanently
 closedSafe
 	LDR R0, =MSG_CLOSED
-	MOV R1, #13
+	MOV R1, #14
 	PUSH{LR}
+	BL printArrayInLcd
+	BL pula_cursor_segunda_linha
+	LDR R0, =guessPword
+	MOV R1, R7
+	ADD R1, R1, #1    ; gessPword[0:(i+1)]
 	BL printArrayInLcd
 	BL readKeyboard
 	POP{LR}
@@ -162,7 +174,7 @@ closedSafe
 	B closedSafeNewInput
 
 closedSafeHashtag
-	CMP R0, #0x23 ; R0 == '#'
+	CMP R0, #'#' ; R0 == '#'
 	IT NE
 		BNE closedSafeEnd
 
@@ -188,7 +200,7 @@ closedSafeHashtag
 closedSafeOpenSafe
 	PUSH{LR}
 	LDR R0, =MSG_OPENING
-	MOV R1, #16
+	MOV R1, #13
 	BL printArrayInLcd
 
 	MOV R0, #5000
@@ -200,6 +212,8 @@ closedSafeOpenSafe
 	MOV R0, #0
 	STRB R0, [R1]
 	POP{LR}
+
+	B closedSafeEnd
 
 closedSafeLockSafe
 	PUSH{LR}
@@ -252,6 +266,11 @@ waitMasterPword
 	MOV R1, #14
 	PUSH{LR}
 	BL printArrayInLcd
+	BL pula_cursor_segunda_linha
+	LDR R0, =guessPword
+	MOV R1, R7
+	ADD R1, R1, #1    ; gessPword[0:(i+1)]
+	BL printArrayInLcd
 	BL readKeyboard
 	POP{LR}
 
@@ -265,7 +284,7 @@ waitMasterPword
 	B waitMasterPwordNewInput
 
 waitMasterPwordHashtag
-	CMP R0, #0x23 ; R0 == '#'
+	CMP R0, #'#' ; R0 == '#'
 	IT NE
 		BNE waitMasterPwordEnd
 
@@ -380,15 +399,16 @@ Atualiza_LEDs
 
 Atualiza_LEDsEnd
 	BX LR
+
 ; -------------------------------------------------------------------------------------------------------------------------
 ; Fim do Arquivo
 ; -------------------------------------------------------------------------------------------------------------------------	
 
 MSG_OPEN	DCB      "Cofre Aberto", 0
-MSG_OPENING	DCB	"Cofre Abrindo", 0
+MSG_OPENING	DCB   "Cofre Abrindo", 0
 MSG_CLOSING	DCB   "Cofre Fechando", 0
-MSG_CLOSED	DCB	"Cofre Fechado.", 0
-MSG_LOCKED	DCB	"Cofre Travado.", 0
+MSG_CLOSED	DCB   "Cofre Fechado.", 0
+MSG_LOCKED	DCB   "Cofre Travado.", 0
 
 	ALIGN                        ;Garante que o fim da secao esta alinhada 
 	END                          ;Fim do arquivo

@@ -302,8 +302,9 @@ caractere_senha				DCB   "*", 0
 		EXPORT reset_LCD
 		EXPORT readKeyboard
 		EXPORT GPIOPortJ_Handler
-		EXPORT escrever_caractere_senha
+		EXPORT pula_cursor_segunda_linha
 		IMPORT SysTick_Wait1ms
+		IMPORT checkJ0Interrup
 
 ;--------------------------------------------------------------------------------
 ; Funcao GPIO_Init
@@ -445,7 +446,7 @@ EsperaGPIO  LDR     R1, [R0]						;La da memaria o conteado do endereao do regis
 														;nos bits 0 e 1
 			STR     R1, [R0]
 
-			LDR     R0, =GPIO_PORTL_PUR_R				;Carrega o endereço do PUR para a porta L
+			LDR     R0, =GPIO_PORTL_PUR_R				;Carrega o endereco do PUR para a porta L
 			MOV     R1, #2_00001111						;Habilitar funcionalidade digital de resistor de pull-up 
             STR     R1, [R0]
 			
@@ -498,11 +499,14 @@ EsperaGPIO  LDR     R1, [R0]						;La da memaria o conteado do endereao do regis
 
 ; -------------------------------------------------------------------------------
 GPIOPortJ_Handler
-		MOV R9, #5
-
 		LDR R0, =GPIO_PORTJ_AHB_ICR_R
 		MOV R1, #0x11
 		STR R1, [R0]
+
+		PUSH{LR}
+		BL checkJ0Interrup
+		POP{LR}
+
 		BX LR
 ; -------------------------------------------------------------------------------
 ; Function to read button input from the matrix keyboard(4x4)
@@ -525,34 +529,95 @@ verifica_teclado
 	CMP R2, #0xF
 	BEQ depois_de_verificar_teclado
 tecla_pressionada
-	LSL R0, R4, #4
-	ORR R0, R2
-	B depois_de_verificar_teclado
+	MOV R3, #1
+	LSL R3, R4
+	ORR R0, R2, R3
+	B decideValueToReturn
 depois_de_verificar_teclado
 	CMP R4, #7
-	BEQ readKeyboardEnd
+	ITT EQ
+		MOVEQ R0, #0
+		BEQ readKeyboardEnd
 	ADD R4, #1
 	B verifica_teclado
 readKeyboardEnd
 	BX LR
 
+decideValueToReturn
+	CMP R0, #2_00011110 ; C1, L1
+	ITT EQ
+		MOVEQ R0, #'1'
+		BEQ readKeyboardEnd
+	CMP R0, #2_00011101; C1, L2
+	ITT EQ
+		MOVEQ R0, #'4'
+		BEQ readKeyboardEnd
+	CMP R0, #2_00011011; C1, L3
+	ITT EQ
+		MOVEQ R0, #'7'
+		BEQ readKeyboardEnd
+	CMP R0, #2_00010111; C1, L4
+	ITT EQ
+		MOVEQ R0, #'*'
+		BEQ readKeyboardEnd
+	CMP R0, #2_00101110; C2, L1
+	ITT EQ
+		MOVEQ R0, #'2'
+		BEQ readKeyboardEnd
+	CMP R0, #2_00101101; C2, L2
+	ITT EQ
+		MOVEQ R0, #'5'
+		BEQ readKeyboardEnd
+	CMP R0, #2_00101011; C2, L3
+	ITT EQ
+		MOVEQ R0, #'8'
+		BEQ readKeyboardEnd
+	CMP R0, #2_00100111; C2, L4
+	ITT EQ
+		MOVEQ R0, #'0'
+		BEQ readKeyboardEnd
+	CMP R0, #2_01001110; C3, L1
+	ITT EQ
+		MOVEQ R0, #'3'
+		BEQ readKeyboardEnd
+	CMP R0, #2_01001101; C3, L2
+	ITT EQ
+		MOVEQ R0, #'6'
+		BEQ readKeyboardEnd
+	CMP R0, #2_01001011; C3, L3
+	ITT EQ
+		MOVEQ R0, #'9'
+		BEQ readKeyboardEnd
+	CMP R0, #2_01000111; C3, L4
+	ITT EQ
+		MOVEQ R0, #'#'
+		BEQ readKeyboardEnd
+	CMP R0, #2_10001110; C4, L1
+	ITT EQ
+		MOVEQ R0, #'A'
+		BEQ readKeyboardEnd
+	CMP R0, #2_10001101; C4, L2
+	ITT EQ
+		MOVEQ R0, #'B'
+		BEQ readKeyboardEnd
+	CMP R0, #2_10001011; C4, L3
+	ITT EQ
+		MOVEQ R0, #'C'
+		BEQ readKeyboardEnd
+	MOV R0, #'D'
+	B readKeyboardEnd
 ; -------------------------------------------------------------------------------
-; Função ler_coluna
-; Parâmetro de entrada: R0 -> número da coluna que se quer ler - de 4 a 7
-; Parâmetro de saída: Não tem
-ler_coluna
+; Funcao ler_coluna
+; Parametro de entrada: R0 -> numero da coluna que se quer ler - de 4 a 7
+; Parametro de saida: Nao tem
+ler_coluna 
 	LDR R1, =GPIO_PORTM_DIR_R
-	LDR R2, [R1] ; Lê para carregar o valor anterior da porta inteira
 	
-	; R3 vai ter como bit 1 o bit na posição R0
+	; R3 vai ter como bit 1 o bit na posicao R0
 	MOV R3, #1
 	LSL R3, R0
 
-	; Seta todas as colunas como entrada
-	BIC R2, #0xF0
-	; Seta a coluna passada por parâmetro como saída
-	ORR R2, R3
-	STR R2, [R1] ; Escreve o novo valor da porta
+	STR R3, [R1] ; Escreve o novo valor da porta 0 ENTRADA 1 SAIDA
 	
 	; Escreve 0 na coluna escolhida
 	LDR R1, =GPIO_PORTM_DATA_R
@@ -563,9 +628,9 @@ ler_coluna
 	BX LR
 
 ; -------------------------------------------------------------------------------
-; Função ler_porta_L - Lê o valor de PL3-PL0
-; Parâmetro de entrada: Não tem
-; Parâmetro de saída: Não tem
+; Funcao ler_porta_L - Le o valor de PL3-PL0
+; Parametro de entrada: Nao tem
+; Parametro de saida: Nao tem
 ler_porta_L
 	LDR R1, =GPIO_PORTL_DATA_R
 	LDR R2, [R1] ; 
@@ -574,13 +639,13 @@ ler_porta_L
 	BX LR
 
 ; -------------------------------------------------------------------------------
-; Função lcd_enable_and_wait - Dá um enable no LCD, espera por 2ms e dá um disable e espera 2ms
-; Parâmetro de entrada: Não tem
-; Parâmetro de saída: Não tem
-lcd_enable_and_wait ;Depois dividir a função em wait 40us e wait 1,64ms
+; Funcao lcd_enable_and_wait - Da um enable no LCD, espera por 2ms e da um disable e espera 2ms
+; Parametro de entrada: Nao tem
+; Parametro de saida: Nao tem
+lcd_enable_and_wait ;Depois dividir a funcao em wait 40us e wait 1,64ms
 	;EN como 1 para habilitar - EN -> PM2
-	LDR R1, =GPIO_PORTM_DATA_R ;Carrega-se o endereço
-	LDR R0, [R1] ; Lê para carregar o valor anterior da porta inteira
+	LDR R1, =GPIO_PORTM_DATA_R ;Carrega-se o endereco
+	LDR R0, [R1] ; Le para carregar o valor anterior da porta inteira
 	ORR R0, R0, #2_00000100 ; Faz o OR bit a bit para manter os valores anteriores e setar somente o bit
 	STR R0, [R1] ; Escreve o novo valor da porta
 	
@@ -590,8 +655,8 @@ lcd_enable_and_wait ;Depois dividir a função em wait 40us e wait 1,64ms
 	POP { LR }
 	
 	;EN como 0 para desabilitar - EN -> PM2
-	LDR R1, =GPIO_PORTM_DATA_R ;Carrega-se o endereço
-	LDR R0, [R1] ; Lê para carregar o valor anterior da porta inteira
+	LDR R1, =GPIO_PORTM_DATA_R ;Carrega-se o endereco
+	LDR R0, [R1] ; Le para carregar o valor anterior da porta inteira
 	BIC R0, R0, #2_00000100 ; Faz o AND negado bit a bit para manter os valores anteriores e limpar somente o bit 0
 	STR R0, [R1] ; Escreve o novo valor da porta
 	
@@ -603,35 +668,35 @@ lcd_enable_and_wait ;Depois dividir a função em wait 40us e wait 1,64ms
 	BX LR
 
 ; -------------------------------------------------------------------------------
-; Função set_RS_0 - Seta o RS do LCD como 0
-; Parâmetro de entrada: Não tem
-; Parâmetro de saída: Não tem
+; Funcao set_RS_0 - Seta o RS do LCD como 0
+; Parametro de entrada: Nao tem
+; Parametro de saida: Nao tem
 set_RS_0
-	;RS como 0 para enviar instrução - RS -> PM0	
-	LDR R1, =GPIO_PORTM_DATA_R ;Carrega-se o endereço
-	LDR R0, [R1] ; Lê para carregar o valor anterior da porta inteira
+	;RS como 0 para enviar instrucao - RS -> PM0	
+	LDR R1, =GPIO_PORTM_DATA_R ;Carrega-se o endereco
+	LDR R0, [R1] ; Le para carregar o valor anterior da porta inteira
 	BIC R0, R0, #2_00000001 ; Faz o AND negado bit a bit para manter os valores anteriores e limpar somente o bit 0
 	STR R0, [R1] ; Escreve o novo valor da porta
 	
 	BX LR
 
 ; -------------------------------------------------------------------------------
-; Função set_RS_1 - Seta o RS do LCD como 1
-; Parâmetro de entrada: Não tem
-; Parâmetro de saída: Não tem
+; Funcao set_RS_1 - Seta o RS do LCD como 1
+; Parametro de entrada: Nao tem
+; Parametro de saida: Nao tem
 set_RS_1
 	;RS como 1 para enviar dados - RS -> PM0	
-	LDR R1, =GPIO_PORTM_DATA_R ;Carrega-se o endereço
-	LDR R0, [R1] ; Lê para carregar o valor anterior da porta inteira
+	LDR R1, =GPIO_PORTM_DATA_R ;Carrega-se o endereco
+	LDR R0, [R1] ; Le para carregar o valor anterior da porta inteira
 	ORR R0, R0, #2_00000001 ; Faz o OR bit a bit para manter os valores anteriores e setar somente o bit
 	STR R0, [R1] ; Escreve o novo valor da porta
 	
 	BX LR
 
 ; -------------------------------------------------------------------------------
-; Função envia_instrucao_lcd - Envia um comando para o LCD
-; Parâmetro de entrada: R0 -> Comando a ser enviado
-; Parâmetro de saída: Não tem 
+; Funcao envia_instrucao_lcd - Envia um comando para o LCD
+; Parametro de entrada: R0 -> Comando a ser enviado
+; Parametro de saida: Nao tem 
 envia_instrucao_lcd
 	LDR R1, =GPIO_PORTK_DATA_R
 	STR R0, [R1]
@@ -647,9 +712,9 @@ envia_instrucao_lcd
 	BX LR
 
 ; -------------------------------------------------------------------------------
-; Função envia_dado_lcd - Envia um dado para o LCD
-; Parâmetro de entrada: R1 -> Dado a ser enviado
-; Parâmetro de saída: Não tem 
+; Funcao envia_dado_lcd - Envia um dado para o LCD
+; Parametro de entrada: R1 -> Dado a ser enviado
+; Parametro de saida: Nao tem 
 envia_dado_lcd
 	LDR R0, =GPIO_PORTK_DATA_R
 	STR R1, [R0]
@@ -665,31 +730,27 @@ envia_dado_lcd
 	BX LR
 
 ; -------------------------------------------------------------------------------
-; Função printArrayInLcd - Escreve uma string no LCD
-; Parâmetro de entrada: R0 -> Endereço de memória de início da string
-; Parâmetro de saída: Não tem 
+; Funcao printArrayInLcd - Escreve uma string no LCD
+; Parametro de entrada: R0 -> Endereco de memoria de inicio da string
+; Parametro de saida: Nao tem 
 printArrayInLcd
+	MOV R2, R1
 escrever_proximo
-	PUSH { LR }
-	BL reset_LCD
-	POP { LR }
 	LDRB R1, [R0], #1
-	CMP R1, #0
-	BEQ printArrayInLcdEnd
 	PUSH { LR, R0 }
 	BL envia_dado_lcd
 	POP { R0, LR }
+	SUB R2, #1
+	CMP R2, #0
+	BEQ printArrayInLcdEnd
 	B escrever_proximo
 printArrayInLcdEnd
-	PUSH { LR }
-	BL pula_cursor_segunda_linha
-	POP { LR }
 	BX LR
 
 ; -------------------------------------------------------------------------------
-; Função reset_LCD - Reseta o LCD
-; Parâmetro de entrada: Não tem
-; Parâmetro de saída: Não tem 
+; Funcao reset_LCD - Reseta o LCD
+; Parametro de entrada: Nao tem
+; Parametro de saida: Nao tem 
 reset_LCD
 	; Reset LCD
 	MOV R0, #0x01
@@ -699,9 +760,9 @@ reset_LCD
 	BX LR
 	
 ; -------------------------------------------------------------------------------
-; Função pula_cursor_segunda_linha - Manda o cursor para a segunda linha do LCD
-; Parâmetro de entrada: Não tem
-; Parâmetro de saída: Não tem 
+; Funcao pula_cursor_segunda_linha - Manda o cursor para a segunda linha do LCD
+; Parametro de entrada: Nao tem
+; Parametro de saida: Nao tem 
 pula_cursor_segunda_linha
 	; Reset LCD
 	MOV R0, #0xC0
@@ -710,32 +771,22 @@ pula_cursor_segunda_linha
 	POP { R1, LR }
 	BX LR
 ; -------------------------------------------------------------------------------
-; Função Escrever_cofre_travado
-; Parâmetro de entrada: Não tem
-; Parâmetro de saída: Não tem 
-escrever_caractere_senha
-	PUSH { LR }
-	LDR R0, =caractere_senha
-	BL printArrayInLcd
-	POP { LR }
-	BX LR
-; -------------------------------------------------------------------------------
-; Função lcd_init - Inicializa o LCD
-; Parâmetro de entrada: Não tem
-; Parâmetro de saída: Não tem 
+; Funcao lcd_init - Inicializa o LCD
+; Parametro de entrada: Nao tem
+; Parametro de saida: Nao tem 
 lcd_init
 	; Reset no LCD -----------------------------------------------
 	PUSH { LR }
 	BL reset_LCD
 	POP { LR }
 	
-	; Inicializa configuração do LCD -----------------------------------------------
+	; Inicializa configuracao do LCD -----------------------------------------------
 	MOV R0, #0x38
 	PUSH { LR }
 	BL envia_instrucao_lcd
 	POP { LR }
 	
-	; Inicializa configuração do LCD -----------------------------------------------
+	; Inicializa configuracao do LCD -----------------------------------------------
 	MOV R0, #0xF
 	PUSH { LR }
 	BL envia_instrucao_lcd
@@ -745,9 +796,9 @@ lcd_init
 
 
 ; -------------------------------------------------------------------------------
-; Função Pisca_LED
-; Parâmetro de entrada: R5 --> Liga ou Desliga LEDs
-; Parâmetro de saída: Não tem
+; Funcao Pisca_LED
+; Parametro de entrada: R5 --> Liga ou Desliga LEDs
+; Parametro de saida: Nao tem
 blinkLEDs
 	CMP R5,#-1
 	BEQ apaga_Leds
@@ -789,5 +840,5 @@ ativa_Transistor
 	
 	BX LR									;Retorno
 
-    ALIGN                           ; garante que o fim da seção está alinhada 
+    ALIGN                           ; garante que o fim da secao esta alinhada 
     END                             ; fim do arquivo
