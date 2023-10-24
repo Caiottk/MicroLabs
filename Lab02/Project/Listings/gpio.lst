@@ -1245,7 +1245,7 @@ ARM Macro Assembler    Page 20
                        -------------------------
   501 00000170         GPIOPortJ_Handler
   502 00000170 48B7            LDR              R0, =GPIO_PORTJ_AHB_ICR_R
-  503 00000172 F04F 0111       MOV              R1, #0x11
+  503 00000172 F04F 0103       MOV              R1, #2_11
   504 00000176 6001            STR              R1, [R0]
   505 00000178         
   506 00000178 B500            PUSH{LR}

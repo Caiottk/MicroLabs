@@ -500,7 +500,7 @@ EsperaGPIO  LDR     R1, [R0]						;La da memaria o conteado do endereao do regis
 ; -------------------------------------------------------------------------------
 GPIOPortJ_Handler
 		LDR R0, =GPIO_PORTJ_AHB_ICR_R
-		MOV R1, #0x11
+		MOV R1, #2_11
 		STR R1, [R0]
 
 		PUSH{LR}

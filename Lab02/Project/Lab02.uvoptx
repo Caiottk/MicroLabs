@@ -156,9 +156,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>117</LineNumber>
+          <LineNumber>124</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>1820</Address>
+          <Address>1814</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -167,14 +167,14 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>.\main.s</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\gpio\main.s\117</Expression>
+          <Expression>\\gpio\main.s\124</Expression>
         </Bp>
         <Bp>
           <Number>1</Number>
           <Type>0</Type>
-          <LineNumber>174</LineNumber>
+          <LineNumber>181</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>1934</Address>
+          <Address>1932</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -183,14 +183,14 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>.\main.s</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\gpio\main.s\174</Expression>
+          <Expression>\\gpio\main.s\181</Expression>
         </Bp>
         <Bp>
           <Number>2</Number>
           <Type>0</Type>
-          <LineNumber>547</LineNumber>
+          <LineNumber>504</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>1000</Address>
+          <Address>918</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -199,28 +199,12 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>.\gpio.s</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\gpio\gpio.s\547</Expression>
+          <Expression>\\gpio\gpio.s\504</Expression>
         </Bp>
         <Bp>
           <Number>3</Number>
           <Type>0</Type>
-          <LineNumber>739</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>1288</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>.\gpio.s</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\gpio\gpio.s\739</Expression>
-        </Bp>
-        <Bp>
-          <Number>4</Number>
-          <Type>0</Type>
-          <LineNumber>543</LineNumber>
+          <LineNumber>293</LineNumber>
           <EnabledFlag>1</EnabledFlag>
           <Address>0</Address>
           <ByteObject>0</ByteObject>
@@ -229,7 +213,7 @@
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>0</BreakIfRCount>
-          <Filename>.\gpio.s</Filename>
+          <Filename>.\main.s</Filename>
           <ExecCommand></ExecCommand>
           <Expression></Expression>
         </Bp>

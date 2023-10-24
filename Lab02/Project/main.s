@@ -70,7 +70,7 @@ MainLoop
 	POP{LR}
 
 	LDR R1, =sysState
-	LDR R1, [R1]
+	LDRB R1, [R1]
 	
 	CMP R1, #0
 	IT EQ
@@ -84,7 +84,7 @@ MainLoop
 	IT EQ
 		BLEQ waitJ0Interrup
 	
-	CMP R1, #1
+	CMP R1, #3
 	IT EQ
 		BLEQ waitMasterPword
 	
@@ -122,6 +122,10 @@ newPwordHashtag
 	PUSH{LR}
 	MOV R0, #1000
 	BL SysTick_Wait1ms
+
+	PUSH{LR}
+	BL reset_LCD ; Resets LCD before next print
+	POP{LR}
 
 	LDR R0, =MSG_CLOSING
 	MOV R1, #14
@@ -199,6 +203,8 @@ closedSafeHashtag
 
 closedSafeOpenSafe
 	PUSH{LR}
+	BL reset_LCD ; Resets LCD before next print
+
 	LDR R0, =MSG_OPENING
 	MOV R1, #13
 	BL printArrayInLcd
@@ -217,6 +223,8 @@ closedSafeOpenSafe
 
 closedSafeLockSafe
 	PUSH{LR}
+	BL reset_LCD ; Resets LCD before next print
+
 	LDR R0, =MSG_LOCKED
 	MOV R1, #14
 	BL printArrayInLcd
@@ -303,6 +311,17 @@ waitMasterPwordHashtag
 	B waitMasterPwordEnd
 
 waitMasterPwordOpenSafe
+	PUSH{LR}
+	BL reset_LCD ; Resets LCD before next print
+
+	LDR R0, =MSG_OPENING
+	MOV R1, #13
+	BL printArrayInLcd
+
+	MOV R0, #5000
+	BL SysTick_Wait1ms
+	POP{LR}
+	
 	MOV R7, #0 ; i = 0
 	LDR R1, =sysState
 	MOV R0, #0
@@ -325,13 +344,13 @@ waitMasterPwordEnd
 ; Initializes variables before the main loop
 InitilizeVars
 	LDR R1, =masterPword
-	MOV R2, #0x0304
-	MOVT R2, #0x0102
+	MOV R2, #0x3431
+	MOVT R2, #0x3237
 	STR R2, [R1]
 	
 	MOV R2, #0
 	LDR R1, =sysState
-	STR R2, [R1]
+	STRB R2, [R1]
 	LDR R1, =currPword
 	STR R2, [R1]
 	LDR R1, =guessPword
@@ -339,11 +358,11 @@ InitilizeVars
 	LDR R1, =lcdString
 	STR R2, [R1]
 	
+	MOV R6, #0 ; errorCtr
 	MOV R7, #0 ; Iterator for passwords
 	MOV R8, #0 ; Iterator for LCD
 	MOV R9, #50
 	MOV R5, #1 ; blinkLeds input(ON/OFF)
-
 
 	BX LR
 
