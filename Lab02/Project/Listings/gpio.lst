@@ -12,8 +12,8 @@ ARM Macro Assembler    Page 1
     6 00000000         
     7 00000000         ; ------------------------------------------------------
                        -------------------------
-    8 00000000                 THUMB                        ; Instrucaes do
-                                                             tipo Thumb-2
+    8 00000000                 THUMB                        ; Instrucaes do tip
+                                                            o Thumb-2
     9 00000000         ; ------------------------------------------------------
                        -------------------------
    10 00000000         ; Declaracaes EQU - Defines
@@ -900,21 +900,21 @@ ARM Macro Assembler    Page 14
   291 00000000         
   292 00000000         ; ------------------------------------------------------
                        -------------------------
-  293 00000000         ; area de Cadigo - Tudo abaixo da diretiva a seguir 
-                       sera armazenado na memaria de 
+  293 00000000         ; area de Cadigo - Tudo abaixo da diretiva a seguir sera
+                        armazenado na memaria de 
   294 00000000         ;                  cadigo
   295 00000000                 AREA             |.text|, CODE, READONLY, ALIGN=
 2
   296 00000000 2A 00   caractere_senha
                                DCB              "*", 0
-  297 00000002         ; Se alguma funcao do arquivo for chamada em outro a
+  297 00000002         ; Se alguma funcao do arquivo for chamada em outro arqui
 
 
 
 ARM Macro Assembler    Page 15 
 
 
-                       rquivo 
+                       vo 
   298 00000002                 EXPORT           GPIO_Init   ; Permite chamar GP
                                                             IO_Init de outro ar
                                                             quivo
@@ -936,8 +936,8 @@ ARM Macro Assembler    Page 15
   313 00000002         ;=====================
   314 00000002         
   315 00000002 48CE            LDR              R0, =SYSCTL_RCGCGPIO_R ;Carrega
-                                                             o endereao do re
-                                                            gistrador RCGCGPIO
+                                                             o endereao do regi
+                                                            strador RCGCGPIO
   316 00000004 F04F 0101       MOV              R1, #GPIO_PORTA ;Seta o bit da 
                                                             porta N
   317 00000008 F441 7180       ORR              R1, #GPIO_PORTJ ;Seta o bit da 
@@ -948,61 +948,59 @@ ARM Macro Assembler    Page 15
   320 00000014 F441 6100       ORR              R1, #GPIO_PORTM
   321 00000018 F441 5100       ORR              R1, #GPIO_PORTP
   322 0000001C F441 4180       ORR              R1, #GPIO_PORTQ
-  323 00000020 6001            STR              R1, [R0]    ;Move para a mema
-                                                            ria os bits das por
-                                                            tas no endereao d
-                                                            o RCGCGPIO
+  323 00000020 6001            STR              R1, [R0]    ;Move para a memari
+                                                            a os bits das porta
+                                                            s no endereao do RC
+                                                            GCGPIO
   324 00000022         
   325 00000022 48C7            LDR              R0, =SYSCTL_PRGPIO_R ;Carrega o
-                                                             endereao do PRGP
-                                                            IO para esperar os 
-                                                            GPIO ficarem pronto
-                                                            s
+                                                             endereao do PRGPIO
+                                                             para esperar os GP
+                                                            IO ficarem prontos
   326 00000024 6801    EsperaGPIO
-                               LDR              R1, [R0]    ;La da memaria 
-                                                            o conteado do end
-                                                            ereao do registra
-                                                            dor
+                               LDR              R1, [R0]    ;La da memaria o co
+                                                            nteado do endereao 
+                                                            do registrador
   327 00000026 F04F 0201       MOV              R2, #GPIO_PORTA ;Seta os bits c
-                                                            orrespondentes as
-                                                             portas para fazer 
-                                                            a comparacao
+                                                            orrespondentes as p
+                                                            ortas para fazer a 
+                                                            comparacao
   328 0000002A F442 7280       ORR              R2, #GPIO_PORTJ ;Seta o bit da 
                                                             porta J, fazendo co
                                                             m OR
   329 0000002E F442 7200       ORR              R2, #GPIO_PORTK
   330 00000032 F441 6180       ORR              R1, #GPIO_PORTL
   331 00000036 F442 6200       ORR              R2, #GPIO_PORTM
+  332 0000003A F441 5100       ORR              R1, #GPIO_PORTP
+  333 0000003E F442 4280       ORR              R2, #GPIO_PORTQ
 
 
 
 ARM Macro Assembler    Page 16 
 
 
-  332 0000003A F441 5100       ORR              R1, #GPIO_PORTP
-  333 0000003E F442 4280       ORR              R2, #GPIO_PORTQ
   334 00000042 4211            TST              R1, R2      ;ANDS de R1 com R2
   335 00000044 D0EE            BEQ              EsperaGPIO  ;Se o flag Z=1, vol
-                                                            ta para o laao. S
-                                                            enao continua exe
-                                                            cutando
+                                                            ta para o laao. Sen
+                                                            ao continua executa
+                                                            ndo
   336 00000046         
   337 00000046         ; 2. Limpar o AMSEL para desabilitar a analagica
   338 00000046 F04F 0100       MOV              R1, #0x00   ;Colocar 0 no regis
                                                             trador para desabil
-                                                            itar a funcao a
-                                                            nalagica
+                                                            itar a funcao anala
+                                                            gica
   339 0000004A 48BE            LDR              R0, =GPIO_PORTA_AHB_AMSEL_R ;Ca
                                                             rrega o R0 com o en
-                                                            dereao do AMSEL p
-                                                            ara a porta J
+                                                            dereao do AMSEL par
+                                                            a a porta J
   340 0000004C 6001            STR              R1, [R0]    ;Guarda no registra
                                                             dor AMSEL da porta 
                                                             J da memaria
   341 0000004E 48BE            LDR              R0, =GPIO_PORTJ_AHB_AMSEL_R ;Ca
                                                             rrega o R0 com o en
-                                                            dereao do AMSEL p
-                                                            ara a porta N
+                                                            dereao do AMSEL par
+                                                            a a porta N
   342 00000050 6001            STR              R1, [R0]    ;Guarda no registra
                                                             dor AMSEL da porta 
                                                             N da memaria
@@ -1023,29 +1021,29 @@ ARM Macro Assembler    Page 16
                                                             nar o modo GPIO
   356 0000006A 48BD            LDR              R0, =GPIO_PORTA_AHB_PCTL_R ;Car
                                                             rega o R0 com o end
-                                                            ereao do PCTL par
-                                                            a a porta J
+                                                            ereao do PCTL para 
+                                                            a porta J
   357 0000006C 6001            STR              R1, [R0]    ;Guarda no registra
                                                             dor PCTL da porta J
                                                              da memaria
   358 0000006E 48BD            LDR              R0, =GPIO_PORTJ_AHB_PCTL_R ;Car
                                                             rega o R0 com o end
-                                                            ereao do PCTL par
-                                                            a a porta N
+                                                            ereao do PCTL para 
+                                                            a porta N
   359 00000070 6001            STR              R1, [R0]    ;Guarda no registra
                                                             dor PCTL da porta N
                                                              da memaria
   360 00000072 48BD            LDR              R0, =GPIO_PORTK_PCTL_R
   361 00000074 6001            STR              R1, [R0]
   362 00000076 48BD            LDR              R0, =GPIO_PORTL_PCTL_R
+  363 00000078 6001            STR              R1, [R0]
+  364 0000007A 48BD            LDR              R0, =GPIO_PORTM_PCTL_R
 
 
 
 ARM Macro Assembler    Page 17 
 
 
-  363 00000078 6001            STR              R1, [R0]
-  364 0000007A 48BD            LDR              R0, =GPIO_PORTM_PCTL_R
   365 0000007C 6001            STR              R1, [R0]
   366 0000007E 48BD            LDR              R0, =GPIO_PORTP_PCTL_R
   367 00000080 6001            STR              R1, [R0]
@@ -1055,17 +1053,17 @@ ARM Macro Assembler    Page 17
   371 00000086         ; 4. DIR para 0 se for entrada, 1 se for saada
   372 00000086 48BD            LDR              R0, =GPIO_PORTA_AHB_DIR_R ;Carr
                                                             ega o R0 com o ende
-                                                            reao do DIR para 
-                                                            a porta N
+                                                            reao do DIR para a 
+                                                            porta N
   373 00000088 F04F 01F0       MOV              R1, #2_11110000 ;PN1 para LED
   374 0000008C 6001            STR              R1, [R0]    ;Guarda no registra
                                                             dor
-  375 0000008E         ; O certo era verificar os outros bits da PF para nao 
-                       transformar entradas em saadas desnecessarias
+  375 0000008E         ; O certo era verificar os outros bits da PF para nao tr
+                       ansformar entradas em saadas desnecessarias
   376 0000008E 48BC            LDR              R0, =GPIO_PORTJ_AHB_DIR_R ;Carr
                                                             ega o R0 com o ende
-                                                            reao do DIR para 
-                                                            a porta J
+                                                            reao do DIR para a 
+                                                            porta J
   377 00000090 F04F 0100       MOV              R1, #0x00   ;Colocar 0 no regis
                                                             trador DIR para fun
                                                             cionar com saada
@@ -1091,29 +1089,26 @@ ARM Macro Assembler    Page 17
   395 000000BE         ; 5. Limpar os bits AFSEL para 0 para selecionar GPIO 
   396 000000BE         ;    Sem funcao alternativa
   397 000000BE F04F 0100       MOV              R1, #0x00   ;Colocar o valor 0 
-                                                            para nao setar fu
-                                                            ncao alternativ
-                                                            a
+                                                            para nao setar func
+                                                            ao alternativa
   398 000000C2 48B5            LDR              R0, =GPIO_PORTA_AHB_AFSEL_R ;Ca
-                                                            rrega o endereao 
-                                                            do AFSEL da porta N
-                                                            
+                                                            rrega o endereao do
+                                                             AFSEL da porta N
   399 000000C4 6001            STR              R1, [R0]    ;Escreve na porta
   400 000000C6 48B5            LDR              R0, =GPIO_PORTJ_AHB_AFSEL_R ;Ca
-                                                            rrega o endereao 
-                                                            do AFSEL da porta J
-                                                            
+                                                            rrega o endereao do
+                                                             AFSEL da porta J
+  401 000000C8 6001            STR              R1, [R0]    ;Escreve na porta
+  402 000000CA 48B5            LDR              R0, =GPIO_PORTK_AFSEL_R
+  403 000000CC 6001            STR              R1, [R0]
+  404 000000CE 48B5            LDR              R0, =GPIO_PORTL_AFSEL_R
+  405 000000D0 6001            STR              R1, [R0]
 
 
 
 ARM Macro Assembler    Page 18 
 
 
-  401 000000C8 6001            STR              R1, [R0]    ;Escreve na porta
-  402 000000CA 48B5            LDR              R0, =GPIO_PORTK_AFSEL_R
-  403 000000CC 6001            STR              R1, [R0]
-  404 000000CE 48B5            LDR              R0, =GPIO_PORTL_AFSEL_R
-  405 000000D0 6001            STR              R1, [R0]
   406 000000D2 48B5            LDR              R0, =GPIO_PORTM_AFSEL_R
   407 000000D4 6001            STR              R1, [R0]
   408 000000D6 48B5            LDR              R0, =GPIO_PORTP_AFSEL_R
@@ -1123,26 +1118,26 @@ ARM Macro Assembler    Page 18
   412 000000DE         
   413 000000DE         ; 6. Setar os bits de DEN para habilitar I/O digital
   414 000000DE 48B5            LDR              R0, =GPIO_PORTA_AHB_DEN_R ;Carr
-                                                            ega o endereao do
-                                                             DEN
+                                                            ega o endereao do D
+                                                            EN
   415 000000E0 F04F 01F0       MOV              R1, #2_11110000 ;Ativa os pinos
                                                              PN1 como I/O Digit
                                                             al
   416 000000E4 6001            STR              R1, [R0]    ;Escreve no registr
-                                                            ador da memaria f
-                                                            uncionalidade digit
-                                                            al 
+                                                            ador da memaria fun
+                                                            cionalidade digital
+                                                             
   417 000000E6         
   418 000000E6 48B4            LDR              R0, =GPIO_PORTJ_AHB_DEN_R ;Carr
-                                                            ega o endereao do
-                                                             DEN
+                                                            ega o endereao do D
+                                                            EN
   419 000000E8 F04F 0103       MOV              R1, #2_00000011 ;Ativa os pinos
                                                              PJ0  como I/O Digi
                                                             tal      
   420 000000EC 6001            STR              R1, [R0]    ;Escreve no registr
-                                                            ador da memaria f
-                                                            uncionalidade digit
-                                                            al
+                                                            ador da memaria fun
+                                                            cionalidade digital
+                                                            
   421 000000EE         
   422 000000EE 48B3            LDR              R0, =GPIO_PORTK_DEN_R
   423 000000F0 F04F 01FF       MOV              R1, #2_11111111
@@ -1167,19 +1162,18 @@ ARM Macro Assembler    Page 18
   442 00000116         ; 7. Para habilitar resistor de pull-up interno, setar P
                        UR para 1
   443 00000116 48AE            LDR              R0, =GPIO_PORTJ_AHB_PUR_R ;Carr
-                                                            ega o endereao do
+                                                            ega o endereao do P
+                                                            UR para a porta J
+  444 00000118 F04F 0103       MOV              R1, #2_00000011 ;Habilitar func
+                                                            ionalidade digital 
+                                                            de resistor de pull
+                                                            -up 
 
 
 
 ARM Macro Assembler    Page 19 
 
 
-                                                             PUR para a porta J
-                                                            
-  444 00000118 F04F 0103       MOV              R1, #2_00000011 ;Habilitar func
-                                                            ionalidade digital 
-                                                            de resistor de pull
-                                                            -up 
   445 0000011C         ;nos bits 0 e 1
   446 0000011C 6001            STR              R1, [R0]
   447 0000011E         
@@ -1233,18 +1227,18 @@ ARM Macro Assembler    Page 19
   489 00000162         
   490 00000162         ; Set port interrupt priority
   491 00000162 48A3            LDR              R0, =NVIC_PRI12_R
-
-
-
-ARM Macro Assembler    Page 20 
-
-
   492 00000164 F04F 0105       MOV              R1, #5
   493 00000168 EA4F 7141       LSL              R1, R1, #29
   494 0000016C 6001            STR              R1, [R0]
   495 0000016E         
   496 0000016E 4770            BX               LR
   497 00000170         
+
+
+
+ARM Macro Assembler    Page 20 
+
+
   498 00000170         
   499 00000170         ; ------------------------------------------------------
                        -------------------------
@@ -1298,18 +1292,18 @@ ARM Macro Assembler    Page 20
   543 000001BA         ler_coluna
   544 000001BA 4974            LDR              R1, =GPIO_PORTM_DIR_R
   545 000001BC 680A            LDR              R2, [R1]    ; Lê para carregar
-
-
-
-ARM Macro Assembler    Page 21 
-
-
                                                              o valor anterior d
                                                             a porta inteira
   546 000001BE         
   547 000001BE         ; R3 vai ter como bit 1 o bit na posição R0
   548 000001BE F04F 0301       MOV              R3, #1
   549 000001C2 FA03 F300       LSL              R3, R0
+
+
+
+ARM Macro Assembler    Page 21 
+
+
   550 000001C6         
   551 000001C6         ; Seta todas as colunas como entrada
   552 000001C6 F022 02F0       BIC              R2, #0xF0
@@ -1363,18 +1357,18 @@ ARM Macro Assembler    Page 21
                                                             iores e setar somen
                                                             te o bit
   585 000001EE 6008            STR              R0, [R1]    ; Escreve o novo va
-
-
-
-ARM Macro Assembler    Page 22 
-
-
                                                             lor da porta
   586 000001F0         
   587 000001F0 B500            PUSH             { LR }
   588 000001F2 F04F 0002       MOV              R0, #2
   589 000001F6 F7FF FFFE       BL               SysTick_Wait1ms
   590 000001FA F85D EB04       POP              { LR }
+
+
+
+ARM Macro Assembler    Page 22 
+
+
   591 000001FE         
   592 000001FE         ;EN como 0 para desabilitar - EN -> PM2
   593 000001FE 497D            LDR              R1, =GPIO_PORTM_DATA_R ;Carrega
@@ -1428,18 +1422,18 @@ ARM Macro Assembler    Page 22
   621 00000224         ; Parâmetro de saída: Não tem
   622 00000224         set_RS_1
   623 00000224         ;RS como 1 para enviar dados - RS -> PM0 
-
-
-
-ARM Macro Assembler    Page 23 
-
-
   624 00000224 4973            LDR              R1, =GPIO_PORTM_DATA_R ;Carrega
                                                             -se o endereço
   625 00000226 6808            LDR              R0, [R1]    ; Lê para carregar
                                                              o valor anterior d
                                                             a porta inteira
   626 00000228 F040 0001       ORR              R0, R0, #2_00000001 ; Faz o OR 
+
+
+
+ARM Macro Assembler    Page 23 
+
+
                                                             bit a bit para mant
                                                             er os valores anter
                                                             iores e setar somen
@@ -1472,11 +1466,11 @@ ARM Macro Assembler    Page 23
   649 0000024A         ; ------------------------------------------------------
                        -------------------------
   650 0000024A         ; Função envia_dado_lcd - Envia um dado para o LCD
-  651 0000024A         ; Parâmetro de entrada: R0 -> Dado a ser enviado
+  651 0000024A         ; Parâmetro de entrada: R1 -> Dado a ser enviado
   652 0000024A         ; Parâmetro de saída: Não tem 
   653 0000024A         envia_dado_lcd
-  654 0000024A 496C            LDR              R1, =GPIO_PORTK_DATA_R
-  655 0000024C 6008            STR              R0, [R1]
+  654 0000024A 486C            LDR              R0, =GPIO_PORTK_DATA_R
+  655 0000024C 6001            STR              R1, [R0]
   656 0000024E         
   657 0000024E B500            PUSH             { LR }
   658 00000250 F7FF FFE8       BL               set_RS_1
@@ -1493,18 +1487,18 @@ ARM Macro Assembler    Page 23
   668 00000264         ; Função printArrayInLcd - Escreve uma string no LCD
   669 00000264         ; Parâmetro de entrada: R0 -> Endereço de memória de 
                        início da string
-
-
-
-ARM Macro Assembler    Page 24 
-
-
   670 00000264         ; Parâmetro de saída: Não tem 
   671 00000264         printArrayInLcd
   672 00000264         escrever_proximo
   673 00000264 B500            PUSH             { LR }
   674 00000266 F7FF FFFE       BL               reset_LCD
   675 0000026A F85D EB04       POP              { LR }
+
+
+
+ARM Macro Assembler    Page 24 
+
+
   676 0000026E F810 1B01       LDRB             R1, [R0], #1
   677 00000272 2900            CMP              R1, #0
   678 00000274 D005            BEQ              printArrayInLcdEnd
@@ -1558,18 +1552,18 @@ ARM Macro Assembler    Page 24
   722 000002BC         ; ------------------------------------------------------
                        -------------------------
   723 000002BC         ; Função lcd_init - Inicializa o LCD
-
-
-
-ARM Macro Assembler    Page 25 
-
-
   724 000002BC         ; Parâmetro de entrada: Não tem
   725 000002BC         ; Parâmetro de saída: Não tem 
   726 000002BC         lcd_init
   727 000002BC         ; Reset no LCD -----------------------------------------
                        ------
   728 000002BC B500            PUSH             { LR }
+
+
+
+ARM Macro Assembler    Page 25 
+
+
   729 000002BE F7FF FFFE       BL               reset_LCD
   730 000002C2 F85D EB04       POP              { LR }
   731 000002C6         
@@ -1623,18 +1617,18 @@ ARM Macro Assembler    Page 25
                                                             do data register
   767 00000306 F04F 0200       LDR              R2, =2_00000000
   768 0000030A 600A            STR              R2, [R1]
-
-
-
-ARM Macro Assembler    Page 26 
-
-
   769 0000030C E7FF            B                ativa_Transistor
   770 0000030E         
   771 0000030E         ativa_Transistor
   772 0000030E 4B3F            LDR              R3, =GPIO_PORTP_DATA_R
   773 00000310 F04F 0420       MOV              R4, #2_00100000
   774 00000314 601C            STR              R4, [R3]
+
+
+
+ARM Macro Assembler    Page 26 
+
+
   775 00000316         
   776 00000316 F04F 0003       MOV              R0, #3
   777 0000031A B500            PUSH             { LR }
@@ -1688,18 +1682,18 @@ ARM Macro Assembler    Page 26
               40066420 
               4005851C 
               4006051C 
-
-
-
-ARM Macro Assembler    Page 27 
-
-
               4006151C 
               4006251C 
               4006351C 
               4006551C 
               4006651C 
               40060510 
+
+
+
+ARM Macro Assembler    Page 27 
+
+
               40062510 
               40060410 
               40060404 
@@ -1715,11 +1709,11 @@ ARM Macro Assembler    Page 27
               400583FC 
               400663FC 
               400653FC 
-Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp.sp --depen
-d=.\objects\gpio.d -o.\objects\gpio.o -I"C:\Users\Caio Andrade\AppData\Local\Ar
-m\Packs\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C129" --predefine="__EVAL SETA 1"
- --predefine="__UVISION_VERSION SETA 536" --predefine="TM4C1294NCPDT SETA 1" --
-list=.\listings\gpio.lst gpio.s
+Command Line: --debug --xref --diag_suppress=9931,A1950W --cpu=Cortex-M4.fp.sp 
+--depend=.\objects\gpio.d -o.\objects\gpio.o -IC:\Users\joaov\AppData\Local\Arm
+\Packs\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C129 --predefine="__EVAL SETA 1" -
+-predefine="__UVISION_VERSION SETA 538" --predefine="TM4C1294NCPDT SETA 1" --li
+st=.\listings\gpio.lst gpio.s
 
 
 

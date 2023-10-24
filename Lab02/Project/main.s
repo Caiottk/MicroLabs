@@ -56,15 +56,10 @@ lcdString   SPACE 0x20
 ; -------------------------------------------------------------------------------
 ; Funcao main()
 Start
-MSG_OPEN	DCB "Cofre Aberto", 0
-MSG_OPENING	DCB	"Cofre Abrindo", 0
-MSG_CLOSING	DCB "Cofre Fechando", 0
-MSG_CLOSED	DCB	"Cofre Fechado", 0
-MSG_LOCKED	DCB	"Cofre Travado.", 0
 	BL PLL_Init                  ;Chama a subrotina para alterar o clock do microcontrolador para 80MHz
 	BL SysTick_Init              ;Chama a subrotina para inicializar o SysTick
 	BL GPIO_Init
-	BL lcd_init                 ;Chama a subrotina que inicializa os GPIO
+	BL lcd_init                  ;Chama a subrotina que inicializa os GPIO
 	BL InitilizeVars
 ;--------------------------------------------------------------------------------
 MainLoop
@@ -377,5 +372,12 @@ Atualiza_LEDsEnd
 ; -------------------------------------------------------------------------------------------------------------------------
 ; Fim do Arquivo
 ; -------------------------------------------------------------------------------------------------------------------------	
+
+MSG_OPEN	DCB      "Cofre Aberto", 0
+MSG_OPENING	DCB	"Cofre Abrindo", 0
+MSG_CLOSING	DCB   "Cofre Fechando", 0
+MSG_CLOSED	DCB	"Cofre Fechado.", 0
+MSG_LOCKED	DCB	"Cofre Travado.", 0
+
 	ALIGN                        ;Garante que o fim da secao esta alinhada 
 	END                          ;Fim do arquivo
