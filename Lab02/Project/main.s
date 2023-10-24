@@ -65,10 +65,6 @@ Start
 	BL InitilizeVars
 ;--------------------------------------------------------------------------------
 MainLoop
-	PUSH{LR}
-	BL reset_LCD ; Resets LCD before next print
-	POP{LR}
-
 	LDR R1, =sysState
 	LDRB R1, [R1]
 	
@@ -93,15 +89,7 @@ MainLoop
 ;--------------------------------------------------------------------------------
 ; Routine for entering a new password and close the safe
 newPword
-	LDR R0, =MSG_OPEN
-	MOV R1, #12
 	PUSH{LR}
-	BL printArrayInLcd
-	BL pula_cursor_segunda_linha
-	LDR R0, =guessPword
-	MOV R1, R7
-	ADD R1, R1, #1    ; gessPword[0:(i+1)]
-	BL printArrayInLcd
 	BL readKeyboard
 	POP{LR}
 
@@ -115,7 +103,7 @@ newPword
 	B newPwordNewInput
 	
 newPwordHashtag
-	CMP R0, #'#' ; R0 == '#'
+	CMP R0, #'*' ; R0 == '#'
 	IT NE
 		BNE newPwordEnd
 
@@ -123,9 +111,7 @@ newPwordHashtag
 	MOV R0, #1000
 	BL SysTick_Wait1ms
 
-	PUSH{LR}
 	BL reset_LCD ; Resets LCD before next print
-	POP{LR}
 
 	LDR R0, =MSG_CLOSING
 	MOV R1, #14
@@ -133,6 +119,13 @@ newPwordHashtag
 
 	MOV R0, #5000
 	BL SysTick_Wait1ms
+
+	BL reset_LCD ; Resets LCD before next print
+
+	LDR R0, =MSG_CLOSED
+	MOV R1, #14
+	BL printArrayInLcd
+	BL pula_cursor_segunda_linha
 
 	MOV R7, #0 ; i = 0
 	MOV R6, #0 ; errorCtr = 0
@@ -148,6 +141,10 @@ newPwordNewInput
 	ADD R1, R1, R7
 	STRB R0, [R1]  ; currPword[i] = R0
 	ADD R7, R7, #1 ; i++
+	PUSH{LR}
+	MOV R1, #1
+	BL printArrayInLcd
+	POP{LR}
 	B newPwordEnd
 
 newPwordEnd
@@ -156,15 +153,7 @@ newPwordEnd
 ;--------------------------------------------------------------------------------
 ; Routine for when the safe is closed: either opens or locks permanently
 closedSafe
-	LDR R0, =MSG_CLOSED
-	MOV R1, #14
 	PUSH{LR}
-	BL printArrayInLcd
-	BL pula_cursor_segunda_linha
-	LDR R0, =guessPword
-	MOV R1, R7
-	ADD R1, R1, #1    ; gessPword[0:(i+1)]
-	BL printArrayInLcd
 	BL readKeyboard
 	POP{LR}
 
@@ -178,7 +167,7 @@ closedSafe
 	B closedSafeNewInput
 
 closedSafeHashtag
-	CMP R0, #'#' ; R0 == '#'
+	CMP R0, #'*' ; R0 == '#'
 	IT NE
 		BNE closedSafeEnd
 
@@ -212,6 +201,13 @@ closedSafeOpenSafe
 	MOV R0, #5000
 	BL SysTick_Wait1ms
 
+	BL reset_LCD ; Resets LCD before next print
+
+	LDR R0, =MSG_OPEN
+	MOV R1, #12
+	BL printArrayInLcd
+	BL pula_cursor_segunda_linha
+
 	MOV R7, #0 ; i = 0
 	MOV R6, #0 ; errorCtr = 0
 	LDR R1, =sysState
@@ -228,6 +224,7 @@ closedSafeLockSafe
 	LDR R0, =MSG_LOCKED
 	MOV R1, #14
 	BL printArrayInLcd
+	BL pula_cursor_segunda_linha
 
 	MOV R0, #5000
 	BL SysTick_Wait1ms
@@ -249,6 +246,10 @@ closedSafeNewInput
 	ADD R1, R1, R7
 	STRB R0, [R1]  ; guessPword[i] = R0
 	ADD R7, R7, #1 ; i++
+	PUSH{LR}
+	MOV R1, #1
+	BL printArrayInLcd
+	POP{LR}
 
 	B closedSafeEnd
 
@@ -258,10 +259,7 @@ closedSafeEnd
 ;--------------------------------------------------------------------------------
 ; Routine that waits for a interruption and disables all other funcions
 waitJ0Interrup
-	LDR R0, =MSG_LOCKED
-	MOV R1, #14
 	PUSH{LR}
-	BL printArrayInLcd
 	BL Atualiza_LEDs
 	POP{LR}
 
@@ -270,15 +268,7 @@ waitJ0Interrup
 ;--------------------------------------------------------------------------------
 ; Routine to check if the master password was correctly written
 waitMasterPword
-	LDR R0, =MSG_LOCKED
-	MOV R1, #14
 	PUSH{LR}
-	BL printArrayInLcd
-	BL pula_cursor_segunda_linha
-	LDR R0, =guessPword
-	MOV R1, R7
-	ADD R1, R1, #1    ; gessPword[0:(i+1)]
-	BL printArrayInLcd
 	BL readKeyboard
 	POP{LR}
 
@@ -292,7 +282,7 @@ waitMasterPword
 	B waitMasterPwordNewInput
 
 waitMasterPwordHashtag
-	CMP R0, #'#' ; R0 == '#'
+	CMP R0, #'*' ; R0 == '#'
 	IT NE
 		BNE waitMasterPwordEnd
 
@@ -321,6 +311,13 @@ waitMasterPwordOpenSafe
 	MOV R0, #5000
 	BL SysTick_Wait1ms
 	POP{LR}
+
+	BL reset_LCD ; Resets LCD before next print
+
+	LDR R0, =MSG_OPEN
+	MOV R1, #12
+	BL printArrayInLcd
+	BL pula_cursor_segunda_linha
 	
 	MOV R7, #0 ; i = 0
 	LDR R1, =sysState
@@ -335,6 +332,11 @@ waitMasterPwordNewInput
 	STRB R0, [R1]  ; guessPword[i] = R0
 	ADD R7, R7, #1 ; i++
 
+	PUSH{LR}
+	MOV R1, #1
+	BL printArrayInLcd
+	POP{LR}
+
 	B waitMasterPwordEnd
 
 waitMasterPwordEnd
@@ -345,7 +347,7 @@ waitMasterPwordEnd
 InitilizeVars
 	LDR R1, =masterPword
 	MOV R2, #0x3431
-	MOVT R2, #0x3237
+	MOVT R2, #0x3737
 	STR R2, [R1]
 	
 	MOV R2, #0
@@ -363,6 +365,13 @@ InitilizeVars
 	MOV R8, #0 ; Iterator for LCD
 	MOV R9, #50
 	MOV R5, #1 ; blinkLeds input(ON/OFF)
+
+	LDR R0, =MSG_OPEN
+	MOV R1, #12
+	PUSH{LR}
+	BL printArrayInLcd
+	BL pula_cursor_segunda_linha
+	POP{LR}
 
 	BX LR
 

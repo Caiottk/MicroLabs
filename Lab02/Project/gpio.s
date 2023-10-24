@@ -304,6 +304,7 @@ caractere_senha				DCB   "*", 0
 		EXPORT GPIOPortJ_Handler
 		EXPORT pula_cursor_segunda_linha
 		IMPORT SysTick_Wait1ms
+		IMPORT SysTick_Wait1us
 		IMPORT checkJ0Interrup
 
 ;--------------------------------------------------------------------------------
@@ -616,14 +617,24 @@ ler_coluna
 	; R3 vai ter como bit 1 o bit na posicao R0
 	MOV R3, #1
 	LSL R3, R0
+	LDR R2, [R1]
+	ORR R3, R2
 
 	STR R3, [R1] ; Escreve o novo valor da porta 0 ENTRADA 1 SAIDA
 	
 	; Escreve 0 na coluna escolhida
 	LDR R1, =GPIO_PORTM_DATA_R
 	LDR R2, [R1]
-	BIC R2, R3 ; Faz o AND negado bit a bit para manter os valores anteriores e limpar somente PM7
+	AND R2, #0x0F
+	NEG R3, R3
+	AND R3, #0xF0
+	ORR R2, R3 ; Faz o AND negado bit a bit para manter os valores anteriores e limpar somente PM7
 	STR R2, [R1]
+
+	PUSH{LR, R0}
+	MOV R0, #20
+	BL SysTick_Wait1ms
+	POP{R0, LR}
 	
 	BX LR
 
@@ -650,8 +661,8 @@ lcd_enable_and_wait ;Depois dividir a funcao em wait 40us e wait 1,64ms
 	STR R0, [R1] ; Escreve o novo valor da porta
 	
 	PUSH { LR }
-	MOV R0, #2
-	BL SysTick_Wait1ms
+	MOV R0, #10
+	BL SysTick_Wait1us
 	POP { LR }
 	
 	;EN como 0 para desabilitar - EN -> PM2
@@ -775,21 +786,27 @@ pula_cursor_segunda_linha
 ; Parametro de entrada: Nao tem
 ; Parametro de saida: Nao tem 
 lcd_init
-	; Reset no LCD -----------------------------------------------
-	PUSH { LR }
-	BL reset_LCD
-	POP { LR }
-	
 	; Inicializa configuracao do LCD -----------------------------------------------
 	MOV R0, #0x38
 	PUSH { LR }
 	BL envia_instrucao_lcd
 	POP { LR }
 	
+	; Autoincrement to the right-----------------
+	MOV R0, #0x6
+	PUSH { LR }
+	BL envia_instrucao_lcd
+	POP { LR }
+
 	; Inicializa configuracao do LCD -----------------------------------------------
 	MOV R0, #0xF
 	PUSH { LR }
 	BL envia_instrucao_lcd
+	POP { LR }
+
+	; Reset no LCD -----------------------------------------------
+	PUSH { LR }
+	BL reset_LCD
 	POP { LR }
 
 	BX LR
