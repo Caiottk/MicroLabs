@@ -3,67 +3,68 @@
 ; Prof. Guilherme Peron
 ; Ver 1 19/03/2018
 ; Ver 2 26/08/2018
-; Este programa deve esperar o usuário pressionar uma chave.
-; Caso o usuário pressione uma chave, um LED deve piscar a cada 1 segundo.
+; Este programa deve esperar o usuario pressionar uma chave.
+; Caso o usuario pressione uma chave, um LED deve piscar a cada 1 segundo.
 
 ; -------------------------------------------------------------------------------
-        THUMB                        ; Instruções do tipo Thumb-2
+        THUMB                        ; Instrucaes do tipo Thumb-2
 ; -------------------------------------------------------------------------------
 		
-; Declarações EQU - Defines
+; Declaracaes EQU - Defines
 ;<NOME>         EQU <VALOR>
 ; ========================
-; Definições de Valores
+; Definicaes de Valores
 
 NO_BTNS_PRESSED EQU 0
 ; -------------------------------------------------------------------------------
-; Área de Dados - Declarações de variáveis
+; area de Dados - Declaracaes de variaveis
 		AREA  DATA, ALIGN=2
-		; Se alguma variável for chamada em outro arquivo
-		;EXPORT  <var> [DATA,SIZE=<tam>]   ; Permite chamar a variável <var> a 
+		; Se alguma variavel for chamada em outro arquivo
+		;EXPORT  <var> [DATA,SIZE=<tam>]   ; Permite chamar a variavel <var> a 
 		                                   ; partir de outro arquivo
-;<var>	SPACE <tam>                        ; Declara uma variável de nome <var>
+;<var>	SPACE <tam>                        ; Declara uma variavel de nome <var>
                                            ; de <tam> bytes a partir da primeira 
-                                           ; posição da RAM		
+                                           ; posicao da RAM		
 sysState    SPACE 0x1
 masterPword SPACE 0x4
 currPword   SPACE 0x4
 guessPword  SPACE 0x4
 lcdString   SPACE 0x20
 ; -------------------------------------------------------------------------------
-; Área de Código - Tudo abaixo da diretiva a seguir será armazenado na memória de 
-;                  código
+; area de Cadigo - Tudo abaixo da diretiva a seguir sera armazenado na memaria de 
+;                  cadigo
         AREA    |.text|, CODE, READONLY, ALIGN=2
 
-		; Se alguma função do arquivo for chamada em outro arquivo	
-        EXPORT Start                ; Permite chamar a função Start a partir de 
+		; Se alguma funcao do arquivo for chamada em outro arquivo	
+        EXPORT Start                ; Permite chamar a funcao Start a partir de 
 			                        ; outro arquivo. No caso startup.s
 									
-		; Se chamar alguma função externa	
+		; Se chamar alguma funcao externa	
         ;IMPORT <func>              ; Permite chamar dentro deste arquivo uma 
-									; função <func>
+									; funcao <func>
 		IMPORT  PLL_Init
 		IMPORT  SysTick_Init
 		IMPORT  SysTick_Wait1ms			
 		IMPORT  GPIO_Init
-		IMPORT LightUpLEDs	
-		IMPORT GetPushBtnsState
-		IMPORT DisableAllLEDs
+
+		IMPORT lcd_init
 		IMPORT printArrayInLcd
 		IMPORT readKeyboard
 		IMPORT blinkLEDs
+		IMPORT escrever_caractere_senha
 
 ; -------------------------------------------------------------------------------
-; Função main()
+; Funcao main()
 Start
-MSG_OPEN	   DCB   "Cofre Aberto, digite nova senha", 0
-MSG_OPENING	DCB	"Cofre Abrindo...", 0
-MSG_CLOSING	DCB   "Cofre Fechando...", 0
+MSG_OPEN	DCB "Cofre Aberto", 0
+MSG_OPENING	DCB	"Cofre Abrindo", 0
+MSG_CLOSING	DCB "Cofre Fechando", 0
 MSG_CLOSED	DCB	"Cofre Fechado", 0
 MSG_LOCKED	DCB	"Cofre Travado.", 0
 	BL PLL_Init                  ;Chama a subrotina para alterar o clock do microcontrolador para 80MHz
 	BL SysTick_Init              ;Chama a subrotina para inicializar o SysTick
-	BL GPIO_Init                 ;Chama a subrotina que inicializa os GPIO
+	BL GPIO_Init
+	BL lcd_init                 ;Chama a subrotina que inicializa os GPIO
 	BL InitilizeVars
 ;--------------------------------------------------------------------------------
 MainLoop
@@ -137,7 +138,9 @@ newPwordNewInput
 	ADD R1, R1, R7
 	STRB R0, [R1]  ; currPword[i] = R0
 	ADD R7, R7, #1 ; i++
-
+	PUSH {LR}
+	BL escrever_caractere_senha
+	POP {LR}
 	B newPwordEnd
 
 newPwordEnd
@@ -241,7 +244,7 @@ waitJ0Interrup
 	MOV R1, #14
 	PUSH{LR}
 	BL printArrayInLcd
-	BL blinkLEDs
+	BL Atualiza_LEDs
 	POP{LR}
 
 	BX LR
@@ -312,14 +315,18 @@ InitilizeVars
 	STR R2, [R1]
 	
 	MOV R7, #0 ; Iterator for passwords
+	MOV R8, #0 ; Iterator for LCD
+	MOV R9, #50
+	MOV R5, #1 ; blinkLeds input(ON/OFF)
+
 
 	BX LR
 
 ;--------------------------------------------------------------------------------
 ; Verifies if two arrays are equal
-; Input: R0 = array1 starting address
-;        R1 = array2 starting address
-;		   R2 = array size
+; Input:  R0 = array1 starting address
+;         R1 = array2 starting address
+;		  R2 = array size
 ; Output: R0 = 1 if the arrays are equal, 0 if not
 arraysCmp
 	CMP R2, #0
@@ -352,8 +359,23 @@ checkJ0Interrup
 	
 	BX LR
 
+Atualiza_LEDs
+	PUSH { LR }
+	BL blinkLEDs
+	POP { LR }
+	SUB R9, #1
+	CMP R9, #0
+	BNE Atualiza_LEDsEnd
+	MOV R9, #50
+	PUSH { R8 }
+	MOV R8, #-1
+	MUL R5,R8
+	POP { R8 }
+
+Atualiza_LEDsEnd
+	BX LR
 ; -------------------------------------------------------------------------------------------------------------------------
 ; Fim do Arquivo
 ; -------------------------------------------------------------------------------------------------------------------------	
-	ALIGN                        ;Garante que o fim da seção está alinhada 
+	ALIGN                        ;Garante que o fim da secao esta alinhada 
 	END                          ;Fim do arquivo
