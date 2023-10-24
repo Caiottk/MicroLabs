@@ -1178,8 +1178,8 @@ ARM Macro Assembler    Page 19
   446 0000011C 6001            STR              R1, [R0]
   447 0000011E         
   448 0000011E 48AD            LDR              R0, =GPIO_PORTL_PUR_R ;Carrega 
-                                                            o endereÃ§o do PUR 
-                                                            para a porta L
+                                                            o endereço do PUR p
+                                                            ara a porta L
   449 00000120 F04F 010F       MOV              R1, #2_00001111 ;Habilitar func
                                                             ionalidade digital 
                                                             de resistor de pull
@@ -1285,17 +1285,17 @@ ARM Macro Assembler    Page 20
   538 000001BA         
   539 000001BA         ; ------------------------------------------------------
                        -------------------------
-  540 000001BA         ; FunÃ§Ã£o ler_coluna
-  541 000001BA         ; ParÃ¢metro de entrada: R0 -> nÃºmero da coluna que se 
-                       quer ler - de 4 a 7
-  542 000001BA         ; ParÃ¢metro de saÃ­da: NÃ£o tem
+  540 000001BA         ; Função ler_coluna
+  541 000001BA         ; Parâmetro de entrada: R0 -> número da coluna que se qu
+                       er ler - de 4 a 7
+  542 000001BA         ; Parâmetro de saída: Não tem
   543 000001BA         ler_coluna
   544 000001BA 4974            LDR              R1, =GPIO_PORTM_DIR_R
-  545 000001BC 680A            LDR              R2, [R1]    ; LÃª para carregar
-                                                             o valor anterior d
-                                                            a porta inteira
+  545 000001BC 680A            LDR              R2, [R1]    ; Lê para carregar 
+                                                            o valor anterior da
+                                                             porta inteira
   546 000001BE         
-  547 000001BE         ; R3 vai ter como bit 1 o bit na posiÃ§Ã£o R0
+  547 000001BE         ; R3 vai ter como bit 1 o bit na posição R0
   548 000001BE F04F 0301       MOV              R3, #1
   549 000001C2 FA03 F300       LSL              R3, R0
 
@@ -1307,7 +1307,7 @@ ARM Macro Assembler    Page 21
   550 000001C6         
   551 000001C6         ; Seta todas as colunas como entrada
   552 000001C6 F022 02F0       BIC              R2, #0xF0
-  553 000001CA         ; Seta a coluna passada por parÃ¢metro como saÃ­da
+  553 000001CA         ; Seta a coluna passada por parâmetro como saída
   554 000001CA EA42 0203       ORR              R2, R3
   555 000001CE 600A            STR              R2, [R1]    ; Escreve o novo va
                                                             lor da porta
@@ -1326,9 +1326,9 @@ ARM Macro Assembler    Page 21
   564 000001DC         
   565 000001DC         ; ------------------------------------------------------
                        -------------------------
-  566 000001DC         ; FunÃ§Ã£o ler_porta_L - LÃª o valor de PL3-PL0
-  567 000001DC         ; ParÃ¢metro de entrada: NÃ£o tem
-  568 000001DC         ; ParÃ¢metro de saÃ­da: NÃ£o tem
+  566 000001DC         ; Função ler_porta_L - Lê o valor de PL3-PL0
+  567 000001DC         ; Parâmetro de entrada: Não tem
+  568 000001DC         ; Parâmetro de saída: Não tem
   569 000001DC         ler_porta_L
   570 000001DC 4986            LDR              R1, =GPIO_PORTL_DATA_R
   571 000001DE 680A            LDR              R2, [R1]    ; 
@@ -1338,19 +1338,19 @@ ARM Macro Assembler    Page 21
   575 000001E6         
   576 000001E6         ; ------------------------------------------------------
                        -------------------------
-  577 000001E6         ; FunÃ§Ã£o lcd_enable_and_wait - DÃ¡ um enable no LCD, e
-                       spera por 2ms e dÃ¡ um disable e espera 2ms
-  578 000001E6         ; ParÃ¢metro de entrada: NÃ£o tem
-  579 000001E6         ; ParÃ¢metro de saÃ­da: NÃ£o tem
+  577 000001E6         ; Função lcd_enable_and_wait - Dá um enable no LCD, espe
+                       ra por 2ms e dá um disable e espera 2ms
+  578 000001E6         ; Parâmetro de entrada: Não tem
+  579 000001E6         ; Parâmetro de saída: Não tem
   580 000001E6         lcd_enable_and_wait                  ;Depois dividir a f
-                                                            unÃ§Ã£o em wait 40u
-                                                            s e wait 1,64ms
+                                                            unção em wait 40us 
+                                                            e wait 1,64ms
   581 000001E6         ;EN como 1 para habilitar - EN -> PM2
   582 000001E6 4983            LDR              R1, =GPIO_PORTM_DATA_R ;Carrega
-                                                            -se o endereÃ§o
-  583 000001E8 6808            LDR              R0, [R1]    ; LÃª para carregar
-                                                             o valor anterior d
-                                                            a porta inteira
+                                                            -se o endereço
+  583 000001E8 6808            LDR              R0, [R1]    ; Lê para carregar 
+                                                            o valor anterior da
+                                                             porta inteira
   584 000001EA F040 0004       ORR              R0, R0, #2_00000100 ; Faz o OR 
                                                             bit a bit para mant
                                                             er os valores anter
@@ -1372,10 +1372,10 @@ ARM Macro Assembler    Page 22
   591 000001FE         
   592 000001FE         ;EN como 0 para desabilitar - EN -> PM2
   593 000001FE 497D            LDR              R1, =GPIO_PORTM_DATA_R ;Carrega
-                                                            -se o endereÃ§o
-  594 00000200 6808            LDR              R0, [R1]    ; LÃª para carregar
-                                                             o valor anterior d
-                                                            a porta inteira
+                                                            -se o endereço
+  594 00000200 6808            LDR              R0, [R1]    ; Lê para carregar 
+                                                            o valor anterior da
+                                                             porta inteira
   595 00000202 F020 0004       BIC              R0, R0, #2_00000100 ; Faz o AND
                                                              negado bit a bit p
                                                             ara manter os valor
@@ -1394,16 +1394,16 @@ ARM Macro Assembler    Page 22
   604 00000218         
   605 00000218         ; ------------------------------------------------------
                        -------------------------
-  606 00000218         ; FunÃ§Ã£o set_RS_0 - Seta o RS do LCD como 0
-  607 00000218         ; ParÃ¢metro de entrada: NÃ£o tem
-  608 00000218         ; ParÃ¢metro de saÃ­da: NÃ£o tem
+  606 00000218         ; Função set_RS_0 - Seta o RS do LCD como 0
+  607 00000218         ; Parâmetro de entrada: Não tem
+  608 00000218         ; Parâmetro de saída: Não tem
   609 00000218         set_RS_0
-  610 00000218         ;RS como 0 para enviar instruÃ§Ã£o - RS -> PM0 
+  610 00000218         ;RS como 0 para enviar instrução - RS -> PM0 
   611 00000218 4976            LDR              R1, =GPIO_PORTM_DATA_R ;Carrega
-                                                            -se o endereÃ§o
-  612 0000021A 6808            LDR              R0, [R1]    ; LÃª para carregar
-                                                             o valor anterior d
-                                                            a porta inteira
+                                                            -se o endereço
+  612 0000021A 6808            LDR              R0, [R1]    ; Lê para carregar 
+                                                            o valor anterior da
+                                                             porta inteira
   613 0000021C F020 0001       BIC              R0, R0, #2_00000001 ; Faz o AND
                                                              negado bit a bit p
                                                             ara manter os valor
@@ -1417,16 +1417,16 @@ ARM Macro Assembler    Page 22
   617 00000224         
   618 00000224         ; ------------------------------------------------------
                        -------------------------
-  619 00000224         ; FunÃ§Ã£o set_RS_1 - Seta o RS do LCD como 1
-  620 00000224         ; ParÃ¢metro de entrada: NÃ£o tem
-  621 00000224         ; ParÃ¢metro de saÃ­da: NÃ£o tem
+  619 00000224         ; Função set_RS_1 - Seta o RS do LCD como 1
+  620 00000224         ; Parâmetro de entrada: Não tem
+  621 00000224         ; Parâmetro de saída: Não tem
   622 00000224         set_RS_1
   623 00000224         ;RS como 1 para enviar dados - RS -> PM0 
   624 00000224 4973            LDR              R1, =GPIO_PORTM_DATA_R ;Carrega
-                                                            -se o endereÃ§o
-  625 00000226 6808            LDR              R0, [R1]    ; LÃª para carregar
-                                                             o valor anterior d
-                                                            a porta inteira
+                                                            -se o endereço
+  625 00000226 6808            LDR              R0, [R1]    ; Lê para carregar 
+                                                            o valor anterior da
+                                                             porta inteira
   626 00000228 F040 0001       ORR              R0, R0, #2_00000001 ; Faz o OR 
 
 
@@ -1445,10 +1445,10 @@ ARM Macro Assembler    Page 23
   630 00000230         
   631 00000230         ; ------------------------------------------------------
                        -------------------------
-  632 00000230         ; FunÃ§Ã£o envia_instrucao_lcd - Envia um comando para o
-                        LCD
-  633 00000230         ; ParÃ¢metro de entrada: R0 -> Comando a ser enviado
-  634 00000230         ; ParÃ¢metro de saÃ­da: NÃ£o tem 
+  632 00000230         ; Função envia_instrucao_lcd - Envia um comando para o L
+                       CD
+  633 00000230         ; Parâmetro de entrada: R0 -> Comando a ser enviado
+  634 00000230         ; Parâmetro de saída: Não tem 
   635 00000230         envia_instrucao_lcd
   636 00000230 4972            LDR              R1, =GPIO_PORTK_DATA_R
   637 00000232 6008            STR              R0, [R1]
@@ -1465,9 +1465,9 @@ ARM Macro Assembler    Page 23
   648 0000024A         
   649 0000024A         ; ------------------------------------------------------
                        -------------------------
-  650 0000024A         ; FunÃ§Ã£o envia_dado_lcd - Envia um dado para o LCD
-  651 0000024A         ; ParÃ¢metro de entrada: R1 -> Dado a ser enviado
-  652 0000024A         ; ParÃ¢metro de saÃ­da: NÃ£o tem 
+  650 0000024A         ; Função envia_dado_lcd - Envia um dado para o LCD
+  651 0000024A         ; Parâmetro de entrada: R1 -> Dado a ser enviado
+  652 0000024A         ; Parâmetro de saída: Não tem 
   653 0000024A         envia_dado_lcd
   654 0000024A 486C            LDR              R0, =GPIO_PORTK_DATA_R
   655 0000024C 6001            STR              R1, [R0]
@@ -1484,10 +1484,10 @@ ARM Macro Assembler    Page 23
   666 00000264         
   667 00000264         ; ------------------------------------------------------
                        -------------------------
-  668 00000264         ; FunÃ§Ã£o printArrayInLcd - Escreve uma string no LCD
-  669 00000264         ; ParÃ¢metro de entrada: R0 -> EndereÃ§o de memÃ³ria de 
-                       inÃ­cio da string
-  670 00000264         ; ParÃ¢metro de saÃ­da: NÃ£o tem 
+  668 00000264         ; Função printArrayInLcd - Escreve uma string no LCD
+  669 00000264         ; Parâmetro de entrada: R0 -> Endereço de memória de iní
+                       cio da string
+  670 00000264         ; Parâmetro de saída: Não tem 
   671 00000264         printArrayInLcd
   672 00000264         escrever_proximo
   673 00000264 B500            PUSH             { LR }
@@ -1514,9 +1514,9 @@ ARM Macro Assembler    Page 24
   688 0000028E         
   689 0000028E         ; ------------------------------------------------------
                        -------------------------
-  690 0000028E         ; FunÃ§Ã£o reset_LCD - Reseta o LCD
-  691 0000028E         ; ParÃ¢metro de entrada: NÃ£o tem
-  692 0000028E         ; ParÃ¢metro de saÃ­da: NÃ£o tem 
+  690 0000028E         ; Função reset_LCD - Reseta o LCD
+  691 0000028E         ; Parâmetro de entrada: Não tem
+  692 0000028E         ; Parâmetro de saída: Não tem 
   693 0000028E         reset_LCD
   694 0000028E         ; Reset LCD
   695 0000028E F04F 0001       MOV              R0, #0x01
@@ -1527,10 +1527,10 @@ ARM Macro Assembler    Page 24
   700 0000029E         
   701 0000029E         ; ------------------------------------------------------
                        -------------------------
-  702 0000029E         ; FunÃ§Ã£o pula_cursor_segunda_linha - Manda o cursor pa
-                       ra a segunda linha do LCD
-  703 0000029E         ; ParÃ¢metro de entrada: NÃ£o tem
-  704 0000029E         ; ParÃ¢metro de saÃ­da: NÃ£o tem 
+  702 0000029E         ; Função pula_cursor_segunda_linha - Manda o cursor para
+                        a segunda linha do LCD
+  703 0000029E         ; Parâmetro de entrada: Não tem
+  704 0000029E         ; Parâmetro de saída: Não tem 
   705 0000029E         pula_cursor_segunda_linha
   706 0000029E         ; Reset LCD
   707 0000029E F04F 00C0       MOV              R0, #0xC0
@@ -1540,9 +1540,9 @@ ARM Macro Assembler    Page 24
   711 000002AC 4770            BX               LR
   712 000002AE         ; ------------------------------------------------------
                        -------------------------
-  713 000002AE         ; FunÃ§Ã£o Escrever_cofre_travado
-  714 000002AE         ; ParÃ¢metro de entrada: NÃ£o tem
-  715 000002AE         ; ParÃ¢metro de saÃ­da: NÃ£o tem 
+  713 000002AE         ; Função Escrever_cofre_travado
+  714 000002AE         ; Parâmetro de entrada: Não tem
+  715 000002AE         ; Parâmetro de saída: Não tem 
   716 000002AE         escrever_caractere_senha
   717 000002AE B500            PUSH             { LR }
   718 000002B0 4853            LDR              R0, =caractere_senha
@@ -1551,9 +1551,9 @@ ARM Macro Assembler    Page 24
   721 000002BA 4770            BX               LR
   722 000002BC         ; ------------------------------------------------------
                        -------------------------
-  723 000002BC         ; FunÃ§Ã£o lcd_init - Inicializa o LCD
-  724 000002BC         ; ParÃ¢metro de entrada: NÃ£o tem
-  725 000002BC         ; ParÃ¢metro de saÃ­da: NÃ£o tem 
+  723 000002BC         ; Função lcd_init - Inicializa o LCD
+  724 000002BC         ; Parâmetro de entrada: Não tem
+  725 000002BC         ; Parâmetro de saída: Não tem 
   726 000002BC         lcd_init
   727 000002BC         ; Reset no LCD -----------------------------------------
                        ------
@@ -1567,15 +1567,15 @@ ARM Macro Assembler    Page 25
   729 000002BE F7FF FFFE       BL               reset_LCD
   730 000002C2 F85D EB04       POP              { LR }
   731 000002C6         
-  732 000002C6         ; Inicializa configuraÃ§Ã£o do LCD ---------------------
-                       --------------------------
+  732 000002C6         ; Inicializa configuração do LCD -----------------------
+                       ------------------------
   733 000002C6 F04F 0038       MOV              R0, #0x38
   734 000002CA B500            PUSH             { LR }
   735 000002CC F7FF FFB0       BL               envia_instrucao_lcd
   736 000002D0 F85D EB04       POP              { LR }
   737 000002D4         
-  738 000002D4         ; Inicializa configuraÃ§Ã£o do LCD ---------------------
-                       --------------------------
+  738 000002D4         ; Inicializa configuração do LCD -----------------------
+                       ------------------------
   739 000002D4 F04F 000F       MOV              R0, #0xF
   740 000002D8 B500            PUSH             { LR }
   741 000002DA F7FF FFA9       BL               envia_instrucao_lcd
@@ -1586,9 +1586,9 @@ ARM Macro Assembler    Page 25
   746 000002E4         
   747 000002E4         ; ------------------------------------------------------
                        -------------------------
-  748 000002E4         ; FunÃ§Ã£o Pisca_LED
-  749 000002E4         ; ParÃ¢metro de entrada: R5 --> Liga ou Desliga LEDs
-  750 000002E4         ; ParÃ¢metro de saÃ­da: NÃ£o tem
+  748 000002E4         ; Função Pisca_LED
+  749 000002E4         ; Parâmetro de entrada: R5 --> Liga ou Desliga LEDs
+  750 000002E4         ; Parâmetro de saída: Não tem
   751 000002E4         blinkLEDs
   752 000002E4 F1B5 3FFF       CMP              R5,#-1
   753 000002E8 D008            BEQ              apaga_Leds
@@ -1647,8 +1647,8 @@ ARM Macro Assembler    Page 26
   790 0000033A 4770            BX               LR          ;Retorno
   791 0000033C         
   792 0000033C                 ALIGN                        ; garante que o fim
-                                                             da seÃ§Ã£o estÃ¡ a
-                                                            linhada 
+                                                             da seção está alin
+                                                            hada 
   793 0000033C                 END                          ; fim do arquivo
               400FE608 
               400FEA08 

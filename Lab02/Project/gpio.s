@@ -445,7 +445,7 @@ EsperaGPIO  LDR     R1, [R0]						;La da memaria o conteado do endereao do regis
 														;nos bits 0 e 1
 			STR     R1, [R0]
 
-			LDR     R0, =GPIO_PORTL_PUR_R				;Carrega o endereÃ§o do PUR para a porta L
+			LDR     R0, =GPIO_PORTL_PUR_R				;Carrega o endereço do PUR para a porta L
 			MOV     R1, #2_00001111						;Habilitar funcionalidade digital de resistor de pull-up 
             STR     R1, [R0]
 			
@@ -537,20 +537,20 @@ readKeyboardEnd
 	BX LR
 
 ; -------------------------------------------------------------------------------
-; FunÃ§Ã£o ler_coluna
-; ParÃ¢metro de entrada: R0 -> nÃºmero da coluna que se quer ler - de 4 a 7
-; ParÃ¢metro de saÃ­da: NÃ£o tem
+; Função ler_coluna
+; Parâmetro de entrada: R0 -> número da coluna que se quer ler - de 4 a 7
+; Parâmetro de saída: Não tem
 ler_coluna
 	LDR R1, =GPIO_PORTM_DIR_R
-	LDR R2, [R1] ; LÃª para carregar o valor anterior da porta inteira
+	LDR R2, [R1] ; Lê para carregar o valor anterior da porta inteira
 	
-	; R3 vai ter como bit 1 o bit na posiÃ§Ã£o R0
+	; R3 vai ter como bit 1 o bit na posição R0
 	MOV R3, #1
 	LSL R3, R0
 
 	; Seta todas as colunas como entrada
 	BIC R2, #0xF0
-	; Seta a coluna passada por parÃ¢metro como saÃ­da
+	; Seta a coluna passada por parâmetro como saída
 	ORR R2, R3
 	STR R2, [R1] ; Escreve o novo valor da porta
 	
@@ -563,9 +563,9 @@ ler_coluna
 	BX LR
 
 ; -------------------------------------------------------------------------------
-; FunÃ§Ã£o ler_porta_L - LÃª o valor de PL3-PL0
-; ParÃ¢metro de entrada: NÃ£o tem
-; ParÃ¢metro de saÃ­da: NÃ£o tem
+; Função ler_porta_L - Lê o valor de PL3-PL0
+; Parâmetro de entrada: Não tem
+; Parâmetro de saída: Não tem
 ler_porta_L
 	LDR R1, =GPIO_PORTL_DATA_R
 	LDR R2, [R1] ; 
@@ -574,13 +574,13 @@ ler_porta_L
 	BX LR
 
 ; -------------------------------------------------------------------------------
-; FunÃ§Ã£o lcd_enable_and_wait - DÃ¡ um enable no LCD, espera por 2ms e dÃ¡ um disable e espera 2ms
-; ParÃ¢metro de entrada: NÃ£o tem
-; ParÃ¢metro de saÃ­da: NÃ£o tem
-lcd_enable_and_wait ;Depois dividir a funÃ§Ã£o em wait 40us e wait 1,64ms
+; Função lcd_enable_and_wait - Dá um enable no LCD, espera por 2ms e dá um disable e espera 2ms
+; Parâmetro de entrada: Não tem
+; Parâmetro de saída: Não tem
+lcd_enable_and_wait ;Depois dividir a função em wait 40us e wait 1,64ms
 	;EN como 1 para habilitar - EN -> PM2
-	LDR R1, =GPIO_PORTM_DATA_R ;Carrega-se o endereÃ§o
-	LDR R0, [R1] ; LÃª para carregar o valor anterior da porta inteira
+	LDR R1, =GPIO_PORTM_DATA_R ;Carrega-se o endereço
+	LDR R0, [R1] ; Lê para carregar o valor anterior da porta inteira
 	ORR R0, R0, #2_00000100 ; Faz o OR bit a bit para manter os valores anteriores e setar somente o bit
 	STR R0, [R1] ; Escreve o novo valor da porta
 	
@@ -590,8 +590,8 @@ lcd_enable_and_wait ;Depois dividir a funÃ§Ã£o em wait 40us e wait 1,64ms
 	POP { LR }
 	
 	;EN como 0 para desabilitar - EN -> PM2
-	LDR R1, =GPIO_PORTM_DATA_R ;Carrega-se o endereÃ§o
-	LDR R0, [R1] ; LÃª para carregar o valor anterior da porta inteira
+	LDR R1, =GPIO_PORTM_DATA_R ;Carrega-se o endereço
+	LDR R0, [R1] ; Lê para carregar o valor anterior da porta inteira
 	BIC R0, R0, #2_00000100 ; Faz o AND negado bit a bit para manter os valores anteriores e limpar somente o bit 0
 	STR R0, [R1] ; Escreve o novo valor da porta
 	
@@ -603,35 +603,35 @@ lcd_enable_and_wait ;Depois dividir a funÃ§Ã£o em wait 40us e wait 1,64ms
 	BX LR
 
 ; -------------------------------------------------------------------------------
-; FunÃ§Ã£o set_RS_0 - Seta o RS do LCD como 0
-; ParÃ¢metro de entrada: NÃ£o tem
-; ParÃ¢metro de saÃ­da: NÃ£o tem
+; Função set_RS_0 - Seta o RS do LCD como 0
+; Parâmetro de entrada: Não tem
+; Parâmetro de saída: Não tem
 set_RS_0
-	;RS como 0 para enviar instruÃ§Ã£o - RS -> PM0	
-	LDR R1, =GPIO_PORTM_DATA_R ;Carrega-se o endereÃ§o
-	LDR R0, [R1] ; LÃª para carregar o valor anterior da porta inteira
+	;RS como 0 para enviar instrução - RS -> PM0	
+	LDR R1, =GPIO_PORTM_DATA_R ;Carrega-se o endereço
+	LDR R0, [R1] ; Lê para carregar o valor anterior da porta inteira
 	BIC R0, R0, #2_00000001 ; Faz o AND negado bit a bit para manter os valores anteriores e limpar somente o bit 0
 	STR R0, [R1] ; Escreve o novo valor da porta
 	
 	BX LR
 
 ; -------------------------------------------------------------------------------
-; FunÃ§Ã£o set_RS_1 - Seta o RS do LCD como 1
-; ParÃ¢metro de entrada: NÃ£o tem
-; ParÃ¢metro de saÃ­da: NÃ£o tem
+; Função set_RS_1 - Seta o RS do LCD como 1
+; Parâmetro de entrada: Não tem
+; Parâmetro de saída: Não tem
 set_RS_1
 	;RS como 1 para enviar dados - RS -> PM0	
-	LDR R1, =GPIO_PORTM_DATA_R ;Carrega-se o endereÃ§o
-	LDR R0, [R1] ; LÃª para carregar o valor anterior da porta inteira
+	LDR R1, =GPIO_PORTM_DATA_R ;Carrega-se o endereço
+	LDR R0, [R1] ; Lê para carregar o valor anterior da porta inteira
 	ORR R0, R0, #2_00000001 ; Faz o OR bit a bit para manter os valores anteriores e setar somente o bit
 	STR R0, [R1] ; Escreve o novo valor da porta
 	
 	BX LR
 
 ; -------------------------------------------------------------------------------
-; FunÃ§Ã£o envia_instrucao_lcd - Envia um comando para o LCD
-; ParÃ¢metro de entrada: R0 -> Comando a ser enviado
-; ParÃ¢metro de saÃ­da: NÃ£o tem 
+; Função envia_instrucao_lcd - Envia um comando para o LCD
+; Parâmetro de entrada: R0 -> Comando a ser enviado
+; Parâmetro de saída: Não tem 
 envia_instrucao_lcd
 	LDR R1, =GPIO_PORTK_DATA_R
 	STR R0, [R1]
@@ -647,9 +647,9 @@ envia_instrucao_lcd
 	BX LR
 
 ; -------------------------------------------------------------------------------
-; FunÃ§Ã£o envia_dado_lcd - Envia um dado para o LCD
-; ParÃ¢metro de entrada: R1 -> Dado a ser enviado
-; ParÃ¢metro de saÃ­da: NÃ£o tem 
+; Função envia_dado_lcd - Envia um dado para o LCD
+; Parâmetro de entrada: R1 -> Dado a ser enviado
+; Parâmetro de saída: Não tem 
 envia_dado_lcd
 	LDR R0, =GPIO_PORTK_DATA_R
 	STR R1, [R0]
@@ -665,9 +665,9 @@ envia_dado_lcd
 	BX LR
 
 ; -------------------------------------------------------------------------------
-; FunÃ§Ã£o printArrayInLcd - Escreve uma string no LCD
-; ParÃ¢metro de entrada: R0 -> EndereÃ§o de memÃ³ria de inÃ­cio da string
-; ParÃ¢metro de saÃ­da: NÃ£o tem 
+; Função printArrayInLcd - Escreve uma string no LCD
+; Parâmetro de entrada: R0 -> Endereço de memória de início da string
+; Parâmetro de saída: Não tem 
 printArrayInLcd
 escrever_proximo
 	PUSH { LR }
@@ -687,9 +687,9 @@ printArrayInLcdEnd
 	BX LR
 
 ; -------------------------------------------------------------------------------
-; FunÃ§Ã£o reset_LCD - Reseta o LCD
-; ParÃ¢metro de entrada: NÃ£o tem
-; ParÃ¢metro de saÃ­da: NÃ£o tem 
+; Função reset_LCD - Reseta o LCD
+; Parâmetro de entrada: Não tem
+; Parâmetro de saída: Não tem 
 reset_LCD
 	; Reset LCD
 	MOV R0, #0x01
@@ -699,9 +699,9 @@ reset_LCD
 	BX LR
 	
 ; -------------------------------------------------------------------------------
-; FunÃ§Ã£o pula_cursor_segunda_linha - Manda o cursor para a segunda linha do LCD
-; ParÃ¢metro de entrada: NÃ£o tem
-; ParÃ¢metro de saÃ­da: NÃ£o tem 
+; Função pula_cursor_segunda_linha - Manda o cursor para a segunda linha do LCD
+; Parâmetro de entrada: Não tem
+; Parâmetro de saída: Não tem 
 pula_cursor_segunda_linha
 	; Reset LCD
 	MOV R0, #0xC0
@@ -710,9 +710,9 @@ pula_cursor_segunda_linha
 	POP { R1, LR }
 	BX LR
 ; -------------------------------------------------------------------------------
-; FunÃ§Ã£o Escrever_cofre_travado
-; ParÃ¢metro de entrada: NÃ£o tem
-; ParÃ¢metro de saÃ­da: NÃ£o tem 
+; Função Escrever_cofre_travado
+; Parâmetro de entrada: Não tem
+; Parâmetro de saída: Não tem 
 escrever_caractere_senha
 	PUSH { LR }
 	LDR R0, =caractere_senha
@@ -720,22 +720,22 @@ escrever_caractere_senha
 	POP { LR }
 	BX LR
 ; -------------------------------------------------------------------------------
-; FunÃ§Ã£o lcd_init - Inicializa o LCD
-; ParÃ¢metro de entrada: NÃ£o tem
-; ParÃ¢metro de saÃ­da: NÃ£o tem 
+; Função lcd_init - Inicializa o LCD
+; Parâmetro de entrada: Não tem
+; Parâmetro de saída: Não tem 
 lcd_init
 	; Reset no LCD -----------------------------------------------
 	PUSH { LR }
 	BL reset_LCD
 	POP { LR }
 	
-	; Inicializa configuraÃ§Ã£o do LCD -----------------------------------------------
+	; Inicializa configuração do LCD -----------------------------------------------
 	MOV R0, #0x38
 	PUSH { LR }
 	BL envia_instrucao_lcd
 	POP { LR }
 	
-	; Inicializa configuraÃ§Ã£o do LCD -----------------------------------------------
+	; Inicializa configuração do LCD -----------------------------------------------
 	MOV R0, #0xF
 	PUSH { LR }
 	BL envia_instrucao_lcd
@@ -745,9 +745,9 @@ lcd_init
 
 
 ; -------------------------------------------------------------------------------
-; FunÃ§Ã£o Pisca_LED
-; ParÃ¢metro de entrada: R5 --> Liga ou Desliga LEDs
-; ParÃ¢metro de saÃ­da: NÃ£o tem
+; Função Pisca_LED
+; Parâmetro de entrada: R5 --> Liga ou Desliga LEDs
+; Parâmetro de saída: Não tem
 blinkLEDs
 	CMP R5,#-1
 	BEQ apaga_Leds
@@ -789,5 +789,5 @@ ativa_Transistor
 	
 	BX LR									;Retorno
 
-    ALIGN                           ; garante que o fim da seÃ§Ã£o estÃ¡ alinhada 
+    ALIGN                           ; garante que o fim da seção está alinhada 
     END                             ; fim do arquivo

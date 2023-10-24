@@ -25,6 +25,7 @@ NO_BTNS_PRESSED EQU 0
 ;<var>	SPACE <tam>                        ; Declara uma variavel de nome <var>
                                            ; de <tam> bytes a partir da primeira 
                                            ; posicao da RAM		
+
 sysState    SPACE 0x1
 masterPword SPACE 0x4
 currPword   SPACE 0x4
@@ -307,6 +308,16 @@ InitilizeVars
 	LDR R1, =masterPword
 	MOV R2, #0x0304
 	MOVT R2, #0x0102
+	STR R2, [R1]
+	
+	MOV R2, #0
+	LDR R1, =sysState
+	STR R2, [R1]
+	LDR R1, =currPword
+	STR R2, [R1]
+	LDR R1, =guessPword
+	STR R2, [R1]
+	LDR R1, =lcdString
 	STR R2, [R1]
 	
 	MOV R7, #0 ; Iterator for passwords
