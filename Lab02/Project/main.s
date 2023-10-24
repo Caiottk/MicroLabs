@@ -315,7 +315,8 @@ InitilizeVars
 	STR R2, [R1]
 	
 	MOV R7, #0 ; Iterator for passwords
-	MOV R4, #50
+	MOV R8, #0 ; Iterator for LCD
+	MOV R9, #50
 	MOV R5, #1 ; blinkLeds input(ON/OFF)
 
 
@@ -362,10 +363,10 @@ Atualiza_LEDs
 	PUSH { LR }
 	BL blinkLEDs
 	POP { LR }
-	SUB R4, #1
-	CMP R4, #0
+	SUB R9, #1
+	CMP R9, #0
 	BNE Atualiza_LEDsEnd
-	MOV R4, #50
+	MOV R9, #50
 	PUSH { R8 }
 	MOV R8, #-1
 	MUL R5,R8
