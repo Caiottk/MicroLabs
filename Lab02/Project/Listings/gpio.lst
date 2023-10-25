@@ -937,7 +937,7 @@ ARM Macro Assembler    Page 15
   314 00000002         GPIO_Init
   315 00000002         ;=====================
   316 00000002         
-  317 00000002 48F3            LDR              R0, =SYSCTL_RCGCGPIO_R ;Carrega
+  317 00000002 48F6            LDR              R0, =SYSCTL_RCGCGPIO_R ;Carrega
                                                              o endereao do regi
                                                             strador RCGCGPIO
   318 00000004 F04F 0101       MOV              R1, #GPIO_PORTA ;Seta o bit da 
@@ -955,7 +955,7 @@ ARM Macro Assembler    Page 15
                                                             s no endereao do RC
                                                             GCGPIO
   326 00000022         
-  327 00000022 48EC            LDR              R0, =SYSCTL_PRGPIO_R ;Carrega o
+  327 00000022 48EF            LDR              R0, =SYSCTL_PRGPIO_R ;Carrega o
                                                              endereao do PRGPIO
                                                              para esperar os GP
                                                             IO ficarem prontos
@@ -992,52 +992,52 @@ ARM Macro Assembler    Page 16
                                                             trador para desabil
                                                             itar a funcao anala
                                                             gica
-  341 0000004A 48E3            LDR              R0, =GPIO_PORTA_AHB_AMSEL_R ;Ca
+  341 0000004A 48E6            LDR              R0, =GPIO_PORTA_AHB_AMSEL_R ;Ca
                                                             rrega o R0 com o en
                                                             dereao do AMSEL par
                                                             a a porta J
   342 0000004C 6001            STR              R1, [R0]    ;Guarda no registra
                                                             dor AMSEL da porta 
                                                             J da memaria
-  343 0000004E 48E3            LDR              R0, =GPIO_PORTJ_AHB_AMSEL_R ;Ca
+  343 0000004E 48E6            LDR              R0, =GPIO_PORTJ_AHB_AMSEL_R ;Ca
                                                             rrega o R0 com o en
                                                             dereao do AMSEL par
                                                             a a porta N
   344 00000050 6001            STR              R1, [R0]    ;Guarda no registra
                                                             dor AMSEL da porta 
                                                             N da memaria
-  345 00000052 48E3            LDR              R0, =GPIO_PORTK_AMSEL_R
+  345 00000052 48E6            LDR              R0, =GPIO_PORTK_AMSEL_R
   346 00000054 6001            STR              R1, [R0]
-  347 00000056 48E3            LDR              R0, =GPIO_PORTL_AMSEL_R
+  347 00000056 48E6            LDR              R0, =GPIO_PORTL_AMSEL_R
   348 00000058 6001            STR              R1, [R0]
-  349 0000005A 48E3            LDR              R0, =GPIO_PORTM_AMSEL_R
+  349 0000005A 48E6            LDR              R0, =GPIO_PORTM_AMSEL_R
   350 0000005C 6001            STR              R1, [R0]
-  351 0000005E 48E3            LDR              R0, =GPIO_PORTP_AMSEL_R
+  351 0000005E 48E6            LDR              R0, =GPIO_PORTP_AMSEL_R
   352 00000060 6001            STR              R1, [R0]
-  353 00000062 48E3            LDR              R0, =GPIO_PORTQ_AMSEL_R
+  353 00000062 48E6            LDR              R0, =GPIO_PORTQ_AMSEL_R
   354 00000064 6001            STR              R1, [R0]
   355 00000066         
   356 00000066         ; 3. Limpar PCTL para selecionar o GPIO
   357 00000066 F04F 0100       MOV              R1, #0x00   ;Colocar 0 no regis
                                                             trador para selecio
                                                             nar o modo GPIO
-  358 0000006A 48E2            LDR              R0, =GPIO_PORTA_AHB_PCTL_R ;Car
+  358 0000006A 48E5            LDR              R0, =GPIO_PORTA_AHB_PCTL_R ;Car
                                                             rega o R0 com o end
                                                             ereao do PCTL para 
                                                             a porta J
   359 0000006C 6001            STR              R1, [R0]    ;Guarda no registra
                                                             dor PCTL da porta J
                                                              da memaria
-  360 0000006E 48E2            LDR              R0, =GPIO_PORTJ_AHB_PCTL_R ;Car
+  360 0000006E 48E5            LDR              R0, =GPIO_PORTJ_AHB_PCTL_R ;Car
                                                             rega o R0 com o end
                                                             ereao do PCTL para 
                                                             a porta N
   361 00000070 6001            STR              R1, [R0]    ;Guarda no registra
                                                             dor PCTL da porta N
                                                              da memaria
-  362 00000072 48E2            LDR              R0, =GPIO_PORTK_PCTL_R
+  362 00000072 48E5            LDR              R0, =GPIO_PORTK_PCTL_R
   363 00000074 6001            STR              R1, [R0]
-  364 00000076 48E2            LDR              R0, =GPIO_PORTL_PCTL_R
+  364 00000076 48E5            LDR              R0, =GPIO_PORTL_PCTL_R
 
 
 
@@ -1045,15 +1045,15 @@ ARM Macro Assembler    Page 17
 
 
   365 00000078 6001            STR              R1, [R0]
-  366 0000007A 48E2            LDR              R0, =GPIO_PORTM_PCTL_R
+  366 0000007A 48E5            LDR              R0, =GPIO_PORTM_PCTL_R
   367 0000007C 6001            STR              R1, [R0]
-  368 0000007E 48E2            LDR              R0, =GPIO_PORTP_PCTL_R
+  368 0000007E 48E5            LDR              R0, =GPIO_PORTP_PCTL_R
   369 00000080 6001            STR              R1, [R0]
-  370 00000082 48E2            LDR              R0, =GPIO_PORTQ_PCTL_R
+  370 00000082 48E5            LDR              R0, =GPIO_PORTQ_PCTL_R
   371 00000084 6001            STR              R1, [R0]
   372 00000086         
   373 00000086         ; 4. DIR para 0 se for entrada, 1 se for saada
-  374 00000086 48E2            LDR              R0, =GPIO_PORTA_AHB_DIR_R ;Carr
+  374 00000086 48E5            LDR              R0, =GPIO_PORTA_AHB_DIR_R ;Carr
                                                             ega o R0 com o ende
                                                             reao do DIR para a 
                                                             porta N
@@ -1062,7 +1062,7 @@ ARM Macro Assembler    Page 17
                                                             dor
   377 0000008E         ; O certo era verificar os outros bits da PF para nao tr
                        ansformar entradas em saadas desnecessarias
-  378 0000008E 48E1            LDR              R0, =GPIO_PORTJ_AHB_DIR_R ;Carr
+  378 0000008E 48E4            LDR              R0, =GPIO_PORTJ_AHB_DIR_R ;Carr
                                                             ega o R0 com o ende
                                                             reao do DIR para a 
                                                             porta J
@@ -1072,19 +1072,19 @@ ARM Macro Assembler    Page 17
   380 00000094 6001            STR              R1, [R0]    ;Guarda no registra
                                                             dor PCTL da porta J
                                                              da memaria
-  381 00000096 48E0            LDR              R0, =GPIO_PORTK_DIR_R
+  381 00000096 48E3            LDR              R0, =GPIO_PORTK_DIR_R
   382 00000098 F04F 01FF       MOV              R1, #2_11111111
   383 0000009C 6001            STR              R1, [R0]
-  384 0000009E 48DF            LDR              R0, =GPIO_PORTL_DIR_R
+  384 0000009E 48E2            LDR              R0, =GPIO_PORTL_DIR_R
   385 000000A0 F04F 0100       MOV              R1, #0x00
   386 000000A4 6001            STR              R1, [R0]
-  387 000000A6 48DE            LDR              R0, =GPIO_PORTM_DIR_R
+  387 000000A6 48E1            LDR              R0, =GPIO_PORTM_DIR_R
   388 000000A8 F04F 01F7       MOV              R1, #2_11110111
   389 000000AC 6001            STR              R1, [R0]
-  390 000000AE 48DD            LDR              R0, =GPIO_PORTP_DIR_R
+  390 000000AE 48E0            LDR              R0, =GPIO_PORTP_DIR_R
   391 000000B0 F04F 0120       MOV              R1, #2_00100000
   392 000000B4 6001            STR              R1, [R0]
-  393 000000B6 48DC            LDR              R0, =GPIO_PORTQ_DIR_R
+  393 000000B6 48DF            LDR              R0, =GPIO_PORTQ_DIR_R
   394 000000B8 F04F 010F       MOV              R1, #2_00001111
   395 000000BC 6001            STR              R1, [R0]
   396 000000BE         
@@ -1093,15 +1093,15 @@ ARM Macro Assembler    Page 17
   399 000000BE F04F 0100       MOV              R1, #0x00   ;Colocar o valor 0 
                                                             para nao setar func
                                                             ao alternativa
-  400 000000C2 48DA            LDR              R0, =GPIO_PORTA_AHB_AFSEL_R ;Ca
+  400 000000C2 48DD            LDR              R0, =GPIO_PORTA_AHB_AFSEL_R ;Ca
                                                             rrega o endereao do
                                                              AFSEL da porta N
   401 000000C4 6001            STR              R1, [R0]    ;Escreve na porta
-  402 000000C6 48DA            LDR              R0, =GPIO_PORTJ_AHB_AFSEL_R ;Ca
+  402 000000C6 48DD            LDR              R0, =GPIO_PORTJ_AHB_AFSEL_R ;Ca
                                                             rrega o endereao do
                                                              AFSEL da porta J
   403 000000C8 6001            STR              R1, [R0]    ;Escreve na porta
-  404 000000CA 48DA            LDR              R0, =GPIO_PORTK_AFSEL_R
+  404 000000CA 48DD            LDR              R0, =GPIO_PORTK_AFSEL_R
   405 000000CC 6001            STR              R1, [R0]
 
 
@@ -1109,17 +1109,17 @@ ARM Macro Assembler    Page 17
 ARM Macro Assembler    Page 18 
 
 
-  406 000000CE 48DA            LDR              R0, =GPIO_PORTL_AFSEL_R
+  406 000000CE 48DD            LDR              R0, =GPIO_PORTL_AFSEL_R
   407 000000D0 6001            STR              R1, [R0]
-  408 000000D2 48DA            LDR              R0, =GPIO_PORTM_AFSEL_R
+  408 000000D2 48DD            LDR              R0, =GPIO_PORTM_AFSEL_R
   409 000000D4 6001            STR              R1, [R0]
-  410 000000D6 48DA            LDR              R0, =GPIO_PORTP_AFSEL_R
+  410 000000D6 48DD            LDR              R0, =GPIO_PORTP_AFSEL_R
   411 000000D8 6001            STR              R1, [R0]
-  412 000000DA 48DA            LDR              R0, =GPIO_PORTQ_AFSEL_R
+  412 000000DA 48DD            LDR              R0, =GPIO_PORTQ_AFSEL_R
   413 000000DC 6001            STR              R1, [R0]
   414 000000DE         
   415 000000DE         ; 6. Setar os bits de DEN para habilitar I/O digital
-  416 000000DE 48DA            LDR              R0, =GPIO_PORTA_AHB_DEN_R ;Carr
+  416 000000DE 48DD            LDR              R0, =GPIO_PORTA_AHB_DEN_R ;Carr
                                                             ega o endereao do D
                                                             EN
   417 000000E0 F04F 01F0       MOV              R1, #2_11110000 ;Ativa os pinos
@@ -1130,7 +1130,7 @@ ARM Macro Assembler    Page 18
                                                             cionalidade digital
                                                              
   419 000000E6         
-  420 000000E6 48D9            LDR              R0, =GPIO_PORTJ_AHB_DEN_R ;Carr
+  420 000000E6 48DC            LDR              R0, =GPIO_PORTJ_AHB_DEN_R ;Carr
                                                             ega o endereao do D
                                                             EN
   421 000000E8 F04F 0103       MOV              R1, #2_00000011 ;Ativa os pinos
@@ -1141,29 +1141,29 @@ ARM Macro Assembler    Page 18
                                                             cionalidade digital
                                                             
   423 000000EE         
-  424 000000EE 48D8            LDR              R0, =GPIO_PORTK_DEN_R
+  424 000000EE 48DB            LDR              R0, =GPIO_PORTK_DEN_R
   425 000000F0 F04F 01FF       MOV              R1, #2_11111111
   426 000000F4 6001            STR              R1, [R0]
   427 000000F6         
-  428 000000F6 48D7            LDR              R0, =GPIO_PORTL_DEN_R
+  428 000000F6 48DA            LDR              R0, =GPIO_PORTL_DEN_R
   429 000000F8 F04F 010F       MOV              R1, #2_00001111
   430 000000FC 6001            STR              R1, [R0]
   431 000000FE         
-  432 000000FE 48D6            LDR              R0, =GPIO_PORTM_DEN_R
+  432 000000FE 48D9            LDR              R0, =GPIO_PORTM_DEN_R
   433 00000100 F04F 01F7       MOV              R1, #2_11110111
   434 00000104 6001            STR              R1, [R0]
   435 00000106         
-  436 00000106 48D5            LDR              R0, =GPIO_PORTP_DEN_R
+  436 00000106 48D8            LDR              R0, =GPIO_PORTP_DEN_R
   437 00000108 F04F 0120       MOV              R1, #2_00100000
   438 0000010C 6001            STR              R1, [R0]
   439 0000010E         
-  440 0000010E 48D4            LDR              R0, =GPIO_PORTQ_DEN_R
+  440 0000010E 48D7            LDR              R0, =GPIO_PORTQ_DEN_R
   441 00000110 F04F 010F       MOV              R1, #2_00001111
   442 00000114 6001            STR              R1, [R0]
   443 00000116         
   444 00000116         ; 7. Para habilitar resistor de pull-up interno, setar P
                        UR para 1
-  445 00000116 48D3            LDR              R0, =GPIO_PORTJ_AHB_PUR_R ;Carr
+  445 00000116 48D6            LDR              R0, =GPIO_PORTJ_AHB_PUR_R ;Carr
                                                             ega o endereao do P
                                                             UR para a porta J
   446 00000118 F04F 0103       MOV              R1, #2_00000011 ;Habilitar func
@@ -1179,7 +1179,7 @@ ARM Macro Assembler    Page 19
   447 0000011C         ;nos bits 0 e 1
   448 0000011C 6001            STR              R1, [R0]
   449 0000011E         
-  450 0000011E 48D2            LDR              R0, =GPIO_PORTL_PUR_R ;Carrega 
+  450 0000011E 48D5            LDR              R0, =GPIO_PORTL_PUR_R ;Carrega 
                                                             o endereco do PUR p
                                                             ara a porta L
   451 00000120 F04F 010F       MOV              R1, #2_00001111 ;Habilitar func
@@ -1191,44 +1191,44 @@ ARM Macro Assembler    Page 19
   454 00000126         ; INTERRUPT SETTINGS
   455 00000126         
   456 00000126         ; Disable interrupt
-  457 00000126 48D1            LDR              R0, =GPIO_PORTJ_AHB_IM_R
+  457 00000126 48D4            LDR              R0, =GPIO_PORTJ_AHB_IM_R
   458 00000128 F04F 0100       MOV              R1, #0
   459 0000012C 6001            STR              R1, [R0]
   460 0000012E         
   461 0000012E         ; Border or level
-  462 0000012E 48D0            LDR              R0, =GPIO_PORTJ_AHB_IS_R
+  462 0000012E 48D3            LDR              R0, =GPIO_PORTJ_AHB_IS_R
   463 00000130 F04F 0100       MOV              R1, #0
   464 00000134 6001            STR              R1, [R0]
   465 00000136         
   466 00000136         ; Activate in 1 or 2 borders
-  467 00000136 48CF            LDR              R0, =GPIO_PORTJ_AHB_IBE_R
+  467 00000136 48D2            LDR              R0, =GPIO_PORTJ_AHB_IBE_R
   468 00000138 F04F 0100       MOV              R1, #0
   469 0000013C 6001            STR              R1, [R0]
   470 0000013E         
   471 0000013E         ; Activate in rising or lowering border 0 = lowering, 1 
                        = rising
-  472 0000013E 48CE            LDR              R0, =GPIO_PORTJ_AHB_IEV_R
+  472 0000013E 48D1            LDR              R0, =GPIO_PORTJ_AHB_IEV_R
   473 00000140 F04F 0102       MOV              R1, #2_10
   474 00000144 6001            STR              R1, [R0]
   475 00000146         
   476 00000146         ; Enable GPIORIS AND GPIOMIS reset
-  477 00000146 48CD            LDR              R0, =GPIO_PORTJ_AHB_ICR_R
+  477 00000146 48D0            LDR              R0, =GPIO_PORTJ_AHB_ICR_R
   478 00000148 F04F 0103       MOV              R1, #2_11
   479 0000014C 6001            STR              R1, [R0]
   480 0000014E         
   481 0000014E         ; Enable interrupt
-  482 0000014E 48C7            LDR              R0, =GPIO_PORTJ_AHB_IM_R
+  482 0000014E 48CA            LDR              R0, =GPIO_PORTJ_AHB_IM_R
   483 00000150 F04F 0103       MOV              R1, #2_11
   484 00000154 6001            STR              R1, [R0]
   485 00000156         
   486 00000156         ; Enable interrut in Nvidea
-  487 00000156 48CA            LDR              R0, =NVIC_EN1_R
+  487 00000156 48CD            LDR              R0, =NVIC_EN1_R
   488 00000158 F04F 0101       MOV              R1, #1
   489 0000015C EA4F 41C1       LSL              R1, R1, #19
   490 00000160 6001            STR              R1, [R0]
   491 00000162         
   492 00000162         ; Set port interrupt priority
-  493 00000162 48C8            LDR              R0, =NVIC_PRI12_R
+  493 00000162 48CB            LDR              R0, =NVIC_PRI12_R
   494 00000164 F04F 0105       MOV              R1, #5
   495 00000168 EA4F 7141       LSL              R1, R1, #29
   496 0000016C 6001            STR              R1, [R0]
@@ -1245,7 +1245,7 @@ ARM Macro Assembler    Page 20
   501 00000170         ; ------------------------------------------------------
                        -------------------------
   502 00000170         GPIOPortJ_Handler
-  503 00000170 48C2            LDR              R0, =GPIO_PORTJ_AHB_ICR_R
+  503 00000170 48C5            LDR              R0, =GPIO_PORTJ_AHB_ICR_R
   504 00000172 F04F 0103       MOV              R1, #2_11
   505 00000176 6001            STR              R1, [R0]
   506 00000178         
@@ -1271,457 +1271,456 @@ ARM Macro Assembler    Page 20
   524 00000196 4620            MOV              R0, R4
   525 00000198 B500            PUSH             { LR }
   526 0000019A F000 F854       BL               ler_coluna
-  527 0000019E         ;R0 -> valor da coluna lida
-  528 0000019E F000 F86E       BL               ler_porta_L
-  529 000001A2 F85D EB04       POP              { LR }
-  530 000001A6 2A0F            CMP              R2, #0xF
-  531 000001A8 D006            BEQ              depois_de_verificar_teclado
-  532 000001AA         tecla_pressionada
-  533 000001AA F04F 0301       MOV              R3, #1
-  534 000001AE FA03 F304       LSL              R3, R4
-  535 000001B2 EA42 0003       ORR              R0, R2, R3
-  536 000001B6 E007            B                decideValueToReturn
-  537 000001B8         depois_de_verificar_teclado
-  538 000001B8 2C07            CMP              R4, #7
-  539 000001BA BF04            ITT              EQ
-  540 000001BC 2000            MOVEQ            R0, #0
-  541 000001BE E002            BEQ              readKeyboardEnd
-  542 000001C0 F104 0401       ADD              R4, #1
-  543 000001C4 E7E7            B                verifica_teclado
-  544 000001C6         readKeyboardEnd
-  545 000001C6 4770            BX               LR
-  546 000001C8         
-  547 000001C8         decideValueToReturn
-  548 000001C8 281E            CMP              R0, #2_00011110 ; C1, L1
-  549 000001CA BF04            ITT              EQ
-  550 000001CC 2031            MOVEQ            R0, #'1'
-  551 000001CE E7FA            BEQ              readKeyboardEnd
-  552 000001D0 281D            CMP              R0, #2_00011101 ; C1, L2
-  553 000001D2 BF04            ITT              EQ
+  527 0000019E F000 F874       BL               ler_porta_L
+  528 000001A2 F85D EB04       POP              { LR }
+  529 000001A6 2A0F            CMP              R2, #0xF
+  530 000001A8 D006            BEQ              depois_de_verificar_teclado
+  531 000001AA         tecla_pressionada
+  532 000001AA F04F 0301       MOV              R3, #1
+  533 000001AE FA03 F304       LSL              R3, R4
+  534 000001B2 EA42 0003       ORR              R0, R2, R3
+  535 000001B6 E007            B                decideValueToReturn
+  536 000001B8         depois_de_verificar_teclado
+  537 000001B8 2C07            CMP              R4, #7
+  538 000001BA BF04            ITT              EQ
+  539 000001BC 2000            MOVEQ            R0, #0
+  540 000001BE E002            BEQ              readKeyboardEnd
+  541 000001C0 F104 0401       ADD              R4, #1
+  542 000001C4 E7E7            B                verifica_teclado
+  543 000001C6         readKeyboardEnd
+  544 000001C6 4770            BX               LR
+  545 000001C8         
+  546 000001C8         decideValueToReturn
+  547 000001C8 281E            CMP              R0, #2_00011110 ; C1, L1
+  548 000001CA BF04            ITT              EQ
+  549 000001CC 2031            MOVEQ            R0, #'1'
+  550 000001CE E7FA            BEQ              readKeyboardEnd
+  551 000001D0 281D            CMP              R0, #2_00011101 ; C1, L2
+  552 000001D2 BF04            ITT              EQ
+  553 000001D4 2034            MOVEQ            R0, #'4'
 
 
 
 ARM Macro Assembler    Page 21 
 
 
-  554 000001D4 2034            MOVEQ            R0, #'4'
-  555 000001D6 E7F6            BEQ              readKeyboardEnd
-  556 000001D8 281B            CMP              R0, #2_00011011 ; C1, L3
-  557 000001DA BF04            ITT              EQ
-  558 000001DC 2037            MOVEQ            R0, #'7'
-  559 000001DE E7F2            BEQ              readKeyboardEnd
-  560 000001E0 2817            CMP              R0, #2_00010111 ; C1, L4
-  561 000001E2 BF04            ITT              EQ
-  562 000001E4 202A            MOVEQ            R0, #'*'
-  563 000001E6 E7EE            BEQ              readKeyboardEnd
-  564 000001E8 282E            CMP              R0, #2_00101110 ; C2, L1
-  565 000001EA BF04            ITT              EQ
-  566 000001EC 2032            MOVEQ            R0, #'2'
-  567 000001EE E7EA            BEQ              readKeyboardEnd
-  568 000001F0 282D            CMP              R0, #2_00101101 ; C2, L2
-  569 000001F2 BF04            ITT              EQ
-  570 000001F4 2035            MOVEQ            R0, #'5'
-  571 000001F6 E7E6            BEQ              readKeyboardEnd
-  572 000001F8 282B            CMP              R0, #2_00101011 ; C2, L3
-  573 000001FA BF04            ITT              EQ
-  574 000001FC 2038            MOVEQ            R0, #'8'
-  575 000001FE E7E2            BEQ              readKeyboardEnd
-  576 00000200 2827            CMP              R0, #2_00100111 ; C2, L4
-  577 00000202 BF04            ITT              EQ
-  578 00000204 2030            MOVEQ            R0, #'0'
-  579 00000206 E7DE            BEQ              readKeyboardEnd
-  580 00000208 284E            CMP              R0, #2_01001110 ; C3, L1
-  581 0000020A BF04            ITT              EQ
-  582 0000020C 2033            MOVEQ            R0, #'3'
-  583 0000020E E7DA            BEQ              readKeyboardEnd
-  584 00000210 284D            CMP              R0, #2_01001101 ; C3, L2
-  585 00000212 BF04            ITT              EQ
-  586 00000214 2036            MOVEQ            R0, #'6'
-  587 00000216 E7D6            BEQ              readKeyboardEnd
-  588 00000218 284B            CMP              R0, #2_01001011 ; C3, L3
-  589 0000021A BF04            ITT              EQ
-  590 0000021C 2039            MOVEQ            R0, #'9'
-  591 0000021E E7D2            BEQ              readKeyboardEnd
-  592 00000220 2847            CMP              R0, #2_01000111 ; C3, L4
-  593 00000222 BF04            ITT              EQ
-  594 00000224 2023            MOVEQ            R0, #'#'
-  595 00000226 E7CE            BEQ              readKeyboardEnd
-  596 00000228 288E            CMP              R0, #2_10001110 ; C4, L1
-  597 0000022A BF04            ITT              EQ
-  598 0000022C 2041            MOVEQ            R0, #'A'
-  599 0000022E E7CA            BEQ              readKeyboardEnd
-  600 00000230 288D            CMP              R0, #2_10001101 ; C4, L2
-  601 00000232 BF04            ITT              EQ
-  602 00000234 2042            MOVEQ            R0, #'B'
-  603 00000236 E7C6            BEQ              readKeyboardEnd
-  604 00000238 288B            CMP              R0, #2_10001011 ; C4, L3
-  605 0000023A BF04            ITT              EQ
-  606 0000023C 2043            MOVEQ            R0, #'C'
-  607 0000023E E7C2            BEQ              readKeyboardEnd
-  608 00000240 F04F 0044       MOV              R0, #'D'
-  609 00000244 E7BF            B                readKeyboardEnd
-  610 00000246         ; ------------------------------------------------------
+  554 000001D6 E7F6            BEQ              readKeyboardEnd
+  555 000001D8 281B            CMP              R0, #2_00011011 ; C1, L3
+  556 000001DA BF04            ITT              EQ
+  557 000001DC 2037            MOVEQ            R0, #'7'
+  558 000001DE E7F2            BEQ              readKeyboardEnd
+  559 000001E0 2817            CMP              R0, #2_00010111 ; C1, L4
+  560 000001E2 BF04            ITT              EQ
+  561 000001E4 202A            MOVEQ            R0, #'*'
+  562 000001E6 E7EE            BEQ              readKeyboardEnd
+  563 000001E8 282E            CMP              R0, #2_00101110 ; C2, L1
+  564 000001EA BF04            ITT              EQ
+  565 000001EC 2032            MOVEQ            R0, #'2'
+  566 000001EE E7EA            BEQ              readKeyboardEnd
+  567 000001F0 282D            CMP              R0, #2_00101101 ; C2, L2
+  568 000001F2 BF04            ITT              EQ
+  569 000001F4 2035            MOVEQ            R0, #'5'
+  570 000001F6 E7E6            BEQ              readKeyboardEnd
+  571 000001F8 282B            CMP              R0, #2_00101011 ; C2, L3
+  572 000001FA BF04            ITT              EQ
+  573 000001FC 2038            MOVEQ            R0, #'8'
+  574 000001FE E7E2            BEQ              readKeyboardEnd
+  575 00000200 2827            CMP              R0, #2_00100111 ; C2, L4
+  576 00000202 BF04            ITT              EQ
+  577 00000204 2030            MOVEQ            R0, #'0'
+  578 00000206 E7DE            BEQ              readKeyboardEnd
+  579 00000208 284E            CMP              R0, #2_01001110 ; C3, L1
+  580 0000020A BF04            ITT              EQ
+  581 0000020C 2033            MOVEQ            R0, #'3'
+  582 0000020E E7DA            BEQ              readKeyboardEnd
+  583 00000210 284D            CMP              R0, #2_01001101 ; C3, L2
+  584 00000212 BF04            ITT              EQ
+  585 00000214 2036            MOVEQ            R0, #'6'
+  586 00000216 E7D6            BEQ              readKeyboardEnd
+  587 00000218 284B            CMP              R0, #2_01001011 ; C3, L3
+  588 0000021A BF04            ITT              EQ
+  589 0000021C 2039            MOVEQ            R0, #'9'
+  590 0000021E E7D2            BEQ              readKeyboardEnd
+  591 00000220 2847            CMP              R0, #2_01000111 ; C3, L4
+  592 00000222 BF04            ITT              EQ
+  593 00000224 2023            MOVEQ            R0, #'#'
+  594 00000226 E7CE            BEQ              readKeyboardEnd
+  595 00000228 288E            CMP              R0, #2_10001110 ; C4, L1
+  596 0000022A BF04            ITT              EQ
+  597 0000022C 2041            MOVEQ            R0, #'A'
+  598 0000022E E7CA            BEQ              readKeyboardEnd
+  599 00000230 288D            CMP              R0, #2_10001101 ; C4, L2
+  600 00000232 BF04            ITT              EQ
+  601 00000234 2042            MOVEQ            R0, #'B'
+  602 00000236 E7C6            BEQ              readKeyboardEnd
+  603 00000238 288B            CMP              R0, #2_10001011 ; C4, L3
+  604 0000023A BF04            ITT              EQ
+  605 0000023C 2043            MOVEQ            R0, #'C'
+  606 0000023E E7C2            BEQ              readKeyboardEnd
+  607 00000240 F04F 0044       MOV              R0, #'D'
+  608 00000244 E7BF            B                readKeyboardEnd
+  609 00000246         ; ------------------------------------------------------
                        -------------------------
-  611 00000246         ; Funcao ler_coluna
+  610 00000246         ; Funcao ler_coluna
+  611 00000246         ; Parametro de entrada: R0 -> numero da coluna que se qu
 
 
 
 ARM Macro Assembler    Page 22 
 
 
-  612 00000246         ; Parametro de entrada: R0 -> numero da coluna que se qu
                        er ler - de 4 a 7
-  613 00000246         ; Parametro de saida: Nao tem
-  614 00000246         ler_coluna
-  615 00000246 4976            LDR              R1, =GPIO_PORTM_DIR_R
-  616 00000248         
-  617 00000248         ; R3 vai ter como bit 1 o bit na posicao R0
-  618 00000248 F04F 0301       MOV              R3, #1
-  619 0000024C FA03 F300       LSL              R3, R0
-  620 00000250 680A            LDR              R2, [R1]
-  621 00000252 EA43 0302       ORR              R3, R2
-  622 00000256         
-  623 00000256 600B            STR              R3, [R1]    ; Escreve o novo va
+  612 00000246         ; Parametro de saida: Nao tem
+  613 00000246         ler_coluna
+  614 00000246 4979            LDR              R1, =GPIO_PORTM_DIR_R
+  615 00000248         
+  616 00000248         ; R3 vai ter como bit 1 o bit na posicao R0
+  617 00000248 F04F 0301       MOV              R3, #1
+  618 0000024C FA03 F300       LSL              R3, R0
+  619 00000250 680A            LDR              R2, [R1]
+  620 00000252 F002 020F       AND              R2, #0x0F
+  621 00000256 EA43 0302       ORR              R3, R2
+  622 0000025A         
+  623 0000025A 600B            STR              R3, [R1]    ; Escreve o novo va
                                                             lor da porta 0 ENTR
                                                             ADA 1 SAIDA
-  624 00000258         
-  625 00000258         ; Escreve 0 na coluna escolhida
-  626 00000258 498B            LDR              R1, =GPIO_PORTM_DATA_R
-  627 0000025A 680A            LDR              R2, [R1]
-  628 0000025C F002 020F       AND              R2, #0x0F
-  629 00000260 F1C3 0300       NEG              R3, R3
-  630 00000264 F003 03F0       AND              R3, #0xF0
-  631 00000268 EA42 0203       ORR              R2, R3      ; Faz o AND negado 
-                                                            bit a bit para mant
-                                                            er os valores anter
-                                                            iores e limpar some
-                                                            nte PM7
-  632 0000026C 600A            STR              R2, [R1]
-  633 0000026E         
-  634 0000026E B501            PUSH{LR,         R0}
-  635 00000270 F04F 0014       MOV              R0, #20
-  636 00000274 F7FF FFFE       BL               SysTick_Wait1ms
-  637 00000278 E8BD 4001       POP{R0,          LR}
-  638 0000027C         
-  639 0000027C 4770            BX               LR
-  640 0000027E         
-  641 0000027E         ; ------------------------------------------------------
+  624 0000025C         
+  625 0000025C         ; Escreve 0 na coluna escolhida
+  626 0000025C 498D            LDR              R1, =GPIO_PORTM_DATA_R
+  627 0000025E 680A            LDR              R2, [R1]
+  628 00000260 F002 020F       AND              R2, #0x0F
+  629 00000264 F04F 0301       MOV              R3, #1
+  630 00000268 FA03 F300       LSL              R3, R0
+  631 0000026C F083 03F0       EOR              R3, R3, #0xF0
+  632 00000270 F003 03F0       AND              R3, #0xF0
+  633 00000274 EA42 0203       ORR              R2, R3      ; R2 = R2 & 0x0F | 
+                                                            R3 & 0xF0
+  634 00000278 600A            STR              R2, [R1]
+  635 0000027A         
+  636 0000027A B501            PUSH{LR,         R0}
+  637 0000027C F04F 000A       MOV              R0, #10
+  638 00000280 F7FF FFFE       BL               SysTick_Wait1ms
+  639 00000284 E8BD 4001       POP{R0,          LR}
+  640 00000288         
+  641 00000288 4770            BX               LR
+  642 0000028A         
+  643 0000028A         ; ------------------------------------------------------
                        -------------------------
-  642 0000027E         ; Funcao ler_porta_L - Le o valor de PL3-PL0
-  643 0000027E         ; Parametro de entrada: Nao tem
-  644 0000027E         ; Parametro de saida: Nao tem
-  645 0000027E         ler_porta_L
-  646 0000027E 4983            LDR              R1, =GPIO_PORTL_DATA_R
-  647 00000280 680A            LDR              R2, [R1]    ; 
-  648 00000282 F002 020F       AND              R2, #0x0F
-  649 00000286         
-  650 00000286 4770            BX               LR
-  651 00000288         
-  652 00000288         ; ------------------------------------------------------
+  644 0000028A         ; Funcao ler_porta_L - Le o valor de PL3-PL0
+  645 0000028A         ; Parametro de entrada: Nao tem
+  646 0000028A         ; Parametro de saida: Nao tem
+  647 0000028A         ler_porta_L
+  648 0000028A 4983            LDR              R1, =GPIO_PORTL_DATA_R
+  649 0000028C 680A            LDR              R2, [R1]    ; 
+  650 0000028E F002 020F       AND              R2, #0x0F
+  651 00000292         
+  652 00000292 4770            BX               LR
+  653 00000294         
+  654 00000294         ; ------------------------------------------------------
                        -------------------------
-  653 00000288         ; Funcao lcd_enable_and_wait - Da um enable no LCD, espe
+  655 00000294         ; Funcao lcd_enable_and_wait - Da um enable no LCD, espe
                        ra por 2ms e da um disable e espera 2ms
-  654 00000288         ; Parametro de entrada: Nao tem
-  655 00000288         ; Parametro de saida: Nao tem
-  656 00000288         lcd_enable_and_wait                  ;Depois dividir a f
+  656 00000294         ; Parametro de entrada: Nao tem
+  657 00000294         ; Parametro de saida: Nao tem
+  658 00000294         lcd_enable_and_wait                  ;Depois dividir a f
                                                             uncao em wait 40us 
                                                             e wait 1,64ms
-  657 00000288         ;EN como 1 para habilitar - EN -> PM2
-  658 00000288 497F            LDR              R1, =GPIO_PORTM_DATA_R ;Carrega
+  659 00000294         ;EN como 1 para habilitar - EN -> PM2
+  660 00000294 497F            LDR              R1, =GPIO_PORTM_DATA_R ;Carrega
+                                                            -se o endereco
 
 
 
 ARM Macro Assembler    Page 23 
 
 
-                                                            -se o endereco
-  659 0000028A 6808            LDR              R0, [R1]    ; Le para carregar 
+  661 00000296 6808            LDR              R0, [R1]    ; Le para carregar 
                                                             o valor anterior da
                                                              porta inteira
-  660 0000028C F040 0004       ORR              R0, R0, #2_00000100 ; Faz o OR 
+  662 00000298 F040 0004       ORR              R0, R0, #2_00000100 ; Faz o OR 
                                                             bit a bit para mant
                                                             er os valores anter
                                                             iores e setar somen
                                                             te o bit
-  661 00000290 6008            STR              R0, [R1]    ; Escreve o novo va
+  663 0000029C 6008            STR              R0, [R1]    ; Escreve o novo va
                                                             lor da porta
-  662 00000292         
-  663 00000292 B500            PUSH             { LR }
-  664 00000294 F04F 000A       MOV              R0, #10
-  665 00000298 F7FF FFFE       BL               SysTick_Wait1us
-  666 0000029C F85D EB04       POP              { LR }
-  667 000002A0         
-  668 000002A0         ;EN como 0 para desabilitar - EN -> PM2
-  669 000002A0 4979            LDR              R1, =GPIO_PORTM_DATA_R ;Carrega
+  664 0000029E         
+  665 0000029E B500            PUSH             { LR }
+  666 000002A0 F04F 000A       MOV              R0, #10
+  667 000002A4 F7FF FFFE       BL               SysTick_Wait1us
+  668 000002A8 F85D EB04       POP              { LR }
+  669 000002AC         
+  670 000002AC         ;EN como 0 para desabilitar - EN -> PM2
+  671 000002AC 4979            LDR              R1, =GPIO_PORTM_DATA_R ;Carrega
                                                             -se o endereco
-  670 000002A2 6808            LDR              R0, [R1]    ; Le para carregar 
+  672 000002AE 6808            LDR              R0, [R1]    ; Le para carregar 
                                                             o valor anterior da
                                                              porta inteira
-  671 000002A4 F020 0004       BIC              R0, R0, #2_00000100 ; Faz o AND
+  673 000002B0 F020 0004       BIC              R0, R0, #2_00000100 ; Faz o AND
                                                              negado bit a bit p
                                                             ara manter os valor
                                                             es anteriores e lim
                                                             par somente o bit 0
                                                             
-  672 000002A8 6008            STR              R0, [R1]    ; Escreve o novo va
+  674 000002B4 6008            STR              R0, [R1]    ; Escreve o novo va
                                                             lor da porta
-  673 000002AA         
-  674 000002AA B500            PUSH             { LR }
-  675 000002AC F04F 0002       MOV              R0, #2
-  676 000002B0 F7FF FFFE       BL               SysTick_Wait1ms
-  677 000002B4 F85D EB04       POP              { LR }
-  678 000002B8         
-  679 000002B8 4770            BX               LR
-  680 000002BA         
-  681 000002BA         ; ------------------------------------------------------
+  675 000002B6         
+  676 000002B6 B500            PUSH             { LR }
+  677 000002B8 F04F 0002       MOV              R0, #2
+  678 000002BC F7FF FFFE       BL               SysTick_Wait1ms
+  679 000002C0 F85D EB04       POP              { LR }
+  680 000002C4         
+  681 000002C4 4770            BX               LR
+  682 000002C6         
+  683 000002C6         ; ------------------------------------------------------
                        -------------------------
-  682 000002BA         ; Funcao set_RS_0 - Seta o RS do LCD como 0
-  683 000002BA         ; Parametro de entrada: Nao tem
-  684 000002BA         ; Parametro de saida: Nao tem
-  685 000002BA         set_RS_0
-  686 000002BA         ;RS como 0 para enviar instrucao - RS -> PM0 
-  687 000002BA 4973            LDR              R1, =GPIO_PORTM_DATA_R ;Carrega
+  684 000002C6         ; Funcao set_RS_0 - Seta o RS do LCD como 0
+  685 000002C6         ; Parametro de entrada: Nao tem
+  686 000002C6         ; Parametro de saida: Nao tem
+  687 000002C6         set_RS_0
+  688 000002C6         ;RS como 0 para enviar instrucao - RS -> PM0 
+  689 000002C6 4973            LDR              R1, =GPIO_PORTM_DATA_R ;Carrega
                                                             -se o endereco
-  688 000002BC 6808            LDR              R0, [R1]    ; Le para carregar 
+  690 000002C8 6808            LDR              R0, [R1]    ; Le para carregar 
                                                             o valor anterior da
                                                              porta inteira
-  689 000002BE F020 0001       BIC              R0, R0, #2_00000001 ; Faz o AND
+  691 000002CA F020 0001       BIC              R0, R0, #2_00000001 ; Faz o AND
                                                              negado bit a bit p
                                                             ara manter os valor
                                                             es anteriores e lim
                                                             par somente o bit 0
                                                             
-  690 000002C2 6008            STR              R0, [R1]    ; Escreve o novo va
+  692 000002CE 6008            STR              R0, [R1]    ; Escreve o novo va
                                                             lor da porta
+  693 000002D0         
 
 
 
 ARM Macro Assembler    Page 24 
 
 
-  691 000002C4         
-  692 000002C4 4770            BX               LR
-  693 000002C6         
-  694 000002C6         ; ------------------------------------------------------
+  694 000002D0 4770            BX               LR
+  695 000002D2         
+  696 000002D2         ; ------------------------------------------------------
                        -------------------------
-  695 000002C6         ; Funcao set_RS_1 - Seta o RS do LCD como 1
-  696 000002C6         ; Parametro de entrada: Nao tem
-  697 000002C6         ; Parametro de saida: Nao tem
-  698 000002C6         set_RS_1
-  699 000002C6         ;RS como 1 para enviar dados - RS -> PM0 
-  700 000002C6 4970            LDR              R1, =GPIO_PORTM_DATA_R ;Carrega
+  697 000002D2         ; Funcao set_RS_1 - Seta o RS do LCD como 1
+  698 000002D2         ; Parametro de entrada: Nao tem
+  699 000002D2         ; Parametro de saida: Nao tem
+  700 000002D2         set_RS_1
+  701 000002D2         ;RS como 1 para enviar dados - RS -> PM0 
+  702 000002D2 4970            LDR              R1, =GPIO_PORTM_DATA_R ;Carrega
                                                             -se o endereco
-  701 000002C8 6808            LDR              R0, [R1]    ; Le para carregar 
+  703 000002D4 6808            LDR              R0, [R1]    ; Le para carregar 
                                                             o valor anterior da
                                                              porta inteira
-  702 000002CA F040 0001       ORR              R0, R0, #2_00000001 ; Faz o OR 
+  704 000002D6 F040 0001       ORR              R0, R0, #2_00000001 ; Faz o OR 
                                                             bit a bit para mant
                                                             er os valores anter
                                                             iores e setar somen
                                                             te o bit
-  703 000002CE 6008            STR              R0, [R1]    ; Escreve o novo va
+  705 000002DA 6008            STR              R0, [R1]    ; Escreve o novo va
                                                             lor da porta
-  704 000002D0         
-  705 000002D0 4770            BX               LR
-  706 000002D2         
-  707 000002D2         ; ------------------------------------------------------
+  706 000002DC         
+  707 000002DC 4770            BX               LR
+  708 000002DE         
+  709 000002DE         ; ------------------------------------------------------
                        -------------------------
-  708 000002D2         ; Funcao envia_instrucao_lcd - Envia um comando para o L
+  710 000002DE         ; Funcao envia_instrucao_lcd - Envia um comando para o L
                        CD
-  709 000002D2         ; Parametro de entrada: R0 -> Comando a ser enviado
-  710 000002D2         ; Parametro de saida: Nao tem 
-  711 000002D2         envia_instrucao_lcd
-  712 000002D2 496F            LDR              R1, =GPIO_PORTK_DATA_R
-  713 000002D4 6008            STR              R0, [R1]
-  714 000002D6         
-  715 000002D6 B500            PUSH             { LR }
-  716 000002D8 F7FF FFEF       BL               set_RS_0
-  717 000002DC F85D EB04       POP              { LR }
-  718 000002E0         
-  719 000002E0 B500            PUSH             { LR }
-  720 000002E2 F7FF FFD1       BL               lcd_enable_and_wait
-  721 000002E6 F85D EB04       POP              { LR }
-  722 000002EA         
-  723 000002EA 4770            BX               LR
-  724 000002EC         
-  725 000002EC         ; ------------------------------------------------------
+  711 000002DE         ; Parametro de entrada: R0 -> Comando a ser enviado
+  712 000002DE         ; Parametro de saida: Nao tem 
+  713 000002DE         envia_instrucao_lcd
+  714 000002DE 496F            LDR              R1, =GPIO_PORTK_DATA_R
+  715 000002E0 6008            STR              R0, [R1]
+  716 000002E2         
+  717 000002E2 B500            PUSH             { LR }
+  718 000002E4 F7FF FFEF       BL               set_RS_0
+  719 000002E8 F85D EB04       POP              { LR }
+  720 000002EC         
+  721 000002EC B500            PUSH             { LR }
+  722 000002EE F7FF FFD1       BL               lcd_enable_and_wait
+  723 000002F2 F85D EB04       POP              { LR }
+  724 000002F6         
+  725 000002F6 4770            BX               LR
+  726 000002F8         
+  727 000002F8         ; ------------------------------------------------------
                        -------------------------
-  726 000002EC         ; Funcao envia_dado_lcd - Envia um dado para o LCD
-  727 000002EC         ; Parametro de entrada: R1 -> Dado a ser enviado
-  728 000002EC         ; Parametro de saida: Nao tem 
-  729 000002EC         envia_dado_lcd
-  730 000002EC 4868            LDR              R0, =GPIO_PORTK_DATA_R
-  731 000002EE 6001            STR              R1, [R0]
-  732 000002F0         
-  733 000002F0 B500            PUSH             { LR }
-  734 000002F2 F7FF FFE8       BL               set_RS_1
-  735 000002F6 F85D EB04       POP              { LR }
-  736 000002FA         
-  737 000002FA B500            PUSH             { LR }
+  728 000002F8         ; Funcao envia_dado_lcd - Envia um dado para o LCD
+  729 000002F8         ; Parametro de entrada: R1 -> Dado a ser enviado
+  730 000002F8         ; Parametro de saida: Nao tem 
+  731 000002F8         envia_dado_lcd
+  732 000002F8 4868            LDR              R0, =GPIO_PORTK_DATA_R
+  733 000002FA 6001            STR              R1, [R0]
+  734 000002FC         
+  735 000002FC B500            PUSH             { LR }
+  736 000002FE F7FF FFE8       BL               set_RS_1
+  737 00000302 F85D EB04       POP              { LR }
+  738 00000306         
+  739 00000306 B500            PUSH             { LR }
+  740 00000308 F7FF FFC4       BL               lcd_enable_and_wait
 
 
 
 ARM Macro Assembler    Page 25 
 
 
-  738 000002FC F7FF FFC4       BL               lcd_enable_and_wait
-  739 00000300 F85D EB04       POP              { LR }
-  740 00000304         
-  741 00000304 4770            BX               LR
-  742 00000306         
-  743 00000306         ; ------------------------------------------------------
+  741 0000030C F85D EB04       POP              { LR }
+  742 00000310         
+  743 00000310 4770            BX               LR
+  744 00000312         
+  745 00000312         ; ------------------------------------------------------
                        -------------------------
-  744 00000306         ; Funcao printArrayInLcd - Escreve uma string no LCD
-  745 00000306         ; Parametro de entrada: R0 -> Endereco de memoria de ini
+  746 00000312         ; Funcao printArrayInLcd - Escreve uma string no LCD
+  747 00000312         ; Parametro de entrada: R0 -> Endereco de memoria de ini
                        cio da string
-  746 00000306         ; Parametro de saida: Nao tem 
-  747 00000306         printArrayInLcd
-  748 00000306 460A            MOV              R2, R1
-  749 00000308         escrever_proximo
-  750 00000308 F810 1B01       LDRB             R1, [R0], #1
-  751 0000030C B501            PUSH             { LR, R0 }
-  752 0000030E F7FF FFED       BL               envia_dado_lcd
-  753 00000312 E8BD 4001       POP              { R0, LR }
-  754 00000316 F1A2 0201       SUB              R2, #1
-  755 0000031A 2A00            CMP              R2, #0
-  756 0000031C D000            BEQ              printArrayInLcdEnd
-  757 0000031E E7F3            B                escrever_proximo
-  758 00000320         printArrayInLcdEnd
-  759 00000320 4770            BX               LR
-  760 00000322         
-  761 00000322         ; ------------------------------------------------------
+  748 00000312         ; Parametro de saida: Nao tem 
+  749 00000312         printArrayInLcd
+  750 00000312 460A            MOV              R2, R1
+  751 00000314         escrever_proximo
+  752 00000314 F810 1B01       LDRB             R1, [R0], #1
+  753 00000318 B501            PUSH             { LR, R0 }
+  754 0000031A F7FF FFED       BL               envia_dado_lcd
+  755 0000031E E8BD 4001       POP              { R0, LR }
+  756 00000322 F1A2 0201       SUB              R2, #1
+  757 00000326 2A00            CMP              R2, #0
+  758 00000328 D000            BEQ              printArrayInLcdEnd
+  759 0000032A E7F3            B                escrever_proximo
+  760 0000032C         printArrayInLcdEnd
+  761 0000032C 4770            BX               LR
+  762 0000032E         
+  763 0000032E         ; ------------------------------------------------------
                        -------------------------
-  762 00000322         ; Funcao reset_LCD - Reseta o LCD
-  763 00000322         ; Parametro de entrada: Nao tem
-  764 00000322         ; Parametro de saida: Nao tem 
-  765 00000322         reset_LCD
-  766 00000322         ; Reset LCD
-  767 00000322 F04F 0001       MOV              R0, #0x01
-  768 00000326 B502            PUSH             { LR, R1 }
-  769 00000328 F7FF FFD3       BL               envia_instrucao_lcd
-  770 0000032C E8BD 4002       POP              { R1, LR }
-  771 00000330 4770            BX               LR
-  772 00000332         
-  773 00000332         ; ------------------------------------------------------
+  764 0000032E         ; Funcao reset_LCD - Reseta o LCD
+  765 0000032E         ; Parametro de entrada: Nao tem
+  766 0000032E         ; Parametro de saida: Nao tem 
+  767 0000032E         reset_LCD
+  768 0000032E         ; Reset LCD
+  769 0000032E F04F 0001       MOV              R0, #0x01
+  770 00000332 B502            PUSH             { LR, R1 }
+  771 00000334 F7FF FFD3       BL               envia_instrucao_lcd
+  772 00000338 E8BD 4002       POP              { R1, LR }
+  773 0000033C 4770            BX               LR
+  774 0000033E         
+  775 0000033E         ; ------------------------------------------------------
                        -------------------------
-  774 00000332         ; Funcao pula_cursor_segunda_linha - Manda o cursor para
+  776 0000033E         ; Funcao pula_cursor_segunda_linha - Manda o cursor para
                         a segunda linha do LCD
-  775 00000332         ; Parametro de entrada: Nao tem
-  776 00000332         ; Parametro de saida: Nao tem 
-  777 00000332         pula_cursor_segunda_linha
-  778 00000332         ; Reset LCD
-  779 00000332 F04F 00C0       MOV              R0, #0xC0
-  780 00000336 B502            PUSH             { LR, R1 }
-  781 00000338 F7FF FFCB       BL               envia_instrucao_lcd
-  782 0000033C E8BD 4002       POP              { R1, LR }
-  783 00000340 4770            BX               LR
-  784 00000342         ; ------------------------------------------------------
+  777 0000033E         ; Parametro de entrada: Nao tem
+  778 0000033E         ; Parametro de saida: Nao tem 
+  779 0000033E         pula_cursor_segunda_linha
+  780 0000033E         ; Reset LCD
+  781 0000033E F04F 00C0       MOV              R0, #0xC0
+  782 00000342 B502            PUSH             { LR, R1 }
+  783 00000344 F7FF FFCB       BL               envia_instrucao_lcd
+  784 00000348 E8BD 4002       POP              { R1, LR }
+  785 0000034C 4770            BX               LR
+  786 0000034E         ; ------------------------------------------------------
                        -------------------------
-  785 00000342         ; Funcao lcd_init - Inicializa o LCD
-  786 00000342         ; Parametro de entrada: Nao tem
-  787 00000342         ; Parametro de saida: Nao tem 
-  788 00000342         lcd_init
-  789 00000342         ; Inicializa configuracao do LCD -----------------------
+  787 0000034E         ; Funcao lcd_init - Inicializa o LCD
+  788 0000034E         ; Parametro de entrada: Nao tem
+  789 0000034E         ; Parametro de saida: Nao tem 
+  790 0000034E         lcd_init
+  791 0000034E         ; Inicializa configuracao do LCD -----------------------
                        ------------------------
+  792 0000034E F04F 0038       MOV              R0, #0x38
 
 
 
 ARM Macro Assembler    Page 26 
 
 
-  790 00000342 F04F 0038       MOV              R0, #0x38
-  791 00000346 B500            PUSH             { LR }
-  792 00000348 F7FF FFC3       BL               envia_instrucao_lcd
-  793 0000034C F85D EB04       POP              { LR }
-  794 00000350         
-  795 00000350         ; Autoincrement to the right-----------------
-  796 00000350 F04F 0006       MOV              R0, #0x6
-  797 00000354 B500            PUSH             { LR }
-  798 00000356 F7FF FFBC       BL               envia_instrucao_lcd
-  799 0000035A F85D EB04       POP              { LR }
-  800 0000035E         
-  801 0000035E         ; Inicializa configuracao do LCD -----------------------
+  793 00000352 B500            PUSH             { LR }
+  794 00000354 F7FF FFC3       BL               envia_instrucao_lcd
+  795 00000358 F85D EB04       POP              { LR }
+  796 0000035C         
+  797 0000035C         ; Autoincrement to the right-----------------
+  798 0000035C F04F 0006       MOV              R0, #0x6
+  799 00000360 B500            PUSH             { LR }
+  800 00000362 F7FF FFBC       BL               envia_instrucao_lcd
+  801 00000366 F85D EB04       POP              { LR }
+  802 0000036A         
+  803 0000036A         ; Inicializa configuracao do LCD -----------------------
                        ------------------------
-  802 0000035E F04F 000F       MOV              R0, #0xF
-  803 00000362 B500            PUSH             { LR }
-  804 00000364 F7FF FFB5       BL               envia_instrucao_lcd
-  805 00000368 F85D EB04       POP              { LR }
-  806 0000036C         
-  807 0000036C         ; Reset no LCD -----------------------------------------
+  804 0000036A F04F 000F       MOV              R0, #0xF
+  805 0000036E B500            PUSH             { LR }
+  806 00000370 F7FF FFB5       BL               envia_instrucao_lcd
+  807 00000374 F85D EB04       POP              { LR }
+  808 00000378         
+  809 00000378         ; Reset no LCD -----------------------------------------
                        ------
-  808 0000036C B500            PUSH             { LR }
-  809 0000036E F7FF FFFE       BL               reset_LCD
-  810 00000372 F85D EB04       POP              { LR }
-  811 00000376         
-  812 00000376 4770            BX               LR
-  813 00000378         
-  814 00000378         
-  815 00000378         ; ------------------------------------------------------
+  810 00000378 B500            PUSH             { LR }
+  811 0000037A F7FF FFFE       BL               reset_LCD
+  812 0000037E F85D EB04       POP              { LR }
+  813 00000382         
+  814 00000382 4770            BX               LR
+  815 00000384         
+  816 00000384         
+  817 00000384         ; ------------------------------------------------------
                        -------------------------
-  816 00000378         ; Funcao Pisca_LED
-  817 00000378         ; Parametro de entrada: R5 --> Liga ou Desliga LEDs
-  818 00000378         ; Parametro de saida: Nao tem
-  819 00000378         blinkLEDs
-  820 00000378 F1B5 3FFF       CMP              R5,#-1
-  821 0000037C D008            BEQ              apaga_Leds
-  822 0000037E         liga_LEDs
-  823 0000037E 4945            LDR              R1, =GPIO_PORTA_AHB_DATA_R ;Car
+  818 00000384         ; Funcao Pisca_LED
+  819 00000384         ; Parametro de entrada: R5 --> Liga ou Desliga LEDs
+  820 00000384         ; Parametro de saida: Nao tem
+  821 00000384         blinkLEDs
+  822 00000384 F1B5 3FFF       CMP              R5,#-1
+  823 00000388 D008            BEQ              apaga_Leds
+  824 0000038A         liga_LEDs
+  825 0000038A 4945            LDR              R1, =GPIO_PORTA_AHB_DATA_R ;Car
                                                             rega o valor do off
                                                             set do data registe
                                                             r
-  824 00000380 F04F 02F0       LDR              R2, =2_11110000
-  825 00000384 600A            STR              R2, [R1]
-  826 00000386 4944            LDR              R1, =GPIO_PORTQ_DATA_R ;Carrega
+  826 0000038C F04F 02F0       LDR              R2, =2_11110000
+  827 00000390 600A            STR              R2, [R1]
+  828 00000392 4944            LDR              R1, =GPIO_PORTQ_DATA_R ;Carrega
                                                              o valor do offset 
                                                             do data register
-  827 00000388 F04F 020F       LDR              R2, =2_00001111
-  828 0000038C 600A            STR              R2, [R1]
-  829 0000038E E008            B                ativa_Transistor
-  830 00000390         apaga_Leds
-  831 00000390 4940            LDR              R1, =GPIO_PORTA_AHB_DATA_R ;Car
+  829 00000394 F04F 020F       LDR              R2, =2_00001111
+  830 00000398 600A            STR              R2, [R1]
+  831 0000039A E008            B                ativa_Transistor
+  832 0000039C         apaga_Leds
+  833 0000039C 4940            LDR              R1, =GPIO_PORTA_AHB_DATA_R ;Car
                                                             rega o valor do off
                                                             set do data registe
                                                             r
-  832 00000392 F04F 0200       LDR              R2, =2_00000000
-  833 00000396 600A            STR              R2, [R1]
-  834 00000398 493F            LDR              R1, =GPIO_PORTQ_DATA_R ;Carrega
+  834 0000039E F04F 0200       LDR              R2, =2_00000000
+  835 000003A2 600A            STR              R2, [R1]
+  836 000003A4 493F            LDR              R1, =GPIO_PORTQ_DATA_R ;Carrega
                                                              o valor do offset 
                                                             do data register
-  835 0000039A F04F 0200       LDR              R2, =2_00000000
+  837 000003A6 F04F 0200       LDR              R2, =2_00000000
+  838 000003AA 600A            STR              R2, [R1]
 
 
 
 ARM Macro Assembler    Page 27 
 
 
-  836 0000039E 600A            STR              R2, [R1]
-  837 000003A0 E7FF            B                ativa_Transistor
-  838 000003A2         
-  839 000003A2         ativa_Transistor
-  840 000003A2 4B3E            LDR              R3, =GPIO_PORTP_DATA_R
-  841 000003A4 F04F 0420       MOV              R4, #2_00100000
-  842 000003A8 601C            STR              R4, [R3]
-  843 000003AA         
-  844 000003AA F04F 0003       MOV              R0, #3
-  845 000003AE B500            PUSH             { LR }
-  846 000003B0 F7FF FFFE       BL               SysTick_Wait1ms
-  847 000003B4 F85D EB04       POP              { LR }
-  848 000003B8         
-  849 000003B8 F04F 0200       MOV              R2, #2_00000000
-  850 000003BC 4B37            LDR              R3, =GPIO_PORTP_DATA_R
-  851 000003BE 601A            STR              R2, [R3]
-  852 000003C0         
-  853 000003C0 F04F 0003       MOV              R0, #3
-  854 000003C4 B500            PUSH             { LR }
-  855 000003C6 F7FF FFFE       BL               SysTick_Wait1ms
-  856 000003CA F85D EB04       POP              { LR }
-  857 000003CE         
-  858 000003CE 4770            BX               LR          ;Retorno
-  859 000003D0         
-  860 000003D0                 ALIGN                        ; garante que o fim
+  839 000003AC E7FF            B                ativa_Transistor
+  840 000003AE         
+  841 000003AE         ativa_Transistor
+  842 000003AE 4B3E            LDR              R3, =GPIO_PORTP_DATA_R
+  843 000003B0 F04F 0420       MOV              R4, #2_00100000
+  844 000003B4 601C            STR              R4, [R3]
+  845 000003B6         
+  846 000003B6 F04F 0003       MOV              R0, #3
+  847 000003BA B500            PUSH             { LR }
+  848 000003BC F7FF FFFE       BL               SysTick_Wait1ms
+  849 000003C0 F85D EB04       POP              { LR }
+  850 000003C4         
+  851 000003C4 F04F 0200       MOV              R2, #2_00000000
+  852 000003C8 4B37            LDR              R3, =GPIO_PORTP_DATA_R
+  853 000003CA 601A            STR              R2, [R3]
+  854 000003CC         
+  855 000003CC F04F 0003       MOV              R0, #3
+  856 000003D0 B500            PUSH             { LR }
+  857 000003D2 F7FF FFFE       BL               SysTick_Wait1ms
+  858 000003D6 F85D EB04       POP              { LR }
+  859 000003DA         
+  860 000003DA 4770            BX               LR          ;Retorno
+  861 000003DC         
+  862 000003DC                 ALIGN                        ; garante que o fim
                                                              da secao esta alin
                                                             hada 
-  861 000003D0                 END                          ; fim do arquivo
+  863 000003DC                 END                          ; fim do arquivo
               400FE608 
               400FEA08 
               40058528 
@@ -1753,13 +1752,13 @@ ARM Macro Assembler    Page 27
               40065420 
               40066420 
               4005851C 
+              4006051C 
 
 
 
 ARM Macro Assembler    Page 28 
 
 
-              4006051C 
               4006151C 
               4006251C 
               4006351C 
@@ -1823,28 +1822,28 @@ Symbol: GPIO_Init
    Uses
       At line 298 in file gpio.s
 Comment: GPIO_Init used once
-apaga_Leds 00000390
+apaga_Leds 0000039C
 
 Symbol: apaga_Leds
    Definitions
-      At line 830 in file gpio.s
+      At line 832 in file gpio.s
    Uses
-      At line 821 in file gpio.s
+      At line 823 in file gpio.s
 Comment: apaga_Leds used once
-ativa_Transistor 000003A2
+ativa_Transistor 000003AE
 
 Symbol: ativa_Transistor
    Definitions
-      At line 839 in file gpio.s
+      At line 841 in file gpio.s
    Uses
-      At line 829 in file gpio.s
-      At line 837 in file gpio.s
+      At line 831 in file gpio.s
+      At line 839 in file gpio.s
 
-blinkLEDs 00000378
+blinkLEDs 00000384
 
 Symbol: blinkLEDs
    Definitions
-      At line 819 in file gpio.s
+      At line 821 in file gpio.s
    Uses
       At line 299 in file gpio.s
 Comment: blinkLEDs used once
@@ -1866,54 +1865,54 @@ decideValueToReturn 000001C8
 
 Symbol: decideValueToReturn
    Definitions
-      At line 547 in file gpio.s
+      At line 546 in file gpio.s
    Uses
-      At line 536 in file gpio.s
+      At line 535 in file gpio.s
 Comment: decideValueToReturn used once
 depois_de_verificar_teclado 000001B8
 
 Symbol: depois_de_verificar_teclado
    Definitions
-      At line 537 in file gpio.s
+      At line 536 in file gpio.s
    Uses
-      At line 531 in file gpio.s
+      At line 530 in file gpio.s
 Comment: depois_de_verificar_teclado used once
-envia_dado_lcd 000002EC
+envia_dado_lcd 000002F8
 
 Symbol: envia_dado_lcd
    Definitions
-      At line 729 in file gpio.s
+      At line 731 in file gpio.s
    Uses
-      At line 752 in file gpio.s
+      At line 754 in file gpio.s
 Comment: envia_dado_lcd used once
-envia_instrucao_lcd 000002D2
+envia_instrucao_lcd 000002DE
 
 Symbol: envia_instrucao_lcd
    Definitions
-      At line 711 in file gpio.s
+      At line 713 in file gpio.s
    Uses
-      At line 769 in file gpio.s
-      At line 781 in file gpio.s
-      At line 792 in file gpio.s
-      At line 798 in file gpio.s
-      At line 804 in file gpio.s
+      At line 771 in file gpio.s
+      At line 783 in file gpio.s
+      At line 794 in file gpio.s
+      At line 800 in file gpio.s
+      At line 806 in file gpio.s
 
-escrever_proximo 00000308
+escrever_proximo 00000314
 
 Symbol: escrever_proximo
    Definitions
-      At line 749 in file gpio.s
+      At line 751 in file gpio.s
    Uses
-      At line 757 in file gpio.s
+      At line 759 in file gpio.s
 Comment: escrever_proximo used once
-lcd_enable_and_wait 00000288
+lcd_enable_and_wait 00000294
 
 Symbol: lcd_enable_and_wait
    Definitions
-      At line 656 in file gpio.s
+      At line 658 in file gpio.s
    Uses
-      At line 720 in file gpio.s
-      At line 738 in file gpio.s
+      At line 722 in file gpio.s
+      At line 740 in file gpio.s
 
 
 
@@ -1921,11 +1920,11 @@ Symbol: lcd_enable_and_wait
 ARM Macro Assembler    Page 3 Alphabetic symbol ordering
 Relocatable symbols
 
-lcd_init 00000342
+lcd_init 0000034E
 
 Symbol: lcd_init
    Definitions
-      At line 788 in file gpio.s
+      At line 790 in file gpio.s
    Uses
       At line 300 in file gpio.s
 Comment: lcd_init used once
@@ -1933,47 +1932,47 @@ ler_coluna 00000246
 
 Symbol: ler_coluna
    Definitions
-      At line 614 in file gpio.s
+      At line 613 in file gpio.s
    Uses
       At line 526 in file gpio.s
 Comment: ler_coluna used once
-ler_porta_L 0000027E
+ler_porta_L 0000028A
 
 Symbol: ler_porta_L
    Definitions
-      At line 645 in file gpio.s
+      At line 647 in file gpio.s
    Uses
-      At line 528 in file gpio.s
+      At line 527 in file gpio.s
 Comment: ler_porta_L used once
-liga_LEDs 0000037E
+liga_LEDs 0000038A
 
 Symbol: liga_LEDs
    Definitions
-      At line 822 in file gpio.s
+      At line 824 in file gpio.s
    Uses
       None
 Comment: liga_LEDs unused
-printArrayInLcd 00000306
+printArrayInLcd 00000312
 
 Symbol: printArrayInLcd
    Definitions
-      At line 747 in file gpio.s
+      At line 749 in file gpio.s
    Uses
       At line 301 in file gpio.s
 Comment: printArrayInLcd used once
-printArrayInLcdEnd 00000320
+printArrayInLcdEnd 0000032C
 
 Symbol: printArrayInLcdEnd
    Definitions
-      At line 758 in file gpio.s
+      At line 760 in file gpio.s
    Uses
-      At line 756 in file gpio.s
+      At line 758 in file gpio.s
 Comment: printArrayInLcdEnd used once
-pula_cursor_segunda_linha 00000332
+pula_cursor_segunda_linha 0000033E
 
 Symbol: pula_cursor_segunda_linha
    Definitions
-      At line 777 in file gpio.s
+      At line 779 in file gpio.s
    Uses
       At line 305 in file gpio.s
 Comment: pula_cursor_segunda_linha used once
@@ -1995,56 +1994,56 @@ readKeyboardEnd 000001C6
 
 Symbol: readKeyboardEnd
    Definitions
-      At line 544 in file gpio.s
+      At line 543 in file gpio.s
    Uses
-      At line 541 in file gpio.s
-      At line 551 in file gpio.s
-      At line 555 in file gpio.s
-      At line 559 in file gpio.s
-      At line 563 in file gpio.s
-      At line 567 in file gpio.s
-      At line 571 in file gpio.s
-      At line 575 in file gpio.s
-      At line 579 in file gpio.s
-      At line 583 in file gpio.s
-      At line 587 in file gpio.s
-      At line 591 in file gpio.s
-      At line 595 in file gpio.s
-      At line 599 in file gpio.s
-      At line 603 in file gpio.s
-      At line 607 in file gpio.s
-      At line 609 in file gpio.s
+      At line 540 in file gpio.s
+      At line 550 in file gpio.s
+      At line 554 in file gpio.s
+      At line 558 in file gpio.s
+      At line 562 in file gpio.s
+      At line 566 in file gpio.s
+      At line 570 in file gpio.s
+      At line 574 in file gpio.s
+      At line 578 in file gpio.s
+      At line 582 in file gpio.s
+      At line 586 in file gpio.s
+      At line 590 in file gpio.s
+      At line 594 in file gpio.s
+      At line 598 in file gpio.s
+      At line 602 in file gpio.s
+      At line 606 in file gpio.s
+      At line 608 in file gpio.s
 
-reset_LCD 00000322
+reset_LCD 0000032E
 
 Symbol: reset_LCD
    Definitions
-      At line 765 in file gpio.s
+      At line 767 in file gpio.s
    Uses
       At line 302 in file gpio.s
-      At line 809 in file gpio.s
+      At line 811 in file gpio.s
 
-set_RS_0 000002BA
+set_RS_0 000002C6
 
 Symbol: set_RS_0
    Definitions
-      At line 685 in file gpio.s
+      At line 687 in file gpio.s
    Uses
-      At line 716 in file gpio.s
+      At line 718 in file gpio.s
 Comment: set_RS_0 used once
-set_RS_1 000002C6
+set_RS_1 000002D2
 
 Symbol: set_RS_1
    Definitions
-      At line 698 in file gpio.s
+      At line 700 in file gpio.s
    Uses
-      At line 734 in file gpio.s
+      At line 736 in file gpio.s
 Comment: set_RS_1 used once
 tecla_pressionada 000001AA
 
 Symbol: tecla_pressionada
    Definitions
-      At line 532 in file gpio.s
+      At line 531 in file gpio.s
 
 
 
@@ -2060,7 +2059,7 @@ Symbol: verifica_teclado
    Definitions
       At line 523 in file gpio.s
    Uses
-      At line 543 in file gpio.s
+      At line 542 in file gpio.s
 Comment: verifica_teclado used once
 28 symbols
 
@@ -2124,8 +2123,8 @@ Symbol: GPIO_PORTA_AHB_DATA_R
    Definitions
       At line 23 in file gpio.s
    Uses
-      At line 823 in file gpio.s
-      At line 831 in file gpio.s
+      At line 825 in file gpio.s
+      At line 833 in file gpio.s
 
 GPIO_PORTA_AHB_DEN_R 4005851C
 
@@ -2857,8 +2856,8 @@ Symbol: GPIO_PORTK_DATA_R
    Definitions
       At line 108 in file gpio.s
    Uses
-      At line 712 in file gpio.s
-      At line 730 in file gpio.s
+      At line 714 in file gpio.s
+      At line 732 in file gpio.s
 
 GPIO_PORTK_DEN_R 4006151C
 
@@ -3147,7 +3146,7 @@ Symbol: GPIO_PORTL_DATA_R
    Definitions
       At line 143 in file gpio.s
    Uses
-      At line 646 in file gpio.s
+      At line 648 in file gpio.s
 Comment: GPIO_PORTL_DATA_R used once
 GPIO_PORTL_DEN_R 4006251C
 
@@ -3443,10 +3442,10 @@ Symbol: GPIO_PORTM_DATA_R
       At line 178 in file gpio.s
    Uses
       At line 626 in file gpio.s
-      At line 658 in file gpio.s
-      At line 669 in file gpio.s
-      At line 687 in file gpio.s
-      At line 700 in file gpio.s
+      At line 660 in file gpio.s
+      At line 671 in file gpio.s
+      At line 689 in file gpio.s
+      At line 702 in file gpio.s
 
 GPIO_PORTM_DEN_R 4006351C
 
@@ -3463,7 +3462,7 @@ Symbol: GPIO_PORTM_DIR_R
       At line 179 in file gpio.s
    Uses
       At line 387 in file gpio.s
-      At line 615 in file gpio.s
+      At line 614 in file gpio.s
 
 GPIO_PORTM_DMACTL_R 40063534
 
@@ -3828,8 +3827,8 @@ Symbol: GPIO_PORTP_DATA_R
    Definitions
       At line 224 in file gpio.s
    Uses
-      At line 840 in file gpio.s
-      At line 850 in file gpio.s
+      At line 842 in file gpio.s
+      At line 852 in file gpio.s
 
 GPIO_PORTP_DEN_R 4006551C
 
@@ -4118,8 +4117,8 @@ Symbol: GPIO_PORTQ_DATA_R
    Definitions
       At line 258 in file gpio.s
    Uses
-      At line 826 in file gpio.s
-      At line 834 in file gpio.s
+      At line 828 in file gpio.s
+      At line 836 in file gpio.s
 
 GPIO_PORTQ_DEN_R 4006651C
 
@@ -4399,10 +4398,10 @@ Symbol: SysTick_Wait1ms
       At line 306 in file gpio.s
    Uses
       At line 520 in file gpio.s
-      At line 636 in file gpio.s
-      At line 676 in file gpio.s
-      At line 846 in file gpio.s
-      At line 855 in file gpio.s
+      At line 638 in file gpio.s
+      At line 678 in file gpio.s
+      At line 848 in file gpio.s
+      At line 857 in file gpio.s
 
 SysTick_Wait1us 00000000
 
@@ -4410,7 +4409,7 @@ Symbol: SysTick_Wait1us
    Definitions
       At line 307 in file gpio.s
    Uses
-      At line 665 in file gpio.s
+      At line 667 in file gpio.s
 Comment: SysTick_Wait1us used once
 checkJ0Interrup 00000000
 

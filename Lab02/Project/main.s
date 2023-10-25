@@ -103,7 +103,7 @@ newPword
 	B newPwordNewInput
 	
 newPwordHashtag
-	CMP R0, #'*' ; R0 == '#'
+	CMP R0, #'#' ; R0 == '#'
 	IT NE
 		BNE newPwordEnd
 
@@ -167,7 +167,7 @@ closedSafe
 	B closedSafeNewInput
 
 closedSafeHashtag
-	CMP R0, #'*' ; R0 == '#'
+	CMP R0, #'#' ; R0 == '#'
 	IT NE
 		BNE closedSafeEnd
 
@@ -226,9 +226,6 @@ closedSafeLockSafe
 	BL printArrayInLcd
 	BL pula_cursor_segunda_linha
 
-	MOV R0, #5000
-	BL SysTick_Wait1ms
-
 	MOV R7, #0 ; i = 0
 	MOV R6, #0 ; errorCtr = 0
 	MOV R3, #0
@@ -282,7 +279,7 @@ waitMasterPword
 	B waitMasterPwordNewInput
 
 waitMasterPwordHashtag
-	CMP R0, #'*' ; R0 == '#'
+	CMP R0, #'#' ; R0 == '#'
 	IT NE
 		BNE waitMasterPwordEnd
 

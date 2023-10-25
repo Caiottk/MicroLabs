@@ -524,7 +524,6 @@ verifica_teclado
 	MOV R0, R4
 	PUSH { LR }
 	BL ler_coluna
-	;R0 -> valor da coluna lida
 	BL ler_porta_L
 	POP { LR }
 	CMP R2, #0xF
@@ -618,6 +617,7 @@ ler_coluna
 	MOV R3, #1
 	LSL R3, R0
 	LDR R2, [R1]
+	AND R2, #0x0F
 	ORR R3, R2
 
 	STR R3, [R1] ; Escreve o novo valor da porta 0 ENTRADA 1 SAIDA
@@ -626,13 +626,15 @@ ler_coluna
 	LDR R1, =GPIO_PORTM_DATA_R
 	LDR R2, [R1]
 	AND R2, #0x0F
-	NEG R3, R3
+	MOV R3, #1
+	LSL R3, R0
+	EOR R3, R3, #0xF0
 	AND R3, #0xF0
-	ORR R2, R3 ; Faz o AND negado bit a bit para manter os valores anteriores e limpar somente PM7
+	ORR R2, R3 ; R2 = R2 & 0x0F | R3 & 0xF0
 	STR R2, [R1]
 
 	PUSH{LR, R0}
-	MOV R0, #20
+	MOV R0, #10
 	BL SysTick_Wait1ms
 	POP{R0, LR}
 	
