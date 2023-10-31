@@ -48,12 +48,12 @@ lcdString   SPACE 0x20
 		IMPORT  SysTick_Wait1ms			
 		IMPORT  GPIO_Init
 
-		IMPORT lcd_init
-		IMPORT printArrayInLcd
-		IMPORT readKeyboard
+		IMPORT LCD_init
+		IMPORT LCD_printArrayInLcd
+		IMPORT LCD_ResetLCD
+		IMPORT LCD_PulaCursorSegundaLinha
+		IMPORT MKEYBOARD_readKeyboard
 		IMPORT blinkLEDs
-		IMPORT reset_LCD
-		IMPORT pula_cursor_segunda_linha
 
 ; -------------------------------------------------------------------------------
 ; Funcao main()
@@ -61,7 +61,7 @@ Start
 	BL PLL_Init                  ;Chama a subrotina para alterar o clock do microcontrolador para 80MHz
 	BL SysTick_Init              ;Chama a subrotina para inicializar o SysTick
 	BL GPIO_Init
-	BL lcd_init                  ;Chama a subrotina que inicializa os GPIO
+	BL LCD_init                  ;Chama a subrotina que inicializa os GPIO
 	BL InitilizeVars
 ;--------------------------------------------------------------------------------
 MainLoop
@@ -90,7 +90,7 @@ MainLoop
 ; Routine for entering a new password and close the safe
 newPword
 	PUSH{LR}
-	BL readKeyboard
+	BL MKEYBOARD_readKeyboard
 	POP{LR}
 
 	CMP R0, #NO_BTNS_PRESSED
@@ -111,21 +111,21 @@ newPwordHashtag
 	MOV R0, #1000
 	BL SysTick_Wait1ms
 
-	BL reset_LCD ; Resets LCD before next print
+	BL LCD_ResetLCD ; Resets LCD before next print
 
 	LDR R0, =MSG_CLOSING
 	MOV R1, #14
-	BL printArrayInLcd
+	BL LCD_printArrayInLcd
 
 	MOV R0, #5000
 	BL SysTick_Wait1ms
 
-	BL reset_LCD ; Resets LCD before next print
+	BL LCD_ResetLCD ; Resets LCD before next print
 
 	LDR R0, =MSG_CLOSED
 	MOV R1, #14
-	BL printArrayInLcd
-	BL pula_cursor_segunda_linha
+	BL LCD_printArrayInLcd
+	BL LCD_PulaCursorSegundaLinha
 
 	MOV R7, #0 ; i = 0
 	MOV R6, #0 ; errorCtr = 0
@@ -143,7 +143,7 @@ newPwordNewInput
 	ADD R7, R7, #1 ; i++
 	PUSH{LR}
 	MOV R1, #1
-	BL printArrayInLcd
+	BL LCD_printArrayInLcd
 	POP{LR}
 	B newPwordEnd
 
@@ -154,7 +154,7 @@ newPwordEnd
 ; Routine for when the safe is closed: either opens or locks permanently
 closedSafe
 	PUSH{LR}
-	BL readKeyboard
+	BL MKEYBOARD_readKeyboard
 	POP{LR}
 
 	CMP R0, #NO_BTNS_PRESSED
@@ -192,21 +192,21 @@ closedSafeHashtag
 
 closedSafeOpenSafe
 	PUSH{LR}
-	BL reset_LCD ; Resets LCD before next print
+	BL LCD_ResetLCD ; Resets LCD before next print
 
 	LDR R0, =MSG_OPENING
 	MOV R1, #13
-	BL printArrayInLcd
+	BL LCD_printArrayInLcd
 
 	MOV R0, #5000
 	BL SysTick_Wait1ms
 
-	BL reset_LCD ; Resets LCD before next print
+	BL LCD_ResetLCD ; Resets LCD before next print
 
 	LDR R0, =MSG_OPEN
 	MOV R1, #12
-	BL printArrayInLcd
-	BL pula_cursor_segunda_linha
+	BL LCD_printArrayInLcd
+	BL LCD_PulaCursorSegundaLinha
 
 	MOV R7, #0 ; i = 0
 	MOV R6, #0 ; errorCtr = 0
@@ -219,12 +219,12 @@ closedSafeOpenSafe
 
 closedSafeLockSafe
 	PUSH{LR}
-	BL reset_LCD ; Resets LCD before next print
+	BL LCD_ResetLCD ; Resets LCD before next print
 
 	LDR R0, =MSG_LOCKED
 	MOV R1, #14
-	BL printArrayInLcd
-	BL pula_cursor_segunda_linha
+	BL LCD_printArrayInLcd
+	BL LCD_PulaCursorSegundaLinha
 
 	MOV R7, #0 ; i = 0
 	MOV R6, #0 ; errorCtr = 0
@@ -245,7 +245,7 @@ closedSafeNewInput
 	ADD R7, R7, #1 ; i++
 	PUSH{LR}
 	MOV R1, #1
-	BL printArrayInLcd
+	BL LCD_printArrayInLcd
 	POP{LR}
 
 	B closedSafeEnd
@@ -266,7 +266,7 @@ waitJ0Interrup
 ; Routine to check if the master password was correctly written
 waitMasterPword
 	PUSH{LR}
-	BL readKeyboard
+	BL MKEYBOARD_readKeyboard
 	POP{LR}
 
 	CMP R0, #NO_BTNS_PRESSED
@@ -299,21 +299,21 @@ waitMasterPwordHashtag
 
 waitMasterPwordOpenSafe
 	PUSH{LR}
-	BL reset_LCD ; Resets LCD before next print
+	BL LCD_ResetLCD ; Resets LCD before next print
 
 	LDR R0, =MSG_OPENING
 	MOV R1, #13
-	BL printArrayInLcd
+	BL LCD_printArrayInLcd
 
 	MOV R0, #5000
 	BL SysTick_Wait1ms
 
-	BL reset_LCD ; Resets LCD before next print
+	BL LCD_ResetLCD ; Resets LCD before next print
 
 	LDR R0, =MSG_OPEN
 	MOV R1, #12
-	BL printArrayInLcd
-	BL pula_cursor_segunda_linha
+	BL LCD_printArrayInLcd
+	BL LCD_PulaCursorSegundaLinha
 	
 	MOV R7, #0 ; i = 0
 	LDR R1, =sysState
@@ -331,7 +331,7 @@ waitMasterPwordNewInput
 
 	PUSH{LR}
 	MOV R1, #1
-	BL printArrayInLcd
+	BL LCD_printArrayInLcd
 	POP{LR}
 
 	B waitMasterPwordEnd
@@ -366,8 +366,8 @@ InitilizeVars
 	LDR R0, =MSG_OPEN
 	MOV R1, #12
 	PUSH{LR}
-	BL printArrayInLcd
-	BL pula_cursor_segunda_linha
+	BL LCD_printArrayInLcd
+	BL LCD_PulaCursorSegundaLinha
 	POP{LR}
 
 	BX LR
