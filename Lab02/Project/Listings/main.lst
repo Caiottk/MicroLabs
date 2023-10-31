@@ -410,20 +410,20 @@ ARM Macro Assembler    Page 7
   307 000001E2         
   308 000001E2 F241 3088       MOV              R0, #5000
   309 000001E6 F7FF FFFE       BL               SysTick_Wait1ms
-  310 000001EA F85D EB04       POP{LR}
-  311 000001EE         
-  312 000001EE F7FF FFFE       BL               reset_LCD   ; Resets LCD before
+  310 000001EA         
+  311 000001EA F7FF FFFE       BL               reset_LCD   ; Resets LCD before
                                                              next print
-  313 000001F2         
-  314 000001F2 484E            LDR              R0, =MSG_OPEN
-  315 000001F4 F04F 010C       MOV              R1, #12
-  316 000001F8 F7FF FFFE       BL               printArrayInLcd
-  317 000001FC F7FF FFFE       BL               pula_cursor_segunda_linha
-  318 00000200         
-  319 00000200 F04F 0700       MOV              R7, #0      ; i = 0
-  320 00000204 4943            LDR              R1, =sysState
-  321 00000206 F04F 0000       MOV              R0, #0
-  322 0000020A 7008            STRB             R0, [R1]
+  312 000001EE         
+  313 000001EE 484F            LDR              R0, =MSG_OPEN
+  314 000001F0 F04F 010C       MOV              R1, #12
+  315 000001F4 F7FF FFFE       BL               printArrayInLcd
+  316 000001F8 F7FF FFFE       BL               pula_cursor_segunda_linha
+  317 000001FC         
+  318 000001FC F04F 0700       MOV              R7, #0      ; i = 0
+  319 00000200 4944            LDR              R1, =sysState
+  320 00000202 F04F 0000       MOV              R0, #0
+  321 00000206 7008            STRB             R0, [R1]
+  322 00000208 F85D EB04       POP{LR}
   323 0000020C         
   324 0000020C E00C            B                waitMasterPwordEnd
   325 0000020E         
@@ -678,7 +678,7 @@ Symbol: sysState
       At line 132 in file main.s
       At line 213 in file main.s
       At line 234 in file main.s
-      At line 320 in file main.s
+      At line 319 in file main.s
 
 
 
@@ -764,7 +764,7 @@ Relocatable symbols
       At line 432 in file main.s
    Uses
       At line 206 in file main.s
-      At line 314 in file main.s
+      At line 313 in file main.s
       At line 366 in file main.s
 
 MSG_OPENING 000002D7
@@ -1072,7 +1072,7 @@ External symbols
       At line 226 in file main.s
       At line 248 in file main.s
       At line 306 in file main.s
-      At line 316 in file main.s
+      At line 315 in file main.s
       At line 334 in file main.s
       At line 369 in file main.s
 
@@ -1085,7 +1085,7 @@ Symbol: pula_cursor_segunda_linha
       At line 128 in file main.s
       At line 209 in file main.s
       At line 227 in file main.s
-      At line 317 in file main.s
+      At line 316 in file main.s
       At line 370 in file main.s
 
 readKeyboard 00000000
@@ -1110,7 +1110,7 @@ Symbol: reset_LCD
       At line 204 in file main.s
       At line 222 in file main.s
       At line 302 in file main.s
-      At line 312 in file main.s
+      At line 311 in file main.s
 
 10 symbols
 383 symbols in table

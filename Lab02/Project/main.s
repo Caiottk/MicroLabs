@@ -307,7 +307,6 @@ waitMasterPwordOpenSafe
 
 	MOV R0, #5000
 	BL SysTick_Wait1ms
-	POP{LR}
 
 	BL reset_LCD ; Resets LCD before next print
 
@@ -320,6 +319,7 @@ waitMasterPwordOpenSafe
 	LDR R1, =sysState
 	MOV R0, #0
 	STRB R0, [R1]
+	POP{LR}
 
 	B waitMasterPwordEnd
 
