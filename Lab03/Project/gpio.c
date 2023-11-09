@@ -111,7 +111,7 @@ extern void timerInit(void)
 
    NVIC_PRI5_R = (3 << 29);
 
-   TIMER2_CTL_R = 1; // Enables timer
+   // TIMER2_CTL_R = 1; // Enables timer
 }
 
 // -------------------------------------------------------------------------------
