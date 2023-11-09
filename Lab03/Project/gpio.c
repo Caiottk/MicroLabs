@@ -26,7 +26,7 @@ void GPIO_Init(void)
 	SYSCTL_RCGCGPIO_R = (GPIO_PORTF | GPIO_PORTJ | GPIO_PORTN | GPIO_PORTA);
 	//1b.   apos isso verificar no PRGPIO se a porta esta pronta para uso.
    while((SYSCTL_PRGPIO_R & (GPIO_PORTF | GPIO_PORTJ | GPIO_PORTN | GPIO_PORTA) ) !=
-	      (GPIO_PORTF | GPIO_PORTJ | GPIO_PORTN | GPIO_PORTA)){ };
+	      					(GPIO_PORTF | GPIO_PORTJ | GPIO_PORTN | GPIO_PORTA)){ };
 	
 	// 2. Limpar o AMSEL para desabilitar a analogica
 	GPIO_PORTA_AHB_AMSEL_R = 0x00;
@@ -57,6 +57,7 @@ void GPIO_Init(void)
 	GPIO_PORTJ_AHB_DEN_R = 0x03;   //Bit0 e bit1
 	GPIO_PORTN_DEN_R = 0x03; 		   //Bit0 e bit1
 	GPIO_PORTF_AHB_DEN_R = 0x11;   //Bit0 e bit1
+
 	
 	// 7. Habilitar resistor de pull-up interno, setar PUR para 1
 	GPIO_PORTJ_AHB_PUR_R = 0x03;   //Bit0 e bit1

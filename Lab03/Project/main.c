@@ -17,11 +17,22 @@ typedef enum en_semStates
 	RED_SEM,
 } en_semStates;
 
+
+
 typedef enum bool
 {
 	false,
 	true
 } bool;
+
+uint32_t passo;
+uint32_t contPasso;
+uint32_t sysState;
+uint32_t readState;
+uint32_t motorPosition;
+uint32_t passo_completo[4] = {0x03, 0x06, 0x0C, 0x09};
+uint32_t meio_passo[8] = {0x01, 0x03, 0x02, 0x06, 0x04, 0x0C, 0x08, 0x09};
+unsigned char msg[50] = "Sentido: ,velocidade e posicionamento";
 
 ///////// EXTERNAL FUNCTIONS INCLUSIONS //////////
 // Since there is no .h in most files, theis functions must be included by hand.
@@ -37,6 +48,9 @@ uint32_t PortJ_Input(void);
 void PortN_Output(uint32_t leds);
 void PortF_Output(uint32_t valor);
 
+void motor_init(void);
+void PortH_Output(uint32_t data);
+
 void timerInit(void);
 
 void uart_uartInit(void);
@@ -46,6 +60,7 @@ void uart_uartTx(unsigned char txMsg);
 ///////// LOCAL FUNCTIONS DECLARATIONS //////////
 
 static void Pisca_leds(void);
+static void motorRotation(int angulo, char sentido, char velocidade);
 
 ///////// LOCAL FUNCTIONS IMPLEMENTATIONS //////////
 
@@ -57,12 +72,18 @@ int main(void)
 	SysTick_Init();
 	uart_uartInit();
 	GPIO_Init();
+	motor_init();
 	timerInit();
+
+	// while (1)
+	// {
+	// 	msg = uart_uartRx();
+	// 	uart_uartTx(msg);
+	// }
 
 	while (1)
 	{
-		msg = uart_uartRx();
-		uart_uartTx(msg);
+		
 	}
 }
 
@@ -92,3 +113,53 @@ void Timer2A_Handler(void)
 
 	return;
 }
+
+void initVars(void)
+{
+	passo =0;
+	sysState = 0;
+	readState = 0;
+	motorPosition = 0;
+
+	return;
+}
+
+
+// Funcao: motorRotation
+// Descricao: movimenta o motor de passo mostrando no terminal o sentido, velocidade e em qual posicionamento o motor está se movendo, com resolução de 15°.
+// Parametros: angulo - angulo de rotacao
+//             sentido - sentido da rotacao (horario ou anti-horario)
+//             velocidade - velocidade da rotacao (completo ou meio passo)
+// Retorno: void
+void motorRotation(char sentido, char velocidade)
+{
+	// Atraso para estabilização do motor
+	SysTick_Wait1ms(2);
+
+	if(velocidade == '1'){
+		PortH_Output(meio_passo[passo]);
+	}
+	else{
+		PortH_Output(passo_completo[passo]);
+	}
+
+	if(sentido == 'H'){
+		passo++;
+		if(passo >= 8*velocidade){
+			passo = 0;
+		}
+	}
+	else{
+		passo--;
+		if(passo < 0){
+			passo = 8*velocidade - 1;
+		}
+	}
+
+	contPasso++;
+}
+
+void bobina(){
+	while()
+}
+
