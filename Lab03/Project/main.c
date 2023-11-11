@@ -169,7 +169,7 @@ static void Pisca_leds(void);
 static States        stStates;
 static MotorValues   stMotorValues;
 static unsigned char ucIndex;
-static void motorRotation(char sentido, EN_MotorSpeed velocidade);
+static void motorRotation(char sentido, int velocidade);
 
 ///////// LOCAL FUNCTIONS IMPLEMENTATIONS //////////
 
@@ -442,22 +442,9 @@ static void waitForReset(void)
 //             sentido - sentido da rotacao (horario ou anti-horario)
 //             velocidade - velocidade da rotacao (completo ou meio passo)
 // Retorno: void
-void motorRotation(char sentido, EN_MotorSpeed velocidade)
+void motorRotation(char sentido, int velocidade)
 {
 
-	int contLed = 0;
-   double angulo_rotacionado = 0;
-   int auxVelocidade = 0;
-
-   if(velocidade == FULL_STEP){
-      auxVelocidade = 2;
-   }
-   else if(velocidade == HALF_STEP){
-      auxVelocidade = 1;
-   }
-
-
-	while(angulo_rotacionado < stMotorValues.usAngleVal){
 		SysTick_Wait1ms(2);
 
 		if(velocidade == FULL_STEP){
@@ -469,36 +456,17 @@ void motorRotation(char sentido, EN_MotorSpeed velocidade)
 
 		if(stMotorValues.ucDirection == CLOCKWISE){
 			passo++;
-			if(passo == 4*auxVelocidade){
+			if(passo == 4*velocidade){
 				passo = 0;
 			}
 		}
 		else if(stMotorValues.ucDirection == COUNTERCLOCKWISE){
 			passo--;
 			if(passo == -1){
-				passo = 4*auxVelocidade - 1;
+				passo = 4*velocidade - 1;
 			}
-		}
-
-		angulo_rotacionado = contPasso * 1.8;
-
-		if(ceil(angulo_rotacionado) %15 == 0){
-			msg[8] = sentido;
-			msg[10] = velocidade;
-			msg[12] = contPasso;
-			uart_uartTxString(msg, 50);
-		}
-
-		// Verifica se passou um intervalo de 45° para acender o LED
-		if(ceil(angulo_rotacionado) %45 == 0 && contLed < 8){
-			// Acende o LED correspondente
-         contLed++;
-			acendeLED(contLed);
-		}
-
-	}
-	stStates.ucSysState = SYS_WAIT_FOR_RESET;
-	return;
+      }
+		contPasso++;
 }
 // Funcao: acendeLED
 // Descricao: acende um LED a cada 45° de rotacao e mantem acesos os LEDs anteriores
@@ -569,7 +537,7 @@ void Bobina()
       sentido = -1;
    }
 	while(contPasso < 4*auxVelocidade*stMotorValues.usAngleVal){
-		motorRotation(stMotorValues.ucDirection, stMotorValues.usSpeedVal);
+		motorRotation(stMotorValues.ucDirection, auxVelocidade);
       if(contPasso%(15*auxVelocidade)==0){
          msg[8] = stMotorValues.ucDirection;
 			msg[10] = stMotorValues.usSpeedVal;
@@ -593,6 +561,8 @@ void Bobina()
 		Liga_led(contLed);
 	}
 	Liga_led(10);
+   stStates.ucSysState = SYS_WAIT_FOR_RESET;
+	return;
 }
 
 ///////// HANDLERS IMPLEMENTATIONS //////////
