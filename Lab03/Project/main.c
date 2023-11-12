@@ -21,13 +21,6 @@ typedef enum bool
    true
 } bool;
 
-int32_t passo;
-int32_t contPasso;
-// complete step and middle step for a motor with 1.8° step angle and 2 phases	
-uint32_t passo_completo[4] = {0x01, 0x02, 0x04, 0x08};
-uint32_t meio_passo[8] = {0x01, 0x03, 0x02, 0x06, 0x04, 0x0C, 0x08, 0x09};
-unsigned char msg[50] = "Sentido: ,velocidade e posicionamento";
-
 typedef enum EN_Direction
 {
    COUNTERCLOCKWISE,
@@ -56,17 +49,16 @@ typedef struct States
 
 typedef enum EN_MotorSpeed
 {
-  HALF_STEP,
-  FULL_STEP
+   HALF_STEP,
+   FULL_STEP
 } EN_MotorSpeed;
 
 typedef struct MotorValues
 {
    unsigned char ucAngle[ANGLE_CHAR_SIZE];
    unsigned char ucDirection;
-   unsigned char ucSpeed[SPEED_CHAR_SIZE];
-   double usAngleVal;
-   EN_MotorSpeed usSpeedVal;
+   unsigned char ucSpeedType;
+   double        dAngleVal;
 } MotorValues;
 
 ///////// EXTERNAL FUNCTIONS INCLUSIONS //////////
@@ -88,7 +80,7 @@ void PortP_Output(uint32_t valor);
 void acendeLED(uint16_t led_aceso);
 
 void motor_init(void);
-void PortH_Output(uint32_t data);
+void PortE_Output(uint32_t data);
 
 void timerInit(void);
 
@@ -129,12 +121,11 @@ static void getAngleChar(unsigned char *pucAgleArray, unsigned char *pucIndex);
 static void getDirectionChar(unsigned char *pucDirection);
 
 /**
- * @brief Gets a character from the terminal and stores it in pucSpeedArray[*pucIndex]
+ * @brief Gets the type of speed from the terminal
  * 
- * @param pucSpeedArray The array where the character will be stored
- * @param pucIndex      The index of the array where the character will be stored
+ * @param pucSpeedType Pointer where the speed type will be stored.
  */
-static void getSpeedChar(unsigned char *pucSpeedArray, unsigned char *pucIndex);
+static void getSpeedChar(unsigned char *pucSpeedType);
 
 /**
  * @brief waits for the ',' character so that states can be changed
@@ -162,6 +153,10 @@ static bool checkMotorValues(MotorValues *pstMotorValues);
  */
 static void waitForReset(void);
 
+static void motorRotation(char sentido, int velocidade);
+
+static void Bobina();
+
 static void Pisca_leds(void);
 
 ///////// STATIC VARIABLES DECLARATIONS //////////
@@ -169,7 +164,13 @@ static void Pisca_leds(void);
 static States        stStates;
 static MotorValues   stMotorValues;
 static unsigned char ucIndex;
-static void motorRotation(char sentido, int velocidade);
+
+int32_t passo;
+int32_t contPasso;
+// complete step and middle step for a motor with 1.8° step angle and 2 phases   
+uint32_t passo_completo[4] = {0x01, 0x02, 0x04, 0x08};
+uint32_t meio_passo[8] = {0x01, 0x03, 0x02, 0x06, 0x04, 0x0C, 0x08, 0x09};
+char     msg[50] = "Sentido: ,velocidade e posicionamento";
 
 ///////// LOCAL FUNCTIONS IMPLEMENTATIONS //////////
 
@@ -195,7 +196,7 @@ int main(void)
 
          case SYS_ROTATE_MOTOR:
          {
-			Bobina();
+            //Bobina();
          }
          break;
 
@@ -216,10 +217,10 @@ int main(void)
 
 static void Pisca_leds(void)
 {
-	PortN_Output(0x2);
-	SysTick_Wait1ms(250);
-	PortN_Output(0x1);
-	SysTick_Wait1ms(250);
+   PortN_Output(0x2);
+   SysTick_Wait1ms(250);
+   PortN_Output(0x1);
+   SysTick_Wait1ms(250);
 }
 
 static void initVars(void)
@@ -229,14 +230,13 @@ static void initVars(void)
    stStates.ucSysState  = SYS_READ_DATA;
    stStates.ucReadState = READ_ANGLE;
 
-   stMotorValues.usAngleVal  = 0;
-   stMotorValues.usSpeedVal  = HALF_STEP;
+   stMotorValues.dAngleVal   = 0;
    stMotorValues.ucDirection = INVALID_NUMBER;
+   stMotorValues.ucSpeedType = INVALID_NUMBER;
 
    for (ucIndex = 0; ucIndex < ANGLE_CHAR_SIZE; ucIndex++)
    {
       stMotorValues.ucAngle[ucIndex] = 0;
-      stMotorValues.ucSpeed[ucIndex] = 0;
    }
 
    ucIndex = 0;
@@ -265,7 +265,7 @@ static void readInput(void)
 
       case READ_SPEED:
       {
-         getSpeedChar(&stMotorValues.ucSpeed[0], &ucIndex);
+         getSpeedChar(&stMotorValues.ucSpeedType);
       }
       break;
 
@@ -320,16 +320,15 @@ static void getDirectionChar(unsigned char *pucDirection)
    return;
 }
 
-static void getSpeedChar(unsigned char *pucSpeedArray, unsigned char *pucIndex)
+static void getSpeedChar(unsigned char *pucSpeedType)
 {
-   if (*pucIndex < SPEED_CHAR_SIZE)
+   if (INVALID_NUMBER == *pucSpeedType)
    {
       unsigned char ucRxUartInt = uart_uartRxToInt();
-      
+
       if (INVALID_NUMBER != ucRxUartInt)
       {
-         pucSpeedArray[*pucIndex] = ucRxUartInt;
-         (*pucIndex)++;
+         *pucSpeedType = ucRxUartInt;
          uart_uartTxIntToChar(ucRxUartInt);
       }
    }
@@ -407,16 +406,13 @@ static bool checkMotorValues(MotorValues *pstMotorValues)
 {
    bool bMustRotateMotor = true;
 
-   pstMotorValues->usAngleVal = ((pstMotorValues->ucAngle[0] * 100) +
-                                 (pstMotorValues->ucAngle[1] * 10)  +
-                                 pstMotorValues->ucAngle[2]);
-   pstMotorValues->usSpeedVal = ((pstMotorValues->ucSpeed[0] * 100) +
-                                 (pstMotorValues->ucSpeed[1] * 10)  +
-                                 pstMotorValues->ucSpeed[2]);
+   pstMotorValues->dAngleVal = (double)((pstMotorValues->ucAngle[0] * 100) +
+                                        (pstMotorValues->ucAngle[1] * 10)  +
+                                        pstMotorValues->ucAngle[2]);
 
-   if ((pstMotorValues->usAngleVal  > MAX_ANGLE) ||
+   if ((pstMotorValues->dAngleVal   > MAX_ANGLE) ||
        (pstMotorValues->ucDirection > CLOCKWISE) ||
-       (pstMotorValues->usSpeedVal  > MAX_SPEED))
+       (pstMotorValues->ucSpeedType > FULL_STEP))
    {
       bMustRotateMotor = false;
    }
@@ -444,89 +440,88 @@ static void waitForReset(void)
 // Retorno: void
 void motorRotation(char sentido, int velocidade)
 {
+   SysTick_Wait1ms(2);
 
-		SysTick_Wait1ms(2);
+   if(velocidade == FULL_STEP){
+      PortE_Output(passo_completo[passo]);
+   }
+   else if(velocidade == HALF_STEP){
+      PortE_Output(meio_passo[passo]);
+   }
 
-		if(velocidade == FULL_STEP){
-			PortH_Output(passo_completo[passo]);
-		}
-		else if(velocidade == HALF_STEP){
-			PortH_Output(meio_passo[passo]);
-		}
-
-		if(stMotorValues.ucDirection == CLOCKWISE){
-			passo++;
-			if(passo == 4*velocidade){
-				passo = 0;
-			}
-		}
-		else if(stMotorValues.ucDirection == COUNTERCLOCKWISE){
-			passo--;
-			if(passo == -1){
-				passo = 4*velocidade - 1;
-			}
+   if(stMotorValues.ucDirection == CLOCKWISE){
+      passo++;
+      if(passo == 4*velocidade){
+         passo = 0;
       }
-		contPasso++;
+   }
+   else if(stMotorValues.ucDirection == COUNTERCLOCKWISE){
+      passo--;
+      if(passo == -1){
+         passo = 4*velocidade - 1;
+      }
+   }
+   contPasso++;
 }
 // Funcao: acendeLED
 // Descricao: acende um LED a cada 45° de rotacao e mantem acesos os LEDs anteriores
-// 			  também começa acendendo o LED da esquerda para a direita no sentido anti-horario e vice-versa para o sentido horario
+//            também começa acendendo o LED da esquerda para a direita no sentido anti-horario e vice-versa para o sentido horario
 // Parametros: led_aceso - LED que sera aceso
 // Retorno: void
 void acendeLED(uint16_t led_aceso)
 {
-	switch(led_aceso)
-	{
-		case 0:
-			PortA_Output(0x00);
-			PortQ_Output(0x01);
-			break;
-		case 1:
-			PortA_Output(0x00);
-			PortQ_Output(0x02);
-			break;
-		case 2:
-			PortA_Output(0x00);
-			PortQ_Output(0x04);
-			break;		
-		case 3:
-			PortA_Output(0x00);
-			PortQ_Output(0x08);
-			break;		
-		case 4:
-			PortA_Output(0x10);
-			PortQ_Output(0x00);
-			break;		
-		case 5:
-			PortA_Output(0x20);
-			PortQ_Output(0x00);
-			break;		
-		case 6:
-			PortA_Output(0x40);
-			PortQ_Output(0x00);
-			break;		
-		case 7:
-			PortA_Output(0x80);
-			PortQ_Output(0x00);
-			break;		
-		default:
-			PortA_Output(0x00);
-			PortQ_Output(0x00);
-			break;
-	}
-	PortP_Output(0x20); //aciona transistor
-	return;
+   switch(led_aceso)
+   {
+      case 0:
+         PortA_Output(0x00);
+         PortQ_Output(0x01);
+         break;
+      case 1:
+         PortA_Output(0x00);
+         PortQ_Output(0x02);
+         break;
+      case 2:
+         PortA_Output(0x00);
+         PortQ_Output(0x04);
+         break;      
+      case 3:
+         PortA_Output(0x00);
+         PortQ_Output(0x08);
+         break;      
+      case 4:
+         PortA_Output(0x10);
+         PortQ_Output(0x00);
+         break;      
+      case 5:
+         PortA_Output(0x20);
+         PortQ_Output(0x00);
+         break;      
+      case 6:
+         PortA_Output(0x40);
+         PortQ_Output(0x00);
+         break;      
+      case 7:
+         PortA_Output(0x80);
+         PortQ_Output(0x00);
+         break;      
+      default:
+         PortA_Output(0x00);
+         PortQ_Output(0x00);
+         break;
+   }
+   PortP_Output(0x20); //aciona transistor
+   return;
 }
 
-void Bobina()
+static void Bobina()
 {
    int contLed = 0, ledHor = 0, ledAnti = 7;
    int auxVelocidade = 0;
    int sentido = 0;
-   if(stMotorValues.usSpeedVal == FULL_STEP){
+   if(stMotorValues.ucSpeedType == FULL_STEP){
       auxVelocidade = 2;
    }
-   else if(stMotorValues.usSpeedVal == HALF_STEP){
+   else if(stMotorValues.ucSpeedType == HALF_STEP){
       auxVelocidade = 1;
    }
 
@@ -536,33 +531,33 @@ void Bobina()
    else if(stMotorValues.ucDirection == COUNTERCLOCKWISE){
       sentido = -1;
    }
-	while(contPasso < 4*auxVelocidade*stMotorValues.usAngleVal){
-		motorRotation(stMotorValues.ucDirection, auxVelocidade);
+   while(contPasso < 4*auxVelocidade*stMotorValues.dAngleVal){
+      motorRotation(stMotorValues.ucDirection, auxVelocidade);
       if(contPasso%(15*auxVelocidade)==0){
          msg[8] = stMotorValues.ucDirection;
-			msg[10] = stMotorValues.usSpeedVal;
-			msg[12] = contPasso;
-			uart_uartTxString(msg, 50);
+         msg[10] = stMotorValues.ucSpeedType;
+         msg[12] = contPasso;
+         uart_uartTxString(msg, 50);
       }
-		if(contPasso%(45*auxVelocidade)==0)
-		{
-			if( contLed == 0 && sentido == -1){
-				 ledAnti--;
-             contLed = ledAnti;
+      if(contPasso%(45*auxVelocidade)==0)
+      {
+         if( contLed == 0 && sentido == -1){
+            ledAnti--;
+            contLed = ledAnti;
          }
-			else if ( contLed == 7 && sentido == 1){
-			    ledHor++;
-             contLed = ledHor;
+         else if ( contLed == 7 && sentido == 1){
+            ledHor++;
+            contLed = ledHor;
          }
-			else 
-				contLed += sentido;
-		}
+         else 
+            contLed += sentido;
+      }
       
-		Liga_led(contLed);
-	}
-	Liga_led(10);
+      acendeLED(contLed);
+   }
+   acendeLED(10);
    stStates.ucSysState = SYS_WAIT_FOR_RESET;
-	return;
+   return;
 }
 
 ///////// HANDLERS IMPLEMENTATIONS //////////
