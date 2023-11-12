@@ -171,9 +171,9 @@ static MotorValues   stMotorValues;
 static unsigned char ucIndex;
 
 int32_t passo;
-int32_t contPasso;
+unsigned short contPasso;
 // complete step and middle step for a motor with 1.8° step angle and 2 phases   
-uint32_t passo_completo[4] = {0x01, 0x02, 0x04, 0x08};
+uint32_t passo_completo[4] = {0x01, 0x03, 0x02, 0x06};
 uint32_t meio_passo[8] = {0x01, 0x03, 0x02, 0x06, 0x04, 0x0C, 0x08, 0x09};
 
 ///////// LOCAL FUNCTIONS IMPLEMENTATIONS //////////
@@ -444,12 +444,12 @@ static void waitForReset(void)
 // Retorno: void
 void motorRotation(char sentido, int velocidade)
 {
-   SysTick_Wait1ms(2);
+   SysTick_Wait1ms(10);
 
-   if(velocidade == FULL_STEP){
+   if (velocidade == (FULL_STEP + 1)){
       PortE_Output(passo_completo[passo]);
    }
-   else if(velocidade == HALF_STEP){
+   else if (velocidade == (HALF_STEP + 1)){
       PortE_Output(meio_passo[passo]);
    }
 
@@ -521,14 +521,8 @@ static void Bobina()
 {
    uart_clearTerminal();
    int contLed = 0, ledHor = 0, ledAnti = 7;
-   int auxVelocidade = 0;
+   int auxVelocidade = (stMotorValues.ucSpeedType + 1);
    int sentido = 0;
-   if (stMotorValues.ucSpeedType == FULL_STEP){
-      auxVelocidade = 2;
-   }
-   else if (stMotorValues.ucSpeedType == HALF_STEP){
-      auxVelocidade = 1;
-   }
 
    if (stMotorValues.ucDirection == CLOCKWISE){
       sentido = 1;
@@ -545,7 +539,9 @@ static void Bobina()
          uart_uartTxString("\r\nTipo de velocidade: ", 22);
          uart_uartTxIntToChar(stMotorValues.ucSpeedType);
          uart_uartTxString("\r\nPassos dados: ", 16);
-         uart_uartTxIntToChar((unsigned char)contPasso);
+         uart_uartTxIntToChar((unsigned char)(contPasso / 100));
+         uart_uartTxIntToChar((unsigned char)((contPasso / 10) - ((contPasso / 100) * 10)));
+         uart_uartTxIntToChar((unsigned char)(contPasso % 10));
          uart_uartTxString("\r\n", 2);
       }
 
