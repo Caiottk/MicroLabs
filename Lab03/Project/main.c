@@ -55,10 +55,10 @@ typedef enum EN_MotorSpeed
 
 typedef struct MotorValues
 {
-   unsigned char ucAngle[ANGLE_CHAR_SIZE];
-   unsigned char ucDirection;
-   unsigned char ucSpeedType;
-   double        dAngleVal;
+   unsigned char  ucAngle[ANGLE_CHAR_SIZE];
+   unsigned char  ucDirection;
+   unsigned char  ucSpeedType;
+   unsigned short usAngleVal;
 } MotorValues;
 
 ///////// EXTERNAL FUNCTIONS INCLUSIONS //////////
@@ -147,6 +147,11 @@ static void changeStatesAfterComma(void);
 static bool checkMotorValues(MotorValues *pstMotorValues);
 
 /**
+ * @brief Sets all variables to their correct values before the reset state
+ */
+static void changeToResetState(void);
+
+/**
  * @brief Waits for the '*' character to be received
  * 
  * If received, it resets the system to it's initial state
@@ -170,7 +175,6 @@ int32_t contPasso;
 // complete step and middle step for a motor with 1.8° step angle and 2 phases   
 uint32_t passo_completo[4] = {0x01, 0x02, 0x04, 0x08};
 uint32_t meio_passo[8] = {0x01, 0x03, 0x02, 0x06, 0x04, 0x0C, 0x08, 0x09};
-char     msg[50] = "Sentido: ,velocidade e posicionamento";
 
 ///////// LOCAL FUNCTIONS IMPLEMENTATIONS //////////
 
@@ -196,7 +200,7 @@ int main(void)
 
          case SYS_ROTATE_MOTOR:
          {
-            //Bobina();
+            Bobina();
          }
          break;
 
@@ -230,7 +234,7 @@ static void initVars(void)
    stStates.ucSysState  = SYS_READ_DATA;
    stStates.ucReadState = READ_ANGLE;
 
-   stMotorValues.dAngleVal   = 0;
+   stMotorValues.usAngleVal  = 0;
    stMotorValues.ucDirection = INVALID_NUMBER;
    stMotorValues.ucSpeedType = INVALID_NUMBER;
 
@@ -406,11 +410,11 @@ static bool checkMotorValues(MotorValues *pstMotorValues)
 {
    bool bMustRotateMotor = true;
 
-   pstMotorValues->dAngleVal = (double)((pstMotorValues->ucAngle[0] * 100) +
-                                        (pstMotorValues->ucAngle[1] * 10)  +
-                                        pstMotorValues->ucAngle[2]);
+   pstMotorValues->usAngleVal = (unsigned short)((pstMotorValues->ucAngle[0] * 100) +
+                                                 (pstMotorValues->ucAngle[1] * 10)  +
+                                                 pstMotorValues->ucAngle[2]);
 
-   if ((pstMotorValues->dAngleVal   > MAX_ANGLE) ||
+   if ((pstMotorValues->usAngleVal  > MAX_ANGLE) ||
        (pstMotorValues->ucDirection > CLOCKWISE) ||
        (pstMotorValues->ucSpeedType > FULL_STEP))
    {
@@ -515,33 +519,39 @@ void acendeLED(uint16_t led_aceso)
 
 static void Bobina()
 {
+   uart_clearTerminal();
    int contLed = 0, ledHor = 0, ledAnti = 7;
    int auxVelocidade = 0;
    int sentido = 0;
-   if(stMotorValues.ucSpeedType == FULL_STEP){
+   if (stMotorValues.ucSpeedType == FULL_STEP){
       auxVelocidade = 2;
    }
-   else if(stMotorValues.ucSpeedType == HALF_STEP){
+   else if (stMotorValues.ucSpeedType == HALF_STEP){
       auxVelocidade = 1;
    }
 
-   if(stMotorValues.ucDirection == CLOCKWISE){
+   if (stMotorValues.ucDirection == CLOCKWISE){
       sentido = 1;
    }
-   else if(stMotorValues.ucDirection == COUNTERCLOCKWISE){
+   else if (stMotorValues.ucDirection == COUNTERCLOCKWISE){
       sentido = -1;
    }
-   while(contPasso < 4*auxVelocidade*stMotorValues.dAngleVal){
+   while (contPasso < (4 * auxVelocidade * stMotorValues.usAngleVal)){
       motorRotation(stMotorValues.ucDirection, auxVelocidade);
-      if(contPasso%(15*auxVelocidade)==0){
-         msg[8] = stMotorValues.ucDirection;
-         msg[10] = stMotorValues.ucSpeedType;
-         msg[12] = contPasso;
-         uart_uartTxString(msg, 50);
+
+      if ((contPasso % (15*auxVelocidade)) == 0){
+         uart_uartTxString("Sentido: ", 9);
+         uart_uartTxIntToChar(stMotorValues.ucDirection);
+         uart_uartTxString("\r\nTipo de velocidade: ", 22);
+         uart_uartTxIntToChar(stMotorValues.ucSpeedType);
+         uart_uartTxString("\r\nPassos dados: ", 16);
+         uart_uartTxIntToChar((unsigned char)contPasso);
+         uart_uartTxString("\r\n", 2);
       }
-      if(contPasso%(45*auxVelocidade)==0)
+
+      if ((contPasso % (45*auxVelocidade)) == 0)
       {
-         if( contLed == 0 && sentido == -1){
+         if ( contLed == 0 && sentido == -1){
             ledAnti--;
             contLed = ledAnti;
          }
@@ -556,8 +566,18 @@ static void Bobina()
       acendeLED(contLed);
    }
    acendeLED(10);
-   stStates.ucSysState = SYS_WAIT_FOR_RESET;
+   changeToResetState();
    return;
+}
+
+static void changeToResetState(void)
+{
+   stStates.ucSysState = SYS_WAIT_FOR_RESET;
+   uart_clearTerminal();
+   uart_uartTxString("Rotacao finalizada\n\r", 20);
+   uart_uartTxString("Pressione '*' para resetar o sistema", 36);
+   GPIO_PORTN_DATA_R &= ~0x3; // Turns off LEDs
+   TIMER2_CTL_R       = 0;    // Disables timer
 }
 
 ///////// HANDLERS IMPLEMENTATIONS //////////
@@ -568,12 +588,7 @@ void GPIOPortJ_Handler(void)
 
    if (SYS_ROTATE_MOTOR == stStates.ucSysState)
    {
-      stStates.ucSysState = SYS_WAIT_FOR_RESET;
-      uart_clearTerminal();
-      uart_uartTxString("Rotacao abortada\n\r", 18);
-      uart_uartTxString("Pressione '*' para resetar o sistema", 36);
-      GPIO_PORTN_DATA_R &= ~0x3; // Turns off LEDs
-      TIMER2_CTL_R       = 0;    // Disables timer
+      changeToResetState();
    }
 
    return;
