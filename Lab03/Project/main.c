@@ -107,7 +107,7 @@ static void initVars(void);
 /**
  * @brief Reads the input from the terminal and stores in the correct place
  */
-static void readInput(void);
+static void readInput(MotorValues *pstMotorValues, States *pstStates);
 
 /**
  * @brief Gets a character from the terminal and stores it in pucAgleArray[*pucIndex]
@@ -165,7 +165,7 @@ static void waitForReset(void);
 
 static void motorRotation(char sentido, int velocidade);
 
-static void Bobina();
+static void rotate(MotorValues *pstMotorValues);
 
 static void Pisca_leds(void);
 
@@ -183,7 +183,7 @@ long ledAnti = 7;
 long auxVelocidade = 0;
 
 // complete step and half step for a motor with 1.8° step angle and 2 phases
-unsigned long passo_completo[4] = {0x00000002, 0x00000004, 0x00000001, 0x00000008};
+unsigned long passo_completo[4] = {0x00000008, 0x00000001, 0x00000002, 0x00000004};
 unsigned long meio_passo[8]     = {0x00000001, 0x00000009, 0x00000008, 0x0000000A,
                                    0x00000002, 0x00000006, 0x00000006, 0x00000001};
 
@@ -205,13 +205,13 @@ int main(void)
       {
          case SYS_READ_DATA:
          {
-            readInput();
+            readInput(&stMotorValues, &stStates);
          }
          break;
 
          case SYS_ROTATE_MOTOR:
          {
-            Bobina();
+            rotate(&stMotorValues);
          }
          break;
 
@@ -249,8 +249,10 @@ static void initVars(void)
    stMotorValues.usAngleInSteps = 0;
    stMotorValues.ucDirection    = INVALID_NUMBER;
    stMotorValues.ucSpeedType    = INVALID_NUMBER;
-   passo = 0;
+   passo     = 0;
    contPasso = 0;
+   ledHor    = 0;
+   ledAnti   = 7;
 
    for (ucIndex = 0; ucIndex < ANGLE_CHAR_SIZE; ucIndex++)
    {
@@ -265,25 +267,25 @@ static void initVars(void)
 }
 
 
-static void readInput(void)
+static void readInput(MotorValues *pstMotorValues, States *pstStates)
 {
-   switch (stStates.ucReadState)
+   switch (pstStates->ucReadState)
    {
       case READ_ANGLE:
       {
-         getAngleChar(&stMotorValues.ucAngle[0], &ucIndex);
+         getAngleChar(&pstMotorValues->ucAngle[0], &ucIndex);
       }
       break;
 
       case READ_DIRECTION:
       {
-         getDirectionChar(&stMotorValues.ucDirection);
+         getDirectionChar(&pstMotorValues->ucDirection);
       }
       break;
 
       case READ_SPEED:
       {
-         getSpeedChar(&stMotorValues.ucSpeedType);
+         getSpeedChar(&pstMotorValues->ucSpeedType);
       }
       break;
 
@@ -489,6 +491,7 @@ void motorRotation(char sentido, int velocidade)
 
    return;
 }
+
 // Funcao: acendeLED
 // Descricao: acende um LED a cada 45° de rotacao e mantem acesos os LEDs anteriores
 //            também começa acendendo o LED da esquerda para a direita no sentido anti-horario e vice-versa para o sentido horario
@@ -540,18 +543,18 @@ void acendeLED(uint16_t led_aceso)
    return;
 }
 
-static void Bobina()
+static void rotate(MotorValues *pstMotorValues)
 {
-   if (contPasso < stMotorValues.usAngleInSteps)
+   if (contPasso < pstMotorValues->usAngleInSteps)
    {
-      motorRotation(stMotorValues.ucDirection, auxVelocidade);
+      motorRotation(pstMotorValues->ucDirection, auxVelocidade);
 
       if ((contPasso % (16 / auxVelocidade)) == 0) // When the angle is a multiple of 15°
       {
-         uart_uartTxString("Sentido: ", 9);
-         uart_uartTxIntToChar(stMotorValues.ucDirection);
+         uart_uartTxString("\r\nSentido: ", 11);
+         uart_uartTxIntToChar(pstMotorValues->ucDirection);
          uart_uartTxString("\r\nTipo de velocidade: ", 22);
-         uart_uartTxIntToChar(stMotorValues.ucSpeedType);
+         uart_uartTxIntToChar(pstMotorValues->ucSpeedType);
          uart_uartTxString("\r\nPassos dados: ", 16);
          uart_uartTxIntToChar((unsigned char)(contPasso / 100));
          uart_uartTxIntToChar((unsigned char)((contPasso / 10) - ((contPasso / 100) * 10)));
@@ -561,7 +564,7 @@ static void Bobina()
 
       if ((contPasso % (50 / auxVelocidade)) == 0) // When the angle is a multiple of 45°
       {
-         if (CLOCKWISE == stMotorValues.ucDirection)
+         if (CLOCKWISE == pstMotorValues->ucDirection)
          {
             acendeLED(ledHor);
             ledHor++;

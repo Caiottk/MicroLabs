@@ -4,6 +4,8 @@
 
 #define GPIO_PORTE 0x10 //bit 7
 
+extern void PortF_Output(uint32_t valor);
+
 extern void motor_init(void){
     // clk da porta
     SYSCTL_RCGCGPIO_R |= GPIO_PORTE;
@@ -25,6 +27,8 @@ extern void motor_init(void){
 
     // 6. Setar os bits de DEN para habilitar I/O digital
     GPIO_PORTE_AHB_DEN_R = 0x0F;
+
+    PortF_Output(0x0000000C); // Enables all H-Bridge pins
 
     return;
 }
