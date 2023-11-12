@@ -237,6 +237,8 @@ static void initVars(void)
    stMotorValues.usAngleVal  = 0;
    stMotorValues.ucDirection = INVALID_NUMBER;
    stMotorValues.ucSpeedType = INVALID_NUMBER;
+   passo = 0;
+   contPasso = 0;
 
    for (ucIndex = 0; ucIndex < ANGLE_CHAR_SIZE; ucIndex++)
    {
@@ -530,10 +532,10 @@ static void Bobina()
    else if (stMotorValues.ucDirection == COUNTERCLOCKWISE){
       sentido = -1;
    }
-   while (contPasso < (4 * auxVelocidade * stMotorValues.usAngleVal)){
+   while (contPasso <(5*(stMotorValues.usAngleVal*auxVelocidade))/9){
       motorRotation(stMotorValues.ucDirection, auxVelocidade);
 
-      if ((contPasso % (15*auxVelocidade)) == 0){
+      if ((contPasso % (8*auxVelocidade)) == 0){
          uart_uartTxString("Sentido: ", 9);
          uart_uartTxIntToChar(stMotorValues.ucDirection);
          uart_uartTxString("\r\nTipo de velocidade: ", 22);
@@ -545,7 +547,7 @@ static void Bobina()
          uart_uartTxString("\r\n", 2);
       }
 
-      if ((contPasso % (45*auxVelocidade)) == 0)
+      if ((contPasso % (25*auxVelocidade)) == 0)
       {
          if ( contLed == 0 && sentido == -1){
             ledAnti--;
