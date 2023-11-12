@@ -7,13 +7,17 @@
 
 ///////// DEFINES, MACROS AND STRUCTS //////////
 
-#define ANGLE_CHAR_SIZE     3
-#define SPEED_CHAR_SIZE     3
+#define ANGLE_CHAR_SIZE       3
 
-#define MAX_ANGLE           360
-#define MAX_SPEED           100
+#define MAX_ANGLE             360
+#define MAX_SPEED             100
 
-#define INVALID_NUMBER 0xFF
+#define INVALID_NUMBER        0xFF
+
+#define DEGREES_PER_HALF_STEP 0.9
+
+#define CLOCKWISE_SUM         1
+#define COUNTERCLOCKWISE_SUM -1
 
 typedef enum bool
 {
@@ -59,6 +63,7 @@ typedef struct MotorValues
    unsigned char  ucDirection;
    unsigned char  ucSpeedType;
    unsigned short usAngleVal;
+   unsigned short usAngleInSteps;
 } MotorValues;
 
 ///////// EXTERNAL FUNCTIONS INCLUSIONS //////////
@@ -80,7 +85,7 @@ void PortP_Output(uint32_t valor);
 void acendeLED(uint16_t led_aceso);
 
 void motor_init(void);
-void PortE_Output(uint32_t data);
+void PortE_Output(unsigned long data);
 
 void timerInit(void);
 
@@ -172,9 +177,15 @@ static unsigned char ucIndex;
 
 int32_t passo;
 unsigned short contPasso;
-// complete step and middle step for a motor with 1.8° step angle and 2 phases   
-uint32_t passo_completo[4] = {0x01, 0x03, 0x02, 0x06};
-uint32_t meio_passo[8] = {0x01, 0x03, 0x02, 0x06, 0x04, 0x0C, 0x08, 0x09};
+
+long ledHor = 0;
+long ledAnti = 7;
+long auxVelocidade = 0;
+
+// complete step and half step for a motor with 1.8° step angle and 2 phases
+unsigned long passo_completo[4] = {0x00000002, 0x00000004, 0x00000001, 0x00000008};
+unsigned long meio_passo[8]     = {0x00000001, 0x00000009, 0x00000008, 0x0000000A,
+                                   0x00000002, 0x00000006, 0x00000006, 0x00000001};
 
 ///////// LOCAL FUNCTIONS IMPLEMENTATIONS //////////
 
@@ -234,9 +245,10 @@ static void initVars(void)
    stStates.ucSysState  = SYS_READ_DATA;
    stStates.ucReadState = READ_ANGLE;
 
-   stMotorValues.usAngleVal  = 0;
-   stMotorValues.ucDirection = INVALID_NUMBER;
-   stMotorValues.ucSpeedType = INVALID_NUMBER;
+   stMotorValues.usAngleVal     = 0;
+   stMotorValues.usAngleInSteps = 0;
+   stMotorValues.ucDirection    = INVALID_NUMBER;
+   stMotorValues.ucSpeedType    = INVALID_NUMBER;
    passo = 0;
    contPasso = 0;
 
@@ -372,6 +384,7 @@ static void changeStatesAfterComma(void)
          stStates.ucReadState = READ_ANGLE;
          ucIndex = 0;
          TIMER2_CTL_R = 1; // Enables timer
+         auxVelocidade = (stMotorValues.ucSpeedType + 1);
       }
       else
       {
@@ -416,6 +429,10 @@ static bool checkMotorValues(MotorValues *pstMotorValues)
                                                  (pstMotorValues->ucAngle[1] * 10)  +
                                                  pstMotorValues->ucAngle[2]);
 
+   pstMotorValues->usAngleInSteps = (unsigned short)((pstMotorValues->usAngleVal) /
+                                                     ((pstMotorValues->ucSpeedType + 1) *
+                                                      DEGREES_PER_HALF_STEP));
+
    if ((pstMotorValues->usAngleVal  > MAX_ANGLE) ||
        (pstMotorValues->ucDirection > CLOCKWISE) ||
        (pstMotorValues->ucSpeedType > FULL_STEP))
@@ -455,19 +472,22 @@ void motorRotation(char sentido, int velocidade)
       PortE_Output(meio_passo[passo]);
    }
 
-   if(stMotorValues.ucDirection == CLOCKWISE){
+   if (stMotorValues.ucDirection == CLOCKWISE){
       passo++;
-      if(passo == 4*velocidade){
+      if(passo == (8 / velocidade)){
          passo = 0;
       }
    }
-   else if(stMotorValues.ucDirection == COUNTERCLOCKWISE){
+   else if (stMotorValues.ucDirection == COUNTERCLOCKWISE){
       passo--;
       if(passo == -1){
-         passo = 4*velocidade - 1;
+         passo = (8 / velocidade) - 1;
       }
    }
+
    contPasso++;
+
+   return;
 }
 // Funcao: acendeLED
 // Descricao: acende um LED a cada 45° de rotacao e mantem acesos os LEDs anteriores
@@ -515,27 +535,19 @@ void acendeLED(uint16_t led_aceso)
          PortQ_Output(0x00);
          break;
    }
+
    PortP_Output(0x20); //aciona transistor
    return;
 }
 
 static void Bobina()
 {
-   uart_clearTerminal();
-   int contLed = 0, ledHor = 0, ledAnti = 7;
-   int auxVelocidade = (stMotorValues.ucSpeedType + 1);
-   int sentido = 0;
-
-   if (stMotorValues.ucDirection == CLOCKWISE){
-      sentido = 1;
-   }
-   else if (stMotorValues.ucDirection == COUNTERCLOCKWISE){
-      sentido = -1;
-   }
-   while (contPasso <(5*(stMotorValues.usAngleVal*auxVelocidade))/9){
+   if (contPasso < stMotorValues.usAngleInSteps)
+   {
       motorRotation(stMotorValues.ucDirection, auxVelocidade);
 
-      if ((contPasso % (8*auxVelocidade)) == 0){
+      if ((contPasso % (16 / auxVelocidade)) == 0) // When the angle is a multiple of 15°
+      {
          uart_uartTxString("Sentido: ", 9);
          uart_uartTxIntToChar(stMotorValues.ucDirection);
          uart_uartTxString("\r\nTipo de velocidade: ", 22);
@@ -547,24 +559,26 @@ static void Bobina()
          uart_uartTxString("\r\n", 2);
       }
 
-      if ((contPasso % (25*auxVelocidade)) == 0)
+      if ((contPasso % (50 / auxVelocidade)) == 0) // When the angle is a multiple of 45°
       {
-         if ( contLed == 0 && sentido == -1){
-            ledAnti--;
-            contLed = ledAnti;
-         }
-         else if ( contLed == 7 && sentido == 1){
+         if (CLOCKWISE == stMotorValues.ucDirection)
+         {
+            acendeLED(ledHor);
             ledHor++;
-            contLed = ledHor;
          }
-         else 
-            contLed += sentido;
+         else // if (COUNTERCLOCKWISE == stMotorValues.ucDirection)
+         {
+            acendeLED(ledAnti);
+            ledAnti--;
+         }
       }
-      
-      acendeLED(contLed);
    }
-   acendeLED(10);
-   changeToResetState();
+   else
+   {
+      acendeLED(10);
+      changeToResetState();
+   }
+
    return;
 }
 

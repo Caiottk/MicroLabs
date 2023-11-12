@@ -29,8 +29,8 @@ extern void motor_init(void){
     return;
 }
 
-extern void PortE_Output(uint32_t data){
-    uint32_t temp;
+extern void PortE_Output(unsigned long data){
+    unsigned long temp;
     temp = GPIO_PORTE_AHB_DATA_R & 0xFFFFFFF0;
     temp = temp | data;
     GPIO_PORTE_AHB_DATA_R = temp;
