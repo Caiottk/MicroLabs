@@ -152,6 +152,13 @@ static void changeStatesAfterComma(void);
 static bool checkMotorValues(MotorValues *pstMotorValues);
 
 /**
+ * @brief Changes all variables so that the rotate state works
+ * 
+ * @param pstMotorValues Pointer to the struct where motor values are stored
+ */
+static void changeToRotateState(MotorValues *pstMotorValues, States *pstStates);
+
+/**
  * @brief Sets all variables to their correct values before the reset state
  */
 static void changeToResetState(void);
@@ -183,7 +190,7 @@ long ledAnti = 7;
 long auxVelocidade = 0;
 
 // complete step and half step for a motor with 1.8° step angle and 2 phases
-unsigned long passo_completo[4] = {0x00000008, 0x00000001, 0x00000002, 0x00000004};
+unsigned long passo_completo[4] = {0x00000001, 0x00000008, 0x00000002, 0x00000004};
 unsigned long meio_passo[8]     = {0x00000001, 0x00000009, 0x00000008, 0x0000000A,
                                    0x00000002, 0x00000006, 0x00000006, 0x00000001};
 
@@ -379,14 +386,7 @@ static void changeStatesAfterComma(void)
       bool bMustRotateMotor = checkMotorValues(&stMotorValues);
       if (true == bMustRotateMotor)
       {
-         uart_clearTerminal();
-         uart_uartTxString("Motor girando...", 16);
-         uart_uartTxString("\n\rPressione algum push_btn para abortar", 39);
-         stStates.ucSysState  = SYS_ROTATE_MOTOR;
-         stStates.ucReadState = READ_ANGLE;
-         ucIndex = 0;
-         TIMER2_CTL_R = 1; // Enables timer
-         auxVelocidade = (stMotorValues.ucSpeedType + 1);
+         changeToRotateState(&stMotorValues, &stStates);
       }
       else
       {
@@ -418,6 +418,36 @@ static void changeStatesAfterComma(void)
          }
          break;
       }
+   }
+
+   return;
+}
+
+static void changeToRotateState(MotorValues *pstMotorValues, States *pstStates)
+{
+   uart_clearTerminal();
+   uart_uartTxString("Motor girando...", 16);
+   uart_uartTxString("\n\rPressione algum push_btn para abortar", 39);
+   pstStates->ucSysState  = SYS_ROTATE_MOTOR;
+   pstStates->ucReadState = READ_ANGLE;
+   ucIndex = 0;
+   TIMER2_CTL_R = 1; // Enables timer
+   auxVelocidade = (stMotorValues.ucSpeedType + 1);
+
+   if (COUNTERCLOCKWISE == pstMotorValues->ucDirection)
+   {
+      if (FULL_STEP == pstMotorValues->ucSpeedType)
+      {
+         passo = 3;
+      }
+      else
+      {
+         passo = 7;
+      }
+   }
+   else
+   {
+      passo = 0;
    }
 
    return;

@@ -28,7 +28,7 @@ extern void motor_init(void){
     // 6. Setar os bits de DEN para habilitar I/O digital
     GPIO_PORTE_AHB_DEN_R = 0x0F;
 
-    PortF_Output(0x0000000C); // Enables all H-Bridge pins
+    PortF_Output(0x0000000C); // Enables all H-Bridge pins - F2 and F3
 
     return;
 }
