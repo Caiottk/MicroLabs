@@ -47,10 +47,10 @@ void GPIO_Init(void)
    GPIO_PORTP_PCTL_R = 0x00;
 
    // 4. DIR para 0 se for entrada, 1 se for saida
-   GPIO_PORTA_AHB_DIR_R = 0x02;
+   GPIO_PORTA_AHB_DIR_R = 0xF2;
    GPIO_PORTJ_AHB_DIR_R = 0x00;
    GPIO_PORTN_DIR_R = 0x03; //BIT0 | BIT1
-   GPIO_PORTF_AHB_DIR_R = 0x11;
+   GPIO_PORTF_AHB_DIR_R = 0x0C;
    GPIO_PORTQ_DIR_R = 0x0F;
    GPIO_PORTP_DIR_R = 0x20;
       
@@ -63,10 +63,10 @@ void GPIO_Init(void)
    GPIO_PORTP_AFSEL_R = 0x00;
       
    // 6. Setar os bits de DEN para habilitar I/O digital
-   GPIO_PORTA_AHB_DEN_R = 0x03;
+   GPIO_PORTA_AHB_DEN_R = 0xF3;
    GPIO_PORTJ_AHB_DEN_R = 0x03;   //Bit0 e bit1
    GPIO_PORTN_DEN_R = 0x03;          //Bit0 e bit1
-   GPIO_PORTF_AHB_DEN_R = 0x11;   //Bit0 e bit1
+   GPIO_PORTF_AHB_DEN_R = 0x0C;   //Bit0 e bit1
    GPIO_PORTQ_DEN_R = 0x0F;   //Bit0 e bit1
    GPIO_PORTP_DEN_R = 0x20;   //PP5 como saida
 
@@ -112,7 +112,7 @@ extern void timerInit(void)
 
    TIMER2_TAMR_R = 1; // Using 1-shot timer on timer A
 
-   TIMER2_TAILR_R = 55999999; // CUNTER = (700ms / (1/80MHz)) - 1
+   TIMER2_TAILR_R = 15999999; // CUNTER = (200ms / (1/80MHz)) - 1
 
    TIMER2_TAPR_R = 0; // No prescale configured
 
@@ -133,7 +133,7 @@ void PortA_Output(unsigned long valor)
    uint32_t temp;
    //vamos zerar somente os bits menos significativos
    //para uma escrita amigavel nos bits 0 e 1
-   temp = GPIO_PORTA_AHB_DATA_R & 0xFC;
+   temp = GPIO_PORTA_AHB_DATA_R & 0x0F;
    //agora vamos fazer o OR com o valor recebido na funcao
    temp = temp | valor;
    GPIO_PORTA_AHB_DATA_R = temp;
@@ -172,7 +172,7 @@ extern void PortF_Output(uint32_t valor)
     uint32_t temp;
     //vamos zerar somente os bits menos significativos
     //para uma escrita amigavel nos bits 0 e 1
-    temp = GPIO_PORTF_AHB_DATA_R & 0xEE;
+    temp = GPIO_PORTF_AHB_DATA_R & 0x00;
     //agora vamos fazer o OR com o valor recebido na funcao
     temp = temp | valor;
     GPIO_PORTF_AHB_DATA_R = temp; 

@@ -19,6 +19,12 @@
 #define CLOCKWISE_SUM         1
 #define COUNTERCLOCKWISE_SUM -1
 
+#define HALF_STEPS_FOR_45_DEGREES 50
+#define HALF_STEPS_FOR_15_DEGREES 16
+
+// Apparently the compiler doesn't like when I use sizeof()
+#define HALF_STEP_ARRAY_SIZE 8
+
 typedef enum bool
 {
    false,
@@ -170,7 +176,7 @@ static void changeToResetState(void);
  */
 static void waitForReset(void);
 
-static void motorRotation(char sentido, int velocidade);
+static void motorRotation(char sentido, long lSpeedType);
 
 static void rotate(MotorValues *pstMotorValues);
 
@@ -187,12 +193,12 @@ unsigned short contPasso;
 
 long ledHor = 0;
 long ledAnti = 7;
-long auxVelocidade = 0;
+long lSpeedTypeForCalculus = 0;
 
 // complete step and half step for a motor with 1.8° step angle and 2 phases
-unsigned long passo_completo[4] = {0x00000001, 0x00000008, 0x00000002, 0x00000004};
-unsigned long meio_passo[8]     = {0x00000001, 0x00000009, 0x00000008, 0x0000000A,
-                                   0x00000002, 0x00000006, 0x00000006, 0x00000001};
+unsigned long passo_completo[4] = {0x00000008, 0x00000001, 0x00000004, 0x00000002};
+unsigned long meio_passo[8]     = {0x00000008, 0x00000009, 0x00000001, 0x00000005,
+                                   0x00000004, 0x00000008, 0x00000002, 0x00000008};
 
 ///////// LOCAL FUNCTIONS IMPLEMENTATIONS //////////
 
@@ -432,7 +438,7 @@ static void changeToRotateState(MotorValues *pstMotorValues, States *pstStates)
    pstStates->ucReadState = READ_ANGLE;
    ucIndex = 0;
    TIMER2_CTL_R = 1; // Enables timer
-   auxVelocidade = (stMotorValues.ucSpeedType + 1);
+   lSpeedTypeForCalculus = (stMotorValues.ucSpeedType + 1);
 
    if (COUNTERCLOCKWISE == pstMotorValues->ucDirection)
    {
@@ -491,29 +497,29 @@ static void waitForReset(void)
 // Descricao: movimenta o motor de passo mostrando no terminal o sentido, velocidade e em qual posicionamento o motor está se movendo, com resolução de 15°.
 // Parametros: angulo - angulo de rotacao
 //             sentido - sentido da rotacao (horario ou anti-horario)
-//             velocidade - velocidade da rotacao (completo ou meio passo)
+//             lSpeedType - lSpeedType da rotacao (completo ou meio passo) + 1
 // Retorno: void
-void motorRotation(char sentido, int velocidade)
+void motorRotation(char sentido, long lSpeedType)
 {
    SysTick_Wait1ms(10);
 
-   if (velocidade == (FULL_STEP + 1)){
+   if (lSpeedType == (FULL_STEP + 1)){
       PortE_Output(passo_completo[passo]);
    }
-   else if (velocidade == (HALF_STEP + 1)){
+   else if (lSpeedType == (HALF_STEP + 1)){
       PortE_Output(meio_passo[passo]);
    }
 
    if (stMotorValues.ucDirection == CLOCKWISE){
       passo++;
-      if(passo == (8 / velocidade)){
+      if(passo == (HALF_STEP_ARRAY_SIZE / lSpeedType)){
          passo = 0;
       }
    }
    else if (stMotorValues.ucDirection == COUNTERCLOCKWISE){
       passo--;
       if(passo == -1){
-         passo = (8 / velocidade) - 1;
+         passo = (HALF_STEP_ARRAY_SIZE / lSpeedType) - 1;
       }
    }
 
@@ -577,9 +583,9 @@ static void rotate(MotorValues *pstMotorValues)
 {
    if (contPasso < pstMotorValues->usAngleInSteps)
    {
-      motorRotation(pstMotorValues->ucDirection, auxVelocidade);
+      motorRotation(pstMotorValues->ucDirection, lSpeedTypeForCalculus);
 
-      if ((contPasso % (16 / auxVelocidade)) == 0) // When the angle is a multiple of 15°
+      if ((contPasso % (HALF_STEPS_FOR_15_DEGREES / lSpeedTypeForCalculus)) == 0) // When the angle is a multiple of 15°
       {
          uart_uartTxString("\r\nSentido: ", 11);
          uart_uartTxIntToChar(pstMotorValues->ucDirection);
@@ -592,7 +598,7 @@ static void rotate(MotorValues *pstMotorValues)
          uart_uartTxString("\r\n", 2);
       }
 
-      if ((contPasso % (50 / auxVelocidade)) == 0) // When the angle is a multiple of 45°
+      if ((contPasso % (HALF_STEPS_FOR_45_DEGREES / lSpeedTypeForCalculus)) == 0) // When the angle is a multiple of 45°
       {
          if (CLOCKWISE == pstMotorValues->ucDirection)
          {

@@ -9,6 +9,12 @@
 
 #define INVALID_NUMBER 0xFF
 
+///////// EXTERNAL FUNCTIONS INCLUSIONS //////////
+// Since there is no .h in most files, theis functions must be included by hand.
+// Same as if we were using IMPORT from assembly
+
+void SysTick_Wait1ms(uint32_t delay);
+
 /////// EXTERNABLE FUNCTIONS DECLARATION ///////
 
 extern void uart_uartInit(void);
@@ -41,6 +47,8 @@ extern void uart_uartInit(void)
    UART0_CC_R = 0; // CLK = sysCLK
 
    UART0_CTL_R = (UART_CTL_UARTEN | UART_CTL_TXE | UART_CTL_RXE); // Enables Tx, Rx, HSE=0 (clkDiv = 16) and UARTEN
+
+   SysTick_Wait1ms(30);
 
    return;
 }
