@@ -11,19 +11,39 @@
 
 #define INVALID_ADC_VALUE 0xF000
 
-typedef enum en_semStates
+typedef enum SysState
 {
-	PIXCA_SEM,
-	YELLOW_SEM,
-	GREEN_SEM,
-	RED_SEM,
-} en_semStates;
+	WaitingForControl,
+	WaitingForDirection,
+	RotatingPotentiometerAndKey,
+	RotatingPotentiometer,
+} SysState;
+
+typedef enum sentido{
+	clockwise,
+	counterclockwise,
+} Sentido;
+
+typedef enum controle{
+	keyboard,
+	potent
+} Controle;
 
 typedef enum bool
 {
 	false,
 	true
 } bool;
+
+typedef struct DC_MotorRotation
+{
+	Sentido dcRotDirection;
+	Controle dcRotType;
+	uint32_t dcAdVal;
+	uint32_t dcPwmPercent;
+} DC_MotorRotation;
+
+
 
 ///////// EXTERNAL FUNCTIONS INCLUSIONS //////////
 // Since there is no .h in most files, theis functions must be included by hand.
@@ -48,9 +68,27 @@ void uart_uartTx(unsigned char txMsg);
 extern void adc_adcInit(void);
 extern void adc_startAdcConversion(void);
 
+void LCD_GPIOinit();
+void LCD_init();
+void LCD_printArrayInLcd(char *str);
+void LCD_ResetLCD();
+
+void MKBOARD_GPIOinit();
+void MKEYBOARD_readKeyboard();
+
+
 ///////// LOCAL FUNCTIONS DECLARATIONS //////////
 
+/**
+ * @brief Initializes all static variables
+ */
+static void initVars(void);
+
 static void Pisca_leds(void);
+
+///////// STATIC VARIABLES DECLARATIONS //////////
+static SysState sysState;
+static DC_MotorRotation dc_MotorRotation;
 
 ///////// LOCAL FUNCTIONS IMPLEMENTATIONS //////////
 
@@ -61,18 +99,46 @@ int main(void)
 	PLL_Init();
 	SysTick_Init();
 	GPIO_Init();
+	LCD_GPIOinit();
+	LCD_init();
+	MKBOARD_GPIOinit();
+	timerInit();
 	adc_adcInit();
+	initVars();
 
-	adc_startAdcConversion();
 	while (1)
 	{
-
-		if (INVALID_ADC_VALUE != msg)
+		switch (sysState)
 		{
-			msg = INVALID_ADC_VALUE;
-			adc_startAdcConversion();
+			case WaitingForControl:
+				LCD_ResetLCD();
+		    	break;
+			case WaitingForDirection:
+				LCD_ResetLCD();
+				break;
+			case RotatingPotentiometerAndKey:
+				LCD_ResetLCD();
+				break;
+			case RotatingPotentiometer:
+				LCD_ResetLCD();
+				break;
+			default:
+				LCD_ResetLCD();
+				break;
 		}
 	}
+}
+
+static void initVars(void)
+{
+	sysState = WaitingForControl;
+
+	dc_MotorRotation.dcRotDirection = clockwise;
+	dc_MotorRotation.dcRotType = keyboard;
+	dc_MotorRotation.dcAdVal = INVALID_ADC_VALUE;
+	dc_MotorRotation.dcPwmPercent = 0;
+
+	return;
 }
 
 static void Pisca_leds(void)
