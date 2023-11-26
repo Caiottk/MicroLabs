@@ -73,6 +73,7 @@ void uart_uartTx(unsigned char txMsg);
 
 extern void adc_adcInit(void);
 extern void adc_startAdcConversion(void);
+extern void adc_stopAdc3Conversion(void);
 extern unsigned short adc_readAdc3Value(void);
 
 extern void dcMotor_init(void);
@@ -206,12 +207,15 @@ static void initVars(void)
 	dc_MotorRotation.dcAdVal = INVALID_ADC_VALUE;
 	dc_MotorRotation.dcPwmPercent = 0;
 
+   // Stops the motor
+   dcMotor_rotateMotor(dc_MotorRotation.dcRotDirection, dc_MotorRotation.bRunNow);
+
 	SysTick_Wait1ms(1000);
 	LCD_ResetLCD();
 	LCD_printArrayInLcd(inicio, 13);
 	SysTick_Wait1ms(1000);
-	adc_startAdcConversion();
-	TIMER2_CTL_R = 1; // Enables timer
+	adc_stopAdc3Conversion();
+	TIMER2_CTL_R = 0; // Disables timer
 	return;
 }
 
@@ -262,14 +266,14 @@ static void askMotorDirection(void)
 		dc_MotorRotation.dcRotDirection = CLOCKWISE;
 		sysState = ROTATING_POTENT_AND_KEY;
 		LCD_PulaCursorSegundaLinha();
-		LCD_printArrayInLcd(antiHorario, 12);
+		LCD_printArrayInLcd(horario, 7);
 	}
 	else if (c == '1')
 	{
 		dc_MotorRotation.dcRotDirection = COUNTER_CLOCKWISE;
 		sysState = ROTATING_POTENT_AND_KEY;
 		LCD_PulaCursorSegundaLinha();
-		LCD_printArrayInLcd(horario, 7);
+		LCD_printArrayInLcd(antiHorario, 12);
 	}
 
 	SysTick_Wait1ms(1000);
@@ -324,7 +328,7 @@ static void rotateWithPotentOnly(DC_MotorRotation *pstDcMotorRotation)
 		{
 			pstDcMotorRotation->dcRotDirection = CLOCKWISE;
 			pstDcMotorRotation->dcPwmPercent = (((MAX_CLOCKWISE_ADC_VAL - pstDcMotorRotation->dcAdVal) * 100) /
-												MAX_CLOCKWISE_ADC_VAL);
+											MAX_CLOCKWISE_ADC_VAL);
 		}
 		else
 		{

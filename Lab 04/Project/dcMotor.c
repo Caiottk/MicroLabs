@@ -31,13 +31,13 @@ extern void dcMotor_init(void){
    GPIO_PORTE_AHB_PCTL_R |= 0x00;
 
    // 4. DIR para 0 se for entrada, 1 se for saida
-   GPIO_PORTE_AHB_DIR_R |= 0x0F;
+   GPIO_PORTE_AHB_DIR_R |= 0x0C;
 
    // 5. Limpar os bits AFSEL para 0 para selecionar GPIO sem funcao alternativa
    GPIO_PORTE_AHB_AFSEL_R |= 0x00;
 
    // 6. Setar os bits de DEN para habilitar I/O digital
-   GPIO_PORTE_AHB_DEN_R |= 0x0F;
+   GPIO_PORTE_AHB_DEN_R |= 0x0C;
 
    PortF_Output(0x0000000C); // Enables all H-Bridge pins - F2 and F3
 
@@ -58,7 +58,7 @@ extern void dcMotor_rotateMotor(Sentido enMotorDirection, bool bRotate)
    {
       if (CLOCKWISE == enMotorDirection)
       {
-         PortE_Output(0x00000001);
+         PortE_Output(0x00000004);
       }
       else
       {

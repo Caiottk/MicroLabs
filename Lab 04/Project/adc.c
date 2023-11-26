@@ -40,6 +40,13 @@ extern void adc_startAdcConversion(void)
 	return;
 }
 
+extern void adc_stopAdc3Conversion(void)
+{
+   ADC0_PSSI_R &= ~ADC_PSSI_SS3; // Stops conversion of sequencer 3
+
+   return;
+}
+
 /**
  * @brief Reads the ADC3 value, if the conversion is available
  * 
