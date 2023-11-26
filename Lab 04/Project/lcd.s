@@ -103,7 +103,7 @@ GPIO_PORTM              EQU 2_100000000000
 		IMPORT SysTick_Wait1ms
 
 ;--------------------------------------------------------------------------------
-; Funcao LCD_init
+; Funcao LCD_GPIOinit
 ; Parametro de entrada: Nao tem
 ; Parametro de saida: Nao tem
 LCD_GPIOinit

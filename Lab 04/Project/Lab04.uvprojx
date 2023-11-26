@@ -428,6 +428,11 @@
               <FileType>2</FileType>
               <FilePath>.\matrixKeyboard.s</FilePath>
             </File>
+            <File>
+              <FileName>dcMotor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\dcMotor.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
