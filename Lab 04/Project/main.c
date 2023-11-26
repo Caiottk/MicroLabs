@@ -13,40 +13,38 @@
 
 typedef enum SysState
 {
-	WaitingForControl,
-	WaitingForDirection,
-	RotatingPotentiometerAndKey,
-	RotatingPotentiometer,
+   WAITING_CTRL_MODE,
+   WAITING_DIRECTION,
+   ROTATING_POTENT_AND_KEY,
+   ROTATING_POTENT_ONLY,
 } SysState;
 
 typedef enum sentido{
-	clockwise,
-	counterclockwise,
+   CLOCKWISE,
+   COUNTER_CLOCKWISE,
 } Sentido;
 
 typedef enum controle{
-	keyboardAndPotent,
-	potent
+   keyboardAndPotent,
+   potent
 } Controle;
 
 typedef enum bool
 {
-	false,
-	true
+   false,
+   true
 } bool;
 
 typedef struct DC_MotorRotation
 {
-	Sentido dcRotDirection;
-	Controle dcRotType;
-	uint32_t dcAdVal;
-	uint32_t dcPwmPercent;
+   Sentido dcRotDirection;
+   Controle dcRotType;
+   uint32_t dcAdVal;
+   uint32_t dcPwmPercent;
 } DC_MotorRotation;
 
-
-
 ///////// EXTERNAL FUNCTIONS INCLUSIONS //////////
-// Since there is no .h in most files, theis functions must be included by hand.
+// Since there is no .h in most files, their functions must be included by hand.
 // Same as if we were using IMPORT from assembly
 
 void PLL_Init(void);
@@ -101,122 +99,122 @@ unsigned long msg = INVALID_ADC_VALUE;
 
 int main(void)
 {
-	PLL_Init();
-	SysTick_Init();
-	GPIO_Init();
-	LCD_GPIOinit();
-	LCD_init();
-	MKBOARD_GPIOinit();
-	timerInit();
-	adc_adcInit();
-	initVars();
+   PLL_Init();
+   SysTick_Init();
+   GPIO_Init();
+   LCD_GPIOinit();
+   LCD_init();
+   MKBOARD_GPIOinit();
+   timerInit();
+   adc_adcInit();
+   initVars();
 
-	while (1)
-	{
-		switch (sysState)
-		{
-			case WaitingForControl:
-				askWayOfMotorCtrl();
-		    	break;
-			case WaitingForDirection:
-				askMotorDirection();
-				break;
-			case RotatingPotentiometerAndKey:
-				LCD_ResetLCD();
-				break;
-			case RotatingPotentiometer:
-				LCD_ResetLCD();
-				break;
-			default:
-				LCD_ResetLCD();
-				break;
-		}
-	}
+   while (1)
+   {
+      switch (sysState)
+      {
+         case WAITING_CTRL_MODE:
+            askWayOfMotorCtrl();
+             break;
+         case WAITING_DIRECTION:
+            askMotorDirection();
+            break;
+         case ROTATING_POTENT_AND_KEY:
+            LCD_ResetLCD();
+            break;
+         case ROTATING_POTENT_ONLY:
+            LCD_ResetLCD();
+            break;
+         default:
+            LCD_ResetLCD();
+            break;
+      }
+   }
 }
 
 static void initVars(void)
 {
-	sysState = WaitingForControl;
+   sysState = WAITING_CTRL_MODE;
 
-	dc_MotorRotation.dcRotDirection = clockwise;
-	dc_MotorRotation.dcRotType = keyboardAndPotent;
-	dc_MotorRotation.dcAdVal = INVALID_ADC_VALUE;
-	dc_MotorRotation.dcPwmPercent = 0;
+   dc_MotorRotation.dcRotDirection = CLOCKWISE;
+   dc_MotorRotation.dcRotType = keyboardAndPotent;
+   dc_MotorRotation.dcAdVal = INVALID_ADC_VALUE;
+   dc_MotorRotation.dcPwmPercent = 0;
 
-	LCD_ResetLCD();
-	LCD_printArrayInLcd("Motor parado!");
-	SysTick_Wait1ms(1000);
+   LCD_ResetLCD();
+   LCD_printArrayInLcd("Motor parado!");
+   SysTick_Wait1ms(1000);
 
-	return;
+   return;
 }
 
 static void askWayOfMotorCtrl(void)
 {
-	LCD_printArrayInLcd("Controle: 0(KeP) | 1(P)");
-	static char c;
-	do{
-		c = MKEYBOARD_readKeyboard();
-	} while(c != '0' && c != '1');
-	 if(c == '0')
-	 {
-		 sysState = WaitingForDirection;
-		 dc_MotorRotation.dcRotType = keyboardAndPotent;
-		 LCD_printArrayInLcd("Teclado e Pot");
+   LCD_printArrayInLcd("Controle: 0(KeP) | 1(P)");
+   static char c;
+   do{
+      c = MKEYBOARD_readKeyboard();
+   } while(c != '0' && c != '1');
+   if(c == '0')
+   {
+      sysState = WAITING_DIRECTION;
+      dc_MotorRotation.dcRotType = keyboardAndPotent;
+      LCD_printArrayInLcd("Teclado e Pot");
 
-	 }
-	 else if(c == '1')
-	 {
-		 sysState = RotatingPotentiometer;
-		 dc_MotorRotation.dcRotType = potent;
-		 LCD_printArrayInLcd("Potenciometro");
-	 }
+   }
+   else if(c == '1')
+   {
+      sysState = ROTATING_POTENT_ONLY;
+      dc_MotorRotation.dcRotType = potent;
+      LCD_printArrayInLcd("Potenciometro");
+   }
 
-	SysTick_Wait1ms(1000);
+   SysTick_Wait1ms(1000);
 
-	return;
+   return;
 }
 
 static void askMotorDirection(void)
 {
-	LCD_printArrayInLcd("Sentido: 0(A) | 1(H)");
-	static char c;
-	do{
-		c = MKEYBOARD_readKeyboard();
-	} while(c != '0' && c != '1');
-	
-	LCD_ResetLCD();
-	 if(c == '0')
-	 {
-		 dc_MotorRotation.dcRotDirection = counterclockwise;
-		 sysState = RotatingPotentiometerAndKey;
-		 LCD_printArrayInLcd("Anti-horario");
-	 }
-	 else if(c == '1')
-	 {
-		 dc_MotorRotation.dcRotDirection = clockwise;
-		 sysState = RotatingPotentiometerAndKey;
-		 LCD_printArrayInLcd("Horario");
-	 }
-	 SysTick_Wait1ms(1000);
+   LCD_printArrayInLcd("Sentido: 0(A) | 1(H)");
+   static char c;
+   do{
+      c = MKEYBOARD_readKeyboard();
+   } while(c != '0' && c != '1');
+   
+   LCD_ResetLCD();
+    if(c == '0')
+    {
+       dc_MotorRotation.dcRotDirection = COUNTER_CLOCKWISE;
+       sysState = ROTATING_POTENT_AND_KEY;
+       LCD_printArrayInLcd("Anti-horario");
+    }
+    else if(c == '1')
+    {
+       dc_MotorRotation.dcRotDirection = CLOCKWISE;
+       sysState = ROTATING_POTENT_AND_KEY;
+       LCD_printArrayInLcd("Horario");
+    }
+    SysTick_Wait1ms(1000);
 
-	return;
+   return;
 }
 
 static void Pisca_leds(void)
 {
-	PortN_Output(0x2);
-	SysTick_Wait1ms(250);
-	PortN_Output(0x1);
-	SysTick_Wait1ms(250);
+   PortN_Output(0x2);
+   SysTick_Wait1ms(250);
+   PortN_Output(0x1);
+   SysTick_Wait1ms(250);
 }
 
 ///////// HANDLERS IMPLEMENTATIONS //////////
 
 void GPIOPortJ_Handler(void)
 {
-	GPIO_PORTJ_AHB_ICR_R = 0x3;
+   GPIO_PORTJ_AHB_ICR_R = 0x3;
 
-	return;
+   return;
 }
 
 void ADC0Seq3_Handler(void)
@@ -227,15 +225,14 @@ void ADC0Seq3_Handler(void)
 
    ADC0_ISC_R = ADC_ISC_IN3; // ACKS the interruption
 
-	return;
+   return;
 }
 
 void Timer2A_Handler(void)
 {
-	TIMER2_ICR_R = 1; // ACKS the interruption
+   TIMER2_ICR_R = 1; // ACKS the interruption
+
    TIMER2_CTL_R = 1; // Enables timer
 
-   GPIO_PORTN_DATA_R = GPIO_PORTN_DATA_R ^ 1;
-
-	return;
+   return;
 }

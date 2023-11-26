@@ -186,6 +186,7 @@
             <RvdsVP>2</RvdsVP>
             <RvdsMve>0</RvdsMve>
             <RvdsCdeCp>0</RvdsCdeCp>
+            <nBranchProt>0</nBranchProt>
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -427,6 +428,11 @@
               <FileName>matrixKeyboard.s</FileName>
               <FileType>2</FileType>
               <FilePath>.\matrixKeyboard.s</FilePath>
+            </File>
+            <File>
+              <FileName>dcMotor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\dcMotor.c</FilePath>
             </File>
           </Files>
         </Group>
