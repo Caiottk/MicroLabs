@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include "tm4c1294ncpdt.h"
 
+#define INVALID_ADC_VALUE 0xF000
+
 extern void adc_adcInit(void);
 extern void adc_startAdcConversion(void);
 
@@ -26,17 +28,7 @@ extern void adc_adcInit(void)
 
    ADC0_SSCTL3_R = ADC_SSCTL3_IE0 | ADC_SSCTL3_END0; // Interrupt enable and end of sequence
 
-   ADC0_IM_R = ADC_IM_MASK3; // Interrupt mask
-
    ADC0_ACTSS_R |= ADC_ACTSS_ASEN3; // Enables sequencer 3
-
-   ADC0_ISC_R = ADC_ISC_IN3; // ACKS the interruption
-
-   // Enable interrut in Nvic
-   NVIC_EN0_R |= (1 << 17); // ADC0 sequence number 3
-
-   // Set port interrupt priority
-   NVIC_PRI4_R = (0x1 << 13);
 
    return;
 }
@@ -46,4 +38,23 @@ extern void adc_startAdcConversion(void)
 	ADC0_PSSI_R = ADC_PSSI_SS3; // Starts conversion
 
 	return;
+}
+
+/**
+ * @brief Reads the ADC3 value, if the conversion is available
+ * 
+ * @return unsigned short INVALID_ADC_VALUE if the conversion is not ready, ADC0_SSFIFO3_R if it is
+ */
+extern unsigned short adc_readAdc3Value(void)
+{
+   unsigned short usAdcValue = INVALID_ADC_VALUE;
+
+   if (ADC_RIS_INR3 == (ADC0_RIS_R & ADC_RIS_INR3)) // Checks if the conversion of SS3 is done
+   {
+      usAdcValue   = ADC0_SSFIFO3_R;   // Reads the value from FIFO
+      ADC0_DCISC_R = ADC_DCISC_DCINT3; // ACKS the conversion
+      ADC0_PSSI_R  = ADC_PSSI_SS3;     // Restarts conversion
+   }
+
+   return usAdcValue;
 }
