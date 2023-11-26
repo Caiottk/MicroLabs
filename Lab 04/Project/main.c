@@ -70,7 +70,7 @@ extern void adc_startAdcConversion(void);
 
 void LCD_GPIOinit();
 void LCD_init();
-void LCD_printArrayInLcd(char *str);
+void LCD_printArrayInLcd(uint8_t str[16], int size);
 void LCD_ResetLCD();
 
 void MKBOARD_GPIOinit();
@@ -94,6 +94,13 @@ static void Pisca_leds(void);
 ///////// STATIC VARIABLES DECLARATIONS //////////
 static SysState sysState;
 static DC_MotorRotation dc_MotorRotation;
+uint8_t inicio[] = {"Motor Parado!"};
+uint8_t controle[] = {"Control: 0 | 1"};
+uint8_t potenciometro[] = {"Potenciometro"};
+uint8_t teclado[] = {"Teclado"};
+uint8_t sentido[] = {"Sentido: 0 | 1"};
+uint8_t horario[] = {"Horario"};
+uint8_t antiHorario[] = {"Anti-horario"};
 
 ///////// LOCAL FUNCTIONS IMPLEMENTATIONS //////////
 
@@ -144,7 +151,7 @@ static void initVars(void)
 	dc_MotorRotation.dcPwmPercent = 0;
 
 	LCD_ResetLCD();
-	LCD_printArrayInLcd("Motor parado!");
+	LCD_printArrayInLcd(inicio, 13);
 	SysTick_Wait1ms(1000);
 
 	return;
@@ -152,23 +159,25 @@ static void initVars(void)
 
 static void askWayOfMotorCtrl(void)
 {
-	LCD_printArrayInLcd("Controle: 0(KeP) | 1(P)");
+	LCD_ResetLCD();
+	LCD_printArrayInLcd(controle, 14);
 	static char c;
 	do{
 		c = MKEYBOARD_readKeyboard();
 	} while(c != '0' && c != '1');
+	LCD_ResetLCD();
 	 if(c == '0')
 	 {
 		 sysState = WaitingForDirection;
 		 dc_MotorRotation.dcRotType = keyboardAndPotent;
-		 LCD_printArrayInLcd("Teclado e Pot");
+		 LCD_printArrayInLcd(teclado, 7);
 
 	 }
 	 else if(c == '1')
 	 {
 		 sysState = RotatingPotentiometer;
 		 dc_MotorRotation.dcRotType = potent;
-		 LCD_printArrayInLcd("Potenciometro");
+		 LCD_printArrayInLcd(potenciometro, 13);
 	 }
 
 	SysTick_Wait1ms(1000);
@@ -178,7 +187,8 @@ static void askWayOfMotorCtrl(void)
 
 static void askMotorDirection(void)
 {
-	LCD_printArrayInLcd("Sentido: 0(A) | 1(H)");
+	LCD_ResetLCD();
+	LCD_printArrayInLcd(sentido, 14);
 	static char c;
 	do{
 		c = MKEYBOARD_readKeyboard();
@@ -189,13 +199,13 @@ static void askMotorDirection(void)
 	 {
 		 dc_MotorRotation.dcRotDirection = counterclockwise;
 		 sysState = RotatingPotentiometerAndKey;
-		 LCD_printArrayInLcd("Anti-horario");
+		 LCD_printArrayInLcd(antiHorario, 12);
 	 }
 	 else if(c == '1')
 	 {
 		 dc_MotorRotation.dcRotDirection = clockwise;
 		 sysState = RotatingPotentiometerAndKey;
-		 LCD_printArrayInLcd("Horario");
+		 LCD_printArrayInLcd(horario, 7);
 	 }
 	 SysTick_Wait1ms(1000);
 
