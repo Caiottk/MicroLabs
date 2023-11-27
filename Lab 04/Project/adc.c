@@ -35,9 +35,9 @@ extern void adc_adcInit(void)
 
 extern void adc_startAdcConversion(void)
 {
-	ADC0_PSSI_R = ADC_PSSI_SS3; // Starts conversion
+   ADC0_PSSI_R = ADC_PSSI_SS3; // Starts conversion
 
-	return;
+   return;
 }
 
 extern void adc_stopAdc3Conversion(void)

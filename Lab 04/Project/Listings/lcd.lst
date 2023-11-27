@@ -265,7 +265,7 @@ ARM Macro Assembler    Page 5
 
 
    95 00000000         ; Se alguma funcao do arquivo for chamada em outro arqui
-                       vo 
+                       vo   
    96 00000000                 EXPORT           LCD_init
    97 00000000                 EXPORT           LCD_GPIOinit
    98 00000000                 EXPORT           LCD_PulaCursorSegundaLinha
@@ -484,7 +484,7 @@ ARM Macro Assembler    Page 8
   220 000000BA         ; Parametro de entrada: Nao tem
   221 000000BA         ; Parametro de saida: Nao tem
   222 000000BA         set_RS_0
-  223 000000BA         ;RS como 0 para enviar instrucao - RS -> PM0 
+  223 000000BA         ;RS como 0 para enviar instrucao - RS -> PM0   
   224 000000BA 493E            LDR              R1, =GPIO_PORTM_DATA_R ;Carrega
                                                             -se o endereco
   225 000000BC 6808            LDR              R0, [R1]    ; Le para carregar 
@@ -507,7 +507,7 @@ ARM Macro Assembler    Page 8
   233 000000C6         ; Parametro de entrada: Nao tem
   234 000000C6         ; Parametro de saida: Nao tem
   235 000000C6         set_RS_1
-  236 000000C6         ;RS como 1 para enviar dados - RS -> PM0 
+  236 000000C6         ;RS como 1 para enviar dados - RS -> PM0   
   237 000000C6 493B            LDR              R1, =GPIO_PORTM_DATA_R ;Carrega
                                                             -se o endereco
   238 000000C8 6808            LDR              R0, [R1]    ; Le para carregar 

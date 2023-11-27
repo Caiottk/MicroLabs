@@ -18,37 +18,37 @@
 
 typedef enum SysState
 {
-	WAITING_CTRL_MODE,
-	WAITING_DIRECTION,
-	ROTATING_POTENT_AND_KEY,
-	ROTATING_POTENT_ONLY,
+   WAITING_CTRL_MODE,
+   WAITING_DIRECTION,
+   ROTATING_POTENT_AND_KEY,
+   ROTATING_POTENT_ONLY,
 } SysState;
 
 typedef enum sentido
 {
-	CLOCKWISE,
-	COUNTER_CLOCKWISE,
+   CLOCKWISE,
+   COUNTER_CLOCKWISE,
 } Sentido;
 
 typedef enum controle
 {
-	KEYBOARD_AND_POTENT,
-	POTENT_ONLY
+   KEYBOARD_AND_POTENT,
+   POTENT_ONLY
 } Controle;
 
 typedef enum bool
 {
-	false,
-	true
+   false,
+   true
 } bool;
 
 typedef struct DC_MotorRotation
 {
-	Sentido dcRotDirection;
-	Controle dcRotType;
-	bool bRunNow;
-	unsigned short dcAdVal;
-	unsigned char dcPwmPercent;
+   Sentido dcRotDirection;
+   Controle dcRotType;
+   bool bRunNow;
+   unsigned short dcAdVal;
+   unsigned char dcPwmPercent;
 } DC_MotorRotation;
 
 ///////// EXTERNAL FUNCTIONS INCLUSIONS //////////
@@ -143,7 +143,7 @@ static void changeMotorDirectionSwiftly(DC_MotorRotation *pstDcMotorRotation);
  * @param usReadAdcValue     Currently read ADC value
  */
 static void changeAdcValueSwiftly(DC_MotorRotation *pstDcMotorRotation,
-								  unsigned short usReadAdcValue);
+                          unsigned short usReadAdcValue);
 
 /**
  * @brief Uses LCD_SetCursorPos to set the cursor position and then prints the duty cycle
@@ -172,264 +172,264 @@ unsigned long msg = INVALID_ADC_VALUE;
 
 int main(void)
 {
-	PLL_Init();
-	SysTick_Init();
-	GPIO_Init();
-	LCD_GPIOinit();
-	LCD_init();
-	MKBOARD_GPIOinit();
-	timerInit();
-	adc_adcInit();
-	dcMotor_init();
-	initVars();
+   PLL_Init();
+   SysTick_Init();
+   GPIO_Init();
+   LCD_GPIOinit();
+   LCD_init();
+   MKBOARD_GPIOinit();
+   timerInit();
+   adc_adcInit();
+   dcMotor_init();
+   initVars();
 
-	while (1)
-	{
-		switch (sysState)
-		{
-		case WAITING_CTRL_MODE:
-			askWayOfMotorCtrl();
-			break;
-		case WAITING_DIRECTION:
-			askMotorDirection();
-			break;
-		case ROTATING_POTENT_AND_KEY:
-			rotateWithPotentAndKeyboard(&dc_MotorRotation);
-			break;
-		case ROTATING_POTENT_ONLY:
-			rotateWithPotentOnly(&dc_MotorRotation);
-			break;
-		default:
-			LCD_ResetLCD();
-			break;
-		}
-	}
+   while (1)
+   {
+      switch (sysState)
+      {
+      case WAITING_CTRL_MODE:
+         askWayOfMotorCtrl();
+         break;
+      case WAITING_DIRECTION:
+         askMotorDirection();
+         break;
+      case ROTATING_POTENT_AND_KEY:
+         rotateWithPotentAndKeyboard(&dc_MotorRotation);
+         break;
+      case ROTATING_POTENT_ONLY:
+         rotateWithPotentOnly(&dc_MotorRotation);
+         break;
+      default:
+         LCD_ResetLCD();
+         break;
+      }
+   }
 }
 
 static void initVars(void)
 {
-	sysState = WAITING_CTRL_MODE;
+   sysState = WAITING_CTRL_MODE;
 
-	dc_MotorRotation.dcRotDirection = CLOCKWISE;
-	dc_MotorRotation.dcRotType = KEYBOARD_AND_POTENT;
-	dc_MotorRotation.bRunNow = false;
-	dc_MotorRotation.dcAdVal = INVALID_ADC_VALUE;
-	dc_MotorRotation.dcPwmPercent = 0;
+   dc_MotorRotation.dcRotDirection = CLOCKWISE;
+   dc_MotorRotation.dcRotType = KEYBOARD_AND_POTENT;
+   dc_MotorRotation.bRunNow = false;
+   dc_MotorRotation.dcAdVal = INVALID_ADC_VALUE;
+   dc_MotorRotation.dcPwmPercent = 0;
 
    // Stops the motor
    dcMotor_rotateMotor(dc_MotorRotation.dcRotDirection, dc_MotorRotation.bRunNow);
 
-	SysTick_Wait1ms(1000);
-	LCD_ResetLCD();
-	LCD_printArrayInLcd(inicio, 13);
-	SysTick_Wait1ms(1000);
-	adc_stopAdc3Conversion();
+   SysTick_Wait1ms(1000);
+   LCD_ResetLCD();
+   LCD_printArrayInLcd(inicio, 13);
+   SysTick_Wait1ms(1000);
+   adc_stopAdc3Conversion();
    TIMER2_TAILR_R = 80000; // COUNTER = (1ms / (1/80MHz))
    TIMER2_ICR_R = 1; // ACKS the interruption
-	TIMER2_CTL_R = 0; // Disables timer
-	return;
+   TIMER2_CTL_R = 0; // Disables timer
+   return;
 }
 
 static void askWayOfMotorCtrl(void)
 {
-	LCD_ResetLCD();
-	LCD_printArrayInLcd(controle, 14);
-	static char c;
-	do
-	{
-		c = MKEYBOARD_readKeyboard();
-	} while (c != '0' && c != '1');
-	if (c == '0')
-	{
-		sysState = WAITING_DIRECTION;
-		dc_MotorRotation.dcRotType = KEYBOARD_AND_POTENT;
-		LCD_PulaCursorSegundaLinha();
-		LCD_printArrayInLcd(teclado, 7);
+   LCD_ResetLCD();
+   LCD_printArrayInLcd(controle, 14);
+   static char c;
+   do
+   {
+      c = MKEYBOARD_readKeyboard();
+   } while (c != '0' && c != '1');
+   if (c == '0')
+   {
+      sysState = WAITING_DIRECTION;
+      dc_MotorRotation.dcRotType = KEYBOARD_AND_POTENT;
+      LCD_PulaCursorSegundaLinha();
+      LCD_printArrayInLcd(teclado, 7);
       SysTick_Wait1ms(1000);
-	}
-	else if (c == '1')
-	{
-		sysState = ROTATING_POTENT_ONLY;
-		dc_MotorRotation.dcRotType = POTENT_ONLY;
-		LCD_PulaCursorSegundaLinha();
-		LCD_printArrayInLcd(potenciometro, 13);
+   }
+   else if (c == '1')
+   {
+      sysState = ROTATING_POTENT_ONLY;
+      dc_MotorRotation.dcRotType = POTENT_ONLY;
+      LCD_PulaCursorSegundaLinha();
+      LCD_printArrayInLcd(potenciometro, 13);
       SysTick_Wait1ms(1000);
       LCD_ResetLCD();
       LCD_PulaCursorSegundaLinha();
       LCD_printArrayInLcd(dutyCycleStr, 11);
-		adc_startAdcConversion();
-		TIMER2_CTL_R = 1; // Enables timer
+      adc_startAdcConversion();
+      TIMER2_CTL_R = 1; // Enables timer
       SysTick_Wait1ms(1000);
-	}
+   }
 
-	return;
+   return;
 }
 
 static void askMotorDirection(void)
 {
-	LCD_ResetLCD();
-	LCD_printArrayInLcd(sentido, 14);
-	unsigned char c;
-	do
-	{
-		c = MKEYBOARD_readKeyboard();
-	} while (c != '0' && c != '1');
+   LCD_ResetLCD();
+   LCD_printArrayInLcd(sentido, 14);
+   unsigned char c;
+   do
+   {
+      c = MKEYBOARD_readKeyboard();
+   } while (c != '0' && c != '1');
 
-	if (c == '0')
-	{
-		dc_MotorRotation.dcRotDirection = CLOCKWISE;
-		sysState = ROTATING_POTENT_AND_KEY;
-		LCD_ResetLCD();
+   if (c == '0')
+   {
+      dc_MotorRotation.dcRotDirection = CLOCKWISE;
+      sysState = ROTATING_POTENT_AND_KEY;
+      LCD_ResetLCD();
       LCD_printArrayInLcd(horario, 7);
-		LCD_PulaCursorSegundaLinha();
+      LCD_PulaCursorSegundaLinha();
       LCD_printArrayInLcd(dutyCycleStr, 11);
-	}
-	else if (c == '1')
-	{
-		dc_MotorRotation.dcRotDirection = COUNTER_CLOCKWISE;
-		sysState = ROTATING_POTENT_AND_KEY;
-		LCD_ResetLCD();
+   }
+   else if (c == '1')
+   {
+      dc_MotorRotation.dcRotDirection = COUNTER_CLOCKWISE;
+      sysState = ROTATING_POTENT_AND_KEY;
+      LCD_ResetLCD();
       LCD_printArrayInLcd(antiHorario, 12);
-		LCD_PulaCursorSegundaLinha();
+      LCD_PulaCursorSegundaLinha();
       LCD_printArrayInLcd(dutyCycleStr, 11);
-	}
+   }
 
-	SysTick_Wait1ms(1000);
-	adc_startAdcConversion();
-	TIMER2_CTL_R = 1; // Enables timer
-	return;
+   SysTick_Wait1ms(1000);
+   adc_startAdcConversion();
+   TIMER2_CTL_R = 1; // Enables timer
+   return;
 }
 
 static void rotateWithPotentAndKeyboard(DC_MotorRotation *pstDcMotorRotation)
 {
-	unsigned char ucRotDirection = (MKEYBOARD_readKeyboard() - '0');
-	unsigned short usAdcValue = adc_readAdc3Value();
+   unsigned char ucRotDirection = (MKEYBOARD_readKeyboard() - '0');
+   unsigned short usAdcValue = adc_readAdc3Value();
 
-	if ((ucRotDirection <= COUNTER_CLOCKWISE) &&
-		(ucRotDirection != pstDcMotorRotation->dcRotDirection))
-	{
-		changeMotorDirectionSwiftly(pstDcMotorRotation);
+   if ((ucRotDirection <= COUNTER_CLOCKWISE) &&
+      (ucRotDirection != pstDcMotorRotation->dcRotDirection))
+   {
+      changeMotorDirectionSwiftly(pstDcMotorRotation);
 
-		if (pstDcMotorRotation->dcRotDirection == CLOCKWISE)
-		{
-			LCD_ResetLCD();
-			LCD_printArrayInLcd(horario, 7);
-		}
-		else if (pstDcMotorRotation->dcRotDirection == COUNTER_CLOCKWISE)
-		{
-			LCD_ResetLCD();
-			LCD_printArrayInLcd(antiHorario, 12);
-		}
+      if (pstDcMotorRotation->dcRotDirection == CLOCKWISE)
+      {
+         LCD_ResetLCD();
+         LCD_printArrayInLcd(horario, 7);
+      }
+      else if (pstDcMotorRotation->dcRotDirection == COUNTER_CLOCKWISE)
+      {
+         LCD_ResetLCD();
+         LCD_printArrayInLcd(antiHorario, 12);
+      }
 
       LCD_PulaCursorSegundaLinha();
       LCD_printArrayInLcd(dutyCycleStr, 11);
-	}
+   }
 
-	if (INVALID_ADC_VALUE != usAdcValue)
-	{
-		changeAdcValueSwiftly(pstDcMotorRotation, usAdcValue);
+   if (INVALID_ADC_VALUE != usAdcValue)
+   {
+      changeAdcValueSwiftly(pstDcMotorRotation, usAdcValue);
 
-		pstDcMotorRotation->dcPwmPercent = (pstDcMotorRotation->dcAdVal * 100) / MAX_ADC_VALUE;
+      pstDcMotorRotation->dcPwmPercent = (pstDcMotorRotation->dcAdVal * 100) / MAX_ADC_VALUE;
 
       printDutyCycleVal(pstDcMotorRotation->dcPwmPercent);
-	}
+   }
 
-	dcMotor_rotateMotor(pstDcMotorRotation->dcRotDirection, pstDcMotorRotation->bRunNow);
+   dcMotor_rotateMotor(pstDcMotorRotation->dcRotDirection, pstDcMotorRotation->bRunNow);
 
-	return;
+   return;
 }
 
 static void rotateWithPotentOnly(DC_MotorRotation *pstDcMotorRotation)
 {
-	unsigned short usAdcValue = adc_readAdc3Value();
+   unsigned short usAdcValue = adc_readAdc3Value();
 
-	if (INVALID_ADC_VALUE != usAdcValue)
-	{
-		changeAdcValueSwiftly(pstDcMotorRotation, usAdcValue);
+   if (INVALID_ADC_VALUE != usAdcValue)
+   {
+      changeAdcValueSwiftly(pstDcMotorRotation, usAdcValue);
 
-		if (usAdcValue <= MAX_CLOCKWISE_ADC_VAL)
-		{
+      if (usAdcValue <= MAX_CLOCKWISE_ADC_VAL)
+      {
          if (pstDcMotorRotation->dcRotDirection != CLOCKWISE)
          {
-			   pstDcMotorRotation->dcRotDirection = CLOCKWISE;
+            pstDcMotorRotation->dcRotDirection = CLOCKWISE;
             LCD_ResetLCD();
-			   LCD_printArrayInLcd(horario, 7);
+            LCD_printArrayInLcd(horario, 7);
             LCD_PulaCursorSegundaLinha();
             LCD_printArrayInLcd(dutyCycleStr, 11);
          }
 
-			pstDcMotorRotation->dcPwmPercent = (((MAX_CLOCKWISE_ADC_VAL - pstDcMotorRotation->dcAdVal) * 100) /
-											MAX_CLOCKWISE_ADC_VAL);
-		}
-		else
-		{
+         pstDcMotorRotation->dcPwmPercent = (((MAX_CLOCKWISE_ADC_VAL - pstDcMotorRotation->dcAdVal) * 100) /
+                                 MAX_CLOCKWISE_ADC_VAL);
+      }
+      else
+      {
          if (pstDcMotorRotation->dcRotDirection != COUNTER_CLOCKWISE)
          {
-			   pstDcMotorRotation->dcRotDirection = COUNTER_CLOCKWISE;
+            pstDcMotorRotation->dcRotDirection = COUNTER_CLOCKWISE;
             LCD_ResetLCD();
-			   LCD_printArrayInLcd(antiHorario, 12);
+            LCD_printArrayInLcd(antiHorario, 12);
             LCD_PulaCursorSegundaLinha();
             LCD_printArrayInLcd(dutyCycleStr, 11);
          }
 
-			pstDcMotorRotation->dcPwmPercent = (((pstDcMotorRotation->dcAdVal - MAX_CLOCKWISE_ADC_VAL) * 100) /
-												(MAX_ADC_VALUE - MAX_CLOCKWISE_ADC_VAL));
-		}
+         pstDcMotorRotation->dcPwmPercent = (((pstDcMotorRotation->dcAdVal - MAX_CLOCKWISE_ADC_VAL) * 100) /
+                                    (MAX_ADC_VALUE - MAX_CLOCKWISE_ADC_VAL));
+      }
 
       printDutyCycleVal(pstDcMotorRotation->dcPwmPercent);
-	}
+   }
 
-	dcMotor_rotateMotor(pstDcMotorRotation->dcRotDirection, pstDcMotorRotation->bRunNow);
+   dcMotor_rotateMotor(pstDcMotorRotation->dcRotDirection, pstDcMotorRotation->bRunNow);
 
-	return;
+   return;
 }
 
 static void changeMotorDirectionSwiftly(DC_MotorRotation *pstDcMotorRotation)
 {
-	unsigned char ucInitialPwmPercent = pstDcMotorRotation->dcPwmPercent;
+   unsigned char ucInitialPwmPercent = pstDcMotorRotation->dcPwmPercent;
 
-	for (unsigned char ucPwmPercent = ucInitialPwmPercent; ucPwmPercent > 0; ucPwmPercent--)
-	{
-		pstDcMotorRotation->dcPwmPercent = ucPwmPercent;
+   for (unsigned char ucPwmPercent = ucInitialPwmPercent; ucPwmPercent > 0; ucPwmPercent--)
+   {
+      pstDcMotorRotation->dcPwmPercent = ucPwmPercent;
 
-		dcMotor_rotateMotor(pstDcMotorRotation->dcRotDirection, pstDcMotorRotation->bRunNow);
+      dcMotor_rotateMotor(pstDcMotorRotation->dcRotDirection, pstDcMotorRotation->bRunNow);
 
-		SysTick_Wait1ms(100);
+      SysTick_Wait1ms(100);
       printDutyCycleVal(pstDcMotorRotation->dcPwmPercent);
-	}
+   }
 
-	pstDcMotorRotation->dcRotDirection = (pstDcMotorRotation->dcRotDirection == CLOCKWISE) ? COUNTER_CLOCKWISE : CLOCKWISE;
+   pstDcMotorRotation->dcRotDirection = (pstDcMotorRotation->dcRotDirection == CLOCKWISE) ? COUNTER_CLOCKWISE : CLOCKWISE;
 
-	for (unsigned char ucPwmPercent = 0; ucPwmPercent < ucInitialPwmPercent; ucPwmPercent++)
-	{
-		pstDcMotorRotation->dcPwmPercent = ucPwmPercent;
+   for (unsigned char ucPwmPercent = 0; ucPwmPercent < ucInitialPwmPercent; ucPwmPercent++)
+   {
+      pstDcMotorRotation->dcPwmPercent = ucPwmPercent;
 
-		dcMotor_rotateMotor(pstDcMotorRotation->dcRotDirection, pstDcMotorRotation->bRunNow);
+      dcMotor_rotateMotor(pstDcMotorRotation->dcRotDirection, pstDcMotorRotation->bRunNow);
 
-		SysTick_Wait1ms(100);
+      SysTick_Wait1ms(100);
       printDutyCycleVal(pstDcMotorRotation->dcPwmPercent);
-	}
+   }
 
-	return;
+   return;
 }
 
 static void changeAdcValueSwiftly(DC_MotorRotation *pstDcMotorRotation,
-								  unsigned short usReadAdcValue)
+                          unsigned short usReadAdcValue)
 {
-	if (((short)usReadAdcValue - (short)pstDcMotorRotation->dcAdVal) > MAX_DELTA_AD_VAL)
-	{
-		pstDcMotorRotation->dcAdVal += MAX_DELTA_AD_VAL;
-	}
-	else if (((short)usReadAdcValue - (short)pstDcMotorRotation->dcAdVal) < (-MAX_DELTA_AD_VAL))
-	{
-		pstDcMotorRotation->dcAdVal -= MAX_DELTA_AD_VAL;
-	}
-	else
-	{
-		pstDcMotorRotation->dcAdVal = usReadAdcValue;
-	}
+   if (((short)usReadAdcValue - (short)pstDcMotorRotation->dcAdVal) > MAX_DELTA_AD_VAL)
+   {
+      pstDcMotorRotation->dcAdVal += MAX_DELTA_AD_VAL;
+   }
+   else if (((short)usReadAdcValue - (short)pstDcMotorRotation->dcAdVal) < (-MAX_DELTA_AD_VAL))
+   {
+      pstDcMotorRotation->dcAdVal -= MAX_DELTA_AD_VAL;
+   }
+   else
+   {
+      pstDcMotorRotation->dcAdVal = usReadAdcValue;
+   }
 
-	return;
+   return;
 }
 
 static void printDutyCycleVal(unsigned char ucDutyCycle)
@@ -447,44 +447,44 @@ static void printDutyCycleVal(unsigned char ucDutyCycle)
 
 static void Pisca_leds(void)
 {
-	PortN_Output(0x2);
-	SysTick_Wait1ms(250);
-	PortN_Output(0x1);
-	SysTick_Wait1ms(250);
+   PortN_Output(0x2);
+   SysTick_Wait1ms(250);
+   PortN_Output(0x1);
+   SysTick_Wait1ms(250);
 }
 
 ///////// HANDLERS IMPLEMENTATIONS //////////
 
 void GPIOPortJ_Handler(void)
 {
-	GPIO_PORTJ_AHB_ICR_R = 0x3;
+   GPIO_PORTJ_AHB_ICR_R = 0x3;
 
-	if (sysState > WAITING_DIRECTION)
-	{
-		initVars();
-	}
+   if (sysState > WAITING_DIRECTION)
+   {
+      initVars();
+   }
 
-	return;
+   return;
 }
 
 void Timer2A_Handler(void)
 {
-	TIMER2_ICR_R = 1; // ACKS the interruption
+   TIMER2_ICR_R = 1; // ACKS the interruption
 
-	if (true == dc_MotorRotation.bRunNow)
-	{
-		dc_MotorRotation.bRunNow = false;
+   if (true == dc_MotorRotation.bRunNow)
+   {
+      dc_MotorRotation.bRunNow = false;
 
-		TIMER2_TAILR_R = TICKS_FOR_1MS - ((dc_MotorRotation.dcPwmPercent * TICKS_FOR_1MS) / 100);
-	}
-	else
-	{
-		dc_MotorRotation.bRunNow = true;
+      TIMER2_TAILR_R = TICKS_FOR_1MS - ((dc_MotorRotation.dcPwmPercent * TICKS_FOR_1MS) / 100);
+   }
+   else
+   {
+      dc_MotorRotation.bRunNow = true;
 
-		TIMER2_TAILR_R = (dc_MotorRotation.dcPwmPercent * TICKS_FOR_1MS) / 100;
-	}
+      TIMER2_TAILR_R = (dc_MotorRotation.dcPwmPercent * TICKS_FOR_1MS) / 100;
+   }
 
-	TIMER2_CTL_R = 1; // Enables timer
+   TIMER2_CTL_R = 1; // Enables timer
 
-	return;
+   return;
 }
