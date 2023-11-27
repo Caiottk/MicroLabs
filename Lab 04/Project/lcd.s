@@ -98,6 +98,7 @@ GPIO_PORTM              EQU 2_100000000000
 		EXPORT LCD_PulaCursorSegundaLinha
 		EXPORT LCD_ResetLCD
 		EXPORT LCD_printArrayInLcd
+		EXPORT LCD_SetCursorPos
 		
 		IMPORT SysTick_Wait1us
 		IMPORT SysTick_Wait1ms
@@ -279,6 +280,7 @@ envia_dado_lcd
 ; -------------------------------------------------------------------------------
 ; Funcao LCD_printArrayInLcd - Escreve uma string no LCD
 ; Parametro de entrada: R0 -> Endereco de memoria de inicio da string
+;                       R1 -> Tamanho da string
 ; Parametro de saida: Nao tem 
 LCD_printArrayInLcd
 	MOV R2, R1
@@ -317,6 +319,18 @@ LCD_PulaCursorSegundaLinha
 	BL envia_instrucao_lcd
 	POP { R1, LR }
 	BX LR
+
+; -------------------------------------------------------------------------------
+; LCD_SetCursorPos - Set cursor to desired position
+; Input: R0 -> Cursor position (0x80 - 0x8F) first line or (0xC0 - 0xCF) second line
+; Output: None
+LCD_SetCursorPos
+	PUSH { LR }
+	BL envia_instrucao_lcd
+	POP { LR }
+LCD_SetCursorPosEnd
+	BX LR
+
 ; -------------------------------------------------------------------------------
 ; Funcao LCD_init - Inicializa o LCD
 ; Parametro de entrada: Nao tem

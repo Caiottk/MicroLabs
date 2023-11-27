@@ -84,6 +84,7 @@ void LCD_init();
 void LCD_printArrayInLcd(uint8_t *str, uint8_t size);
 void LCD_ResetLCD();
 void LCD_PulaCursorSegundaLinha();
+void LCD_SetCursorPos(unsigned char ucPos);
 
 void MKBOARD_GPIOinit();
 unsigned char MKEYBOARD_readKeyboard();
@@ -144,18 +145,26 @@ static void changeMotorDirectionSwiftly(DC_MotorRotation *pstDcMotorRotation);
 static void changeAdcValueSwiftly(DC_MotorRotation *pstDcMotorRotation,
 								  unsigned short usReadAdcValue);
 
+/**
+ * @brief Uses LCD_SetCursorPos to set the cursor position and then prints the duty cycle
+ * 
+ * @param ucDutyCycle A value from 0 to 100
+ */
+static void printDutyCycleVal(unsigned char ucDutyCycle);
+
 static void Pisca_leds(void);
 
 ///////// STATIC VARIABLES DECLARATIONS //////////
 static SysState sysState;
 static DC_MotorRotation dc_MotorRotation;
-uint8_t inicio[] = {"Motor Parado!"};
-uint8_t controle[] = {"Control: 0 | 1"};
-uint8_t potenciometro[] = {"Potenciometro"};
-uint8_t teclado[] = {"Teclado"};
-uint8_t sentido[] = {"Sentido: 0 | 1"};
-uint8_t horario[] = {"Horario"};
-uint8_t antiHorario[] = {"Anti-horario"};
+uint8_t       inicio[]        = {"Motor Parado!"};
+uint8_t       controle[]      = {"Control: 0 | 1"};
+uint8_t       potenciometro[] = {"Potenciometro"};
+uint8_t       teclado[]       = {"Teclado"};
+uint8_t       sentido[]       = {"Sentido: 0 | 1"};
+uint8_t       horario[]       = {"Horario"};
+uint8_t       antiHorario[]   = {"Anti-horario"};
+unsigned char dutyCycleStr[]  = {"Duty Cycle: "};
 
 ///////// LOCAL FUNCTIONS IMPLEMENTATIONS //////////
 
@@ -215,6 +224,8 @@ static void initVars(void)
 	LCD_printArrayInLcd(inicio, 13);
 	SysTick_Wait1ms(1000);
 	adc_stopAdc3Conversion();
+   TIMER2_TAILR_R = 80000; // COUNTER = (1ms / (1/80MHz))
+   TIMER2_ICR_R = 1; // ACKS the interruption
 	TIMER2_CTL_R = 0; // Disables timer
 	return;
 }
@@ -234,6 +245,7 @@ static void askWayOfMotorCtrl(void)
 		dc_MotorRotation.dcRotType = KEYBOARD_AND_POTENT;
 		LCD_PulaCursorSegundaLinha();
 		LCD_printArrayInLcd(teclado, 7);
+      SysTick_Wait1ms(1000);
 	}
 	else if (c == '1')
 	{
@@ -241,12 +253,14 @@ static void askWayOfMotorCtrl(void)
 		dc_MotorRotation.dcRotType = POTENT_ONLY;
 		LCD_PulaCursorSegundaLinha();
 		LCD_printArrayInLcd(potenciometro, 13);
+      SysTick_Wait1ms(1000);
+      LCD_ResetLCD();
+      LCD_PulaCursorSegundaLinha();
+      LCD_printArrayInLcd(dutyCycleStr, 11);
 		adc_startAdcConversion();
 		TIMER2_CTL_R = 1; // Enables timer
+      SysTick_Wait1ms(1000);
 	}
-
-	SysTick_Wait1ms(1000);
-	LCD_ResetLCD();
 
 	return;
 }
@@ -265,15 +279,19 @@ static void askMotorDirection(void)
 	{
 		dc_MotorRotation.dcRotDirection = CLOCKWISE;
 		sysState = ROTATING_POTENT_AND_KEY;
+		LCD_ResetLCD();
+      LCD_printArrayInLcd(horario, 7);
 		LCD_PulaCursorSegundaLinha();
-		LCD_printArrayInLcd(horario, 7);
+      LCD_printArrayInLcd(dutyCycleStr, 11);
 	}
 	else if (c == '1')
 	{
 		dc_MotorRotation.dcRotDirection = COUNTER_CLOCKWISE;
 		sysState = ROTATING_POTENT_AND_KEY;
+		LCD_ResetLCD();
+      LCD_printArrayInLcd(antiHorario, 12);
 		LCD_PulaCursorSegundaLinha();
-		LCD_printArrayInLcd(antiHorario, 12);
+      LCD_printArrayInLcd(dutyCycleStr, 11);
 	}
 
 	SysTick_Wait1ms(1000);
@@ -302,6 +320,9 @@ static void rotateWithPotentAndKeyboard(DC_MotorRotation *pstDcMotorRotation)
 			LCD_ResetLCD();
 			LCD_printArrayInLcd(antiHorario, 12);
 		}
+
+      LCD_PulaCursorSegundaLinha();
+      LCD_printArrayInLcd(dutyCycleStr, 11);
 	}
 
 	if (INVALID_ADC_VALUE != usAdcValue)
@@ -309,6 +330,8 @@ static void rotateWithPotentAndKeyboard(DC_MotorRotation *pstDcMotorRotation)
 		changeAdcValueSwiftly(pstDcMotorRotation, usAdcValue);
 
 		pstDcMotorRotation->dcPwmPercent = (pstDcMotorRotation->dcAdVal * 100) / MAX_ADC_VALUE;
+
+      printDutyCycleVal(pstDcMotorRotation->dcPwmPercent);
 	}
 
 	dcMotor_rotateMotor(pstDcMotorRotation->dcRotDirection, pstDcMotorRotation->bRunNow);
@@ -326,16 +349,34 @@ static void rotateWithPotentOnly(DC_MotorRotation *pstDcMotorRotation)
 
 		if (usAdcValue <= MAX_CLOCKWISE_ADC_VAL)
 		{
-			pstDcMotorRotation->dcRotDirection = CLOCKWISE;
+         if (pstDcMotorRotation->dcRotDirection != CLOCKWISE)
+         {
+			   pstDcMotorRotation->dcRotDirection = CLOCKWISE;
+            LCD_ResetLCD();
+			   LCD_printArrayInLcd(horario, 7);
+            LCD_PulaCursorSegundaLinha();
+            LCD_printArrayInLcd(dutyCycleStr, 11);
+         }
+
 			pstDcMotorRotation->dcPwmPercent = (((MAX_CLOCKWISE_ADC_VAL - pstDcMotorRotation->dcAdVal) * 100) /
 											MAX_CLOCKWISE_ADC_VAL);
 		}
 		else
 		{
-			pstDcMotorRotation->dcRotDirection = COUNTER_CLOCKWISE;
+         if (pstDcMotorRotation->dcRotDirection != COUNTER_CLOCKWISE)
+         {
+			   pstDcMotorRotation->dcRotDirection = COUNTER_CLOCKWISE;
+            LCD_ResetLCD();
+			   LCD_printArrayInLcd(antiHorario, 12);
+            LCD_PulaCursorSegundaLinha();
+            LCD_printArrayInLcd(dutyCycleStr, 11);
+         }
+
 			pstDcMotorRotation->dcPwmPercent = (((pstDcMotorRotation->dcAdVal - MAX_CLOCKWISE_ADC_VAL) * 100) /
 												(MAX_ADC_VALUE - MAX_CLOCKWISE_ADC_VAL));
 		}
+
+      printDutyCycleVal(pstDcMotorRotation->dcPwmPercent);
 	}
 
 	dcMotor_rotateMotor(pstDcMotorRotation->dcRotDirection, pstDcMotorRotation->bRunNow);
@@ -353,7 +394,8 @@ static void changeMotorDirectionSwiftly(DC_MotorRotation *pstDcMotorRotation)
 
 		dcMotor_rotateMotor(pstDcMotorRotation->dcRotDirection, pstDcMotorRotation->bRunNow);
 
-		SysTick_Wait1ms(1);
+		SysTick_Wait1ms(100);
+      printDutyCycleVal(pstDcMotorRotation->dcPwmPercent);
 	}
 
 	pstDcMotorRotation->dcRotDirection = (pstDcMotorRotation->dcRotDirection == CLOCKWISE) ? COUNTER_CLOCKWISE : CLOCKWISE;
@@ -364,7 +406,8 @@ static void changeMotorDirectionSwiftly(DC_MotorRotation *pstDcMotorRotation)
 
 		dcMotor_rotateMotor(pstDcMotorRotation->dcRotDirection, pstDcMotorRotation->bRunNow);
 
-		SysTick_Wait1ms(1);
+		SysTick_Wait1ms(100);
+      printDutyCycleVal(pstDcMotorRotation->dcPwmPercent);
 	}
 
 	return;
@@ -387,6 +430,19 @@ static void changeAdcValueSwiftly(DC_MotorRotation *pstDcMotorRotation,
 	}
 
 	return;
+}
+
+static void printDutyCycleVal(unsigned char ucDutyCycle)
+{
+   unsigned char cDutyCycle[3];
+   cDutyCycle[0] = (ucDutyCycle / 100) + '0';
+   cDutyCycle[1] = ((ucDutyCycle % 100) / 10) + '0';
+   cDutyCycle[2] = (ucDutyCycle % 10) + '0';
+
+   LCD_SetCursorPos(0xCB);
+   LCD_printArrayInLcd(cDutyCycle, 3);
+
+   return;
 }
 
 static void Pisca_leds(void)
