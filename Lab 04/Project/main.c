@@ -208,6 +208,8 @@ int main(void)
 
 static void initVars(void)
 {
+   adc_stopAdc3Conversion();
+
    sysState = WAITING_CTRL_MODE;
 
    dc_MotorRotation.dcRotDirection = CLOCKWISE;
@@ -223,8 +225,7 @@ static void initVars(void)
    LCD_ResetLCD();
    LCD_printArrayInLcd(inicio, 13);
    SysTick_Wait1ms(1000);
-   adc_stopAdc3Conversion();
-   TIMER2_TAILR_R = 80000; // COUNTER = (1ms / (1/80MHz))
+   TIMER2_TAILR_R = 40000; // COUNTER = (500us / (1/80MHz))
    TIMER2_ICR_R = 1; // ACKS the interruption
    TIMER2_CTL_R = 0; // Disables timer
    return;
@@ -334,8 +335,6 @@ static void rotateWithPotentAndKeyboard(DC_MotorRotation *pstDcMotorRotation)
       printDutyCycleVal(pstDcMotorRotation->dcPwmPercent);
    }
 
-   dcMotor_rotateMotor(pstDcMotorRotation->dcRotDirection, pstDcMotorRotation->bRunNow);
-
    return;
 }
 
@@ -379,8 +378,6 @@ static void rotateWithPotentOnly(DC_MotorRotation *pstDcMotorRotation)
       printDutyCycleVal(pstDcMotorRotation->dcPwmPercent);
    }
 
-   dcMotor_rotateMotor(pstDcMotorRotation->dcRotDirection, pstDcMotorRotation->bRunNow);
-
    return;
 }
 
@@ -392,8 +389,6 @@ static void changeMotorDirectionSwiftly(DC_MotorRotation *pstDcMotorRotation)
    {
       pstDcMotorRotation->dcPwmPercent = ucPwmPercent;
 
-      dcMotor_rotateMotor(pstDcMotorRotation->dcRotDirection, pstDcMotorRotation->bRunNow);
-
       SysTick_Wait1ms(100);
       printDutyCycleVal(pstDcMotorRotation->dcPwmPercent);
    }
@@ -403,8 +398,6 @@ static void changeMotorDirectionSwiftly(DC_MotorRotation *pstDcMotorRotation)
    for (unsigned char ucPwmPercent = 0; ucPwmPercent < ucInitialPwmPercent; ucPwmPercent++)
    {
       pstDcMotorRotation->dcPwmPercent = ucPwmPercent;
-
-      dcMotor_rotateMotor(pstDcMotorRotation->dcRotDirection, pstDcMotorRotation->bRunNow);
 
       SysTick_Wait1ms(100);
       printDutyCycleVal(pstDcMotorRotation->dcPwmPercent);
@@ -483,6 +476,8 @@ void Timer2A_Handler(void)
 
       TIMER2_TAILR_R = (dc_MotorRotation.dcPwmPercent * TICKS_FOR_1MS) / 100;
    }
+
+   dcMotor_rotateMotor(dc_MotorRotation.dcRotDirection, dc_MotorRotation.bRunNow);
 
    TIMER2_CTL_R = 1; // Enables timer
 
