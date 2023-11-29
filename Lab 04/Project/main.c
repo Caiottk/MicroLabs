@@ -152,6 +152,13 @@ static void changeAdcValueSwiftly(DC_MotorRotation *pstDcMotorRotation,
  */
 static void printDutyCycleVal(unsigned char ucDutyCycle);
 
+/**
+ * @brief Checks if the value in the structure is in the valid range
+ * 
+ * @param pstDcMotorRotation Pointer to the DC_MotorRotation struct
+ */
+static void checkStoredAdcValue(DC_MotorRotation *pstDcMotorRotation);
+
 static void Pisca_leds(void);
 
 ///////// STATIC VARIABLES DECLARATIONS //////////
@@ -306,6 +313,8 @@ static void rotateWithPotentAndKeyboard(DC_MotorRotation *pstDcMotorRotation)
    unsigned char ucRotDirection = (MKEYBOARD_readKeyboard() - '0');
    unsigned short usAdcValue = adc_readAdc3Value();
 
+   checkStoredAdcValue(pstDcMotorRotation);
+
    if ((ucRotDirection <= COUNTER_CLOCKWISE) &&
       (ucRotDirection != pstDcMotorRotation->dcRotDirection))
    {
@@ -341,6 +350,8 @@ static void rotateWithPotentAndKeyboard(DC_MotorRotation *pstDcMotorRotation)
 static void rotateWithPotentOnly(DC_MotorRotation *pstDcMotorRotation)
 {
    unsigned short usAdcValue = adc_readAdc3Value();
+
+   checkStoredAdcValue(pstDcMotorRotation);
 
    if (INVALID_ADC_VALUE != usAdcValue)
    {
@@ -444,6 +455,17 @@ static void Pisca_leds(void)
    SysTick_Wait1ms(250);
    PortN_Output(0x1);
    SysTick_Wait1ms(250);
+}
+
+static void checkStoredAdcValue(DC_MotorRotation *pstDcMotorRotation)
+{
+   if (pstDcMotorRotation->dcAdVal > MAX_ADC_VALUE)
+   {
+      pstDcMotorRotation->dcAdVal = MAX_ADC_VALUE;
+   }
+
+   return;
+
 }
 
 ///////// HANDLERS IMPLEMENTATIONS //////////
